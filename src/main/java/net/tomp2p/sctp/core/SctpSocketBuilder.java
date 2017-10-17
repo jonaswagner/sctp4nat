@@ -6,8 +6,6 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.tomp2p.connection.Ports;
-
 public class SctpSocketBuilder {
 
 	//TODO jwa implement all possible variables and parameters for a given SCTP connection
@@ -76,7 +74,7 @@ public class SctpSocketBuilder {
 	}
 
 	private boolean isInRange(int localPort) {
-		return localPort >= 0 && localPort < Ports.MAX_PORT;
+		return localPort >= 0 && localPort < SctpPorts.MAX_PORT;
 	}
 
 	public SctpSocketBuilder localAddress(InetAddress localAddress) {

@@ -23,8 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.tomp2p.utils.Pair;
-
 /**
  * Class encapsulates native SCTP counterpart.
  *

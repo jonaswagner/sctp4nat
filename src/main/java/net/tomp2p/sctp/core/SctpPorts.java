@@ -4,10 +4,12 @@ import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.tomp2p.connection.Ports;
-
 public class SctpPorts {
 
+	public static final int MAX_PORT = 65535;
+	public static final int MIN_DYN_PORT = 49152;
+
+	
 	/**
 	 * This class is a singleton
 	 */
@@ -44,10 +46,10 @@ public class SctpPorts {
 	}
 
 	public synchronized int generateDynPort() {
-		int attempt = RND.nextInt(Ports.MAX_PORT - Ports.MIN_DYN_PORT) + Ports.MIN_DYN_PORT;
+		int attempt = RND.nextInt(MAX_PORT - MIN_DYN_PORT) + MIN_DYN_PORT;
 
 		while (isFreePort(attempt)) {
-			attempt = RND.nextInt(Ports.MAX_PORT - Ports.MIN_DYN_PORT) + Ports.MIN_DYN_PORT;
+			attempt = RND.nextInt(MAX_PORT - MIN_DYN_PORT) + MIN_DYN_PORT;
 		}
 		return attempt;
 	}

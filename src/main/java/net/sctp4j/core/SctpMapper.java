@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sctp4j.origin.SctpSocket;
 
 public class SctpMapper {
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

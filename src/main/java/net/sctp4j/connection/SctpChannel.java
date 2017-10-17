@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.connection;
+package net.sctp4j.connection;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
-import net.tomp2p.sctp.core.SctpChannelFacade;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
-import net.tomp2p.sctp.core.SctpPorts;
-import net.tomp2p.sctp.core.SctpSocketBuilder;
-import net.tomp2p.sctp.core.UdpClientLink;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpChannelFacade;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpPorts;
+import net.sctp4j.core.SctpSocketBuilder;
+import net.sctp4j.core.UdpClientLink;
 
 @Builder
 public class SctpChannel {

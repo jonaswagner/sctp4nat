@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
 import lombok.Getter;
-import net.tomp2p.sctp.connection.SctpUtils;
+import net.sctp4j.connection.SctpUtils;
 
 public class UdpClientLink implements NetworkLink {
 
@@ -60,6 +60,9 @@ public class UdpClientLink implements NetworkLink {
 				} catch (IOException e) {
 					LOG.error(e.getMessage());
 				}
+				
+				udpSocket.close();
+				LOG.debug("Link shutdown, closing udp connection to " + remote.getHostString() + ":" + remote.getPort());
 			}
 		});
 	}

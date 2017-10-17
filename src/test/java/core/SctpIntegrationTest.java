@@ -1,12 +1,13 @@
 package core;
 
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.UdpClientLink;
-import net.tomp2p.sctp.core.UdpServerLink;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.UdpClientLink;
+import net.sctp4j.core.UdpServerLink;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

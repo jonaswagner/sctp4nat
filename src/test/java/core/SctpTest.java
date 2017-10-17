@@ -18,14 +18,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.tomp2p.sctp.connection.SctpUtils;
-import net.tomp2p.sctp.core.Sctp;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
-import net.tomp2p.sctp.core.SctpMapper;
-import net.tomp2p.sctp.core.SctpSocketBuilder;
-import net.tomp2p.sctp.core.UdpClientLink;
-import net.tomp2p.sctp.core.UdpServerLink;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpMapper;
+import net.sctp4j.core.SctpSocketBuilder;
+import net.sctp4j.core.UdpClientLink;
+import net.sctp4j.core.UdpServerLink;
+import net.sctp4j.origin.Sctp;
 
 public class SctpTest {
 
@@ -63,7 +63,7 @@ public class SctpTest {
 							SctpAdapter so) {
 						LOG.debug("SERVER GOT DATA: " + new String(data, StandardCharsets.UTF_8));
 						Assert.assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
-						so.send(data, false, sid, (int) ppid);
+						so.send(data, 0, data.length, false, sid, (int) ppid);
 						comCd.countDown();
 					}
 				};

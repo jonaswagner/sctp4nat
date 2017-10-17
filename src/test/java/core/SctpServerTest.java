@@ -1,7 +1,9 @@
 package core;
 
-import net.tomp2p.sctp.connection.SctpUtils;
-import net.tomp2p.sctp.core.*;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.core.*;
+import net.sctp4j.origin.Sctp;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

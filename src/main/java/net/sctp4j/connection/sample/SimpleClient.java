@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.connection.sample;
+package net.sctp4j.connection.sample;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -8,13 +8,13 @@ import java.nio.charset.StandardCharsets;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 
-import net.tomp2p.sctp.core.SctpChannelFacade;
-import net.tomp2p.sctp.connection.SctpChannel;
-import net.tomp2p.sctp.core.Sctp;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
-import net.tomp2p.sctp.core.SctpPorts;
-import net.tomp2p.sctp.core.UdpClientLink;
+import net.sctp4j.connection.SctpChannel;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpChannelFacade;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpPorts;
+import net.sctp4j.core.UdpClientLink;
+import net.sctp4j.origin.Sctp;
 
 public class SimpleClient {
 

@@ -1,15 +1,15 @@
-package net.tomp2p.sctp.connection.sample;
+package net.sctp4j.connection.sample;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
-import net.tomp2p.sctp.core.SctpChannelFacade;
-import net.tomp2p.sctp.connection.SctpDefaultConfig;
-import net.tomp2p.sctp.connection.SctpUtils;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
-import net.tomp2p.sctp.core.SctpPorts;
+import net.sctp4j.connection.SctpDefaultConfig;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpChannelFacade;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpPorts;
 
 public class SimpleServer {
 	

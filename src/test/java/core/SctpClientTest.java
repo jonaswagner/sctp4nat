@@ -1,10 +1,11 @@
 package core;
 
-import net.tomp2p.sctp.core.SctpMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sctp4j.core.SctpMapper;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

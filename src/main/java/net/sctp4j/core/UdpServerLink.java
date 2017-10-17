@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
-import net.tomp2p.sctp.connection.SctpUtils;
+import net.sctp4j.connection.SctpUtils;
 
 public class UdpServerLink implements NetworkLink {
 
@@ -91,6 +91,9 @@ public class UdpServerLink implements NetworkLink {
                         LOG.error("Error while receiving packet in UDPClientLink.class!", e);
                     }
                 }
+                
+                udpSocket.close();
+				LOG.debug("Link shutdown, stop listening, closing udp connection");
             }
         });
     }

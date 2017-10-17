@@ -24,7 +24,7 @@
 #include <usrsctp.h>
 
 /* The name of the class which defines the callback methods. */
-#define SCTP_CLASSNAME "net/tomp2p/sctp/core/Sctp"
+#define SCTP_CLASSNAME "net/sctp4j/origin/Sctp"
 
 /**
  * Represents the <tt>struct socket</tt> instances initialized by our SCTP
@@ -81,12 +81,12 @@ static jmethodID Sctp_sendCb = 0;
 static JavaVM *Sctp_vm = NULL;
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    on_network_in
  * Signature: (J[BII)V
  */
 JNIEXPORT void JNICALL
-Java_net_tomp2p_sctp_core_Sctp_on_1network_1in
+Java_net_sctp4j_origin_Sctp_on_1network_1in
     (JNIEnv *env, jclass clazz, jlong ptr, jbyteArray pkt, jint off, jint len)
 {
     jbyte *pkt_;
@@ -103,12 +103,12 @@ Java_net_tomp2p_sctp_core_Sctp_on_1network_1in
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_accept
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1accept
+Java_net_sctp4j_origin_Sctp_usrsctp_1accept
     (JNIEnv *env, jclass clazz, jlong ptr)
 {
     SctpSocket *sctpSocket;
@@ -128,12 +128,12 @@ Java_net_tomp2p_sctp_core_Sctp_usrsctp_1accept
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_close
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1close
+Java_net_sctp4j_origin_Sctp_usrsctp_1close
     (JNIEnv *env, jclass clazz, jlong ptr)
 {
     SctpSocket *sctpSocket;
@@ -144,12 +144,12 @@ Java_net_tomp2p_sctp_core_Sctp_usrsctp_1close
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_connect
  * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1connect
+Java_net_sctp4j_origin_Sctp_usrsctp_1connect
     (JNIEnv *env, jclass clazz, jlong ptr, jint remotePort)
 {
     // Try connecting the socket
@@ -160,36 +160,36 @@ Java_net_tomp2p_sctp_core_Sctp_usrsctp_1connect
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_finish
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1finish
+Java_net_sctp4j_origin_Sctp_usrsctp_1finish
     (JNIEnv *env, jclass clazz)
 {
     return usrsctp_finish() ? JNI_TRUE : JNI_FALSE;
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_init
  * Signature: (I)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1init
+Java_net_sctp4j_origin_Sctp_usrsctp_1init
     (JNIEnv *env, jclass clazz, jint port)
 {
     /*
      * First argument is udp_encapsulation_port which is not relevant to our
      * AF_CONN use of SCTP.
      */
-    debugSctpPrintf("=====>: net_tomp2p_sctp_core_Sctp.c calling init\n");
+    debugSctpPrintf("=====>: net_sctp4j_origin_Sctp.c calling init\n");
     usrsctp_init((uint16_t) port, onSctpOutboundPacket, debugSctpPrintf);
 
-    debugSctpPrintf("=====>: net_tomp2p_sctp_core_Sctp.c about to set SCTP_DEBUG_ALL\n");
+    debugSctpPrintf("=====>: net_sctp4j_origin_Sctp.c about to set SCTP_DEBUG_ALL\n");
 #ifdef SCTP_DEBUG
-    debugSctpPrintf("=====>: net_tomp2p_sctp_core_Sctp.c setting SCTP_DEBUG_ALL\n");
+    debugSctpPrintf("=====>: net_sctp4j_origin_Sctp.c setting SCTP_DEBUG_ALL\n");
     //usrsctp_sysctl_set_sctp_debug_on(SCTP_DEBUG_ALL);
     usrsctp_sysctl_set_sctp_debug_on(SCTP_DEBUG_NONE);
 #endif
@@ -202,12 +202,12 @@ Java_net_tomp2p_sctp_core_Sctp_usrsctp_1init
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_listen
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1listen
+Java_net_sctp4j_origin_Sctp_usrsctp_1listen
     (JNIEnv *env, jclass clazz, jlong ptr)
 {
     SctpSocket *sctpSocket;
@@ -228,12 +228,12 @@ Java_net_tomp2p_sctp_core_Sctp_usrsctp_1listen
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_send
  * Signature: (J[BIIZII)I
  */
 JNIEXPORT jint JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1send
+Java_net_sctp4j_origin_Sctp_usrsctp_1send
     (JNIEnv *env, jclass clazz, jlong ptr, jbyteArray data, jint off, jint len,
         jboolean ordered, jint sid, jint ppid)
 {
@@ -279,12 +279,12 @@ Java_net_tomp2p_sctp_core_Sctp_usrsctp_1send
 }
 
 /*
- * Class:     net_tomp2p_sctp_core_Sctp
+ * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_socket
  * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL
-Java_net_tomp2p_sctp_core_Sctp_usrsctp_1socket
+Java_net_sctp4j_origin_Sctp_usrsctp_1socket
     (JNIEnv *env, jclass clazz, jint localPort)
 {
     SctpSocket *sctpSocket;

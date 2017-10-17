@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.io.IOException;
 
 import javassist.NotFoundException;
+import net.sctp4j.origin.SctpSocket;
 
 /**
  * Interface used by {@link SctpSocket} for sending network packets.

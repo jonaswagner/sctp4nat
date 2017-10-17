@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.tomp2p.sctp.connection.SctpUtils;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.origin.Sctp;
+import net.sctp4j.origin.SctpSocket;
 
 public class SctpSocketAdapter implements SctpAdapter{
 
@@ -93,6 +95,7 @@ public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketA
 
 	@Override
 	public int close() {
+		LOG.debug("Closing connection to " + remote.getHostString()+ ":" + remote.getPort());
 		so.closeNative();
 		mapper.unregister(this);
 		SctpPorts.getInstance().removePort(this);

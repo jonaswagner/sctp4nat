@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.tomp2p.sctp.core;
+package net.sctp4j.origin;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,6 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sctp4j.core.Pair;
+import net.sctp4j.core.SctpMapper;
 
 /**
  * Class encapsulates native SCTP counterpart.

@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.sample;
+package net.sctp4j.sample;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -7,13 +7,13 @@ import java.net.InetSocketAddress;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 
-import net.tomp2p.sctp.connection.SctpUtils;
-import net.tomp2p.sctp.core.Sctp;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
-import net.tomp2p.sctp.core.SctpMapper;
-import net.tomp2p.sctp.core.SctpSocketBuilder;
-import net.tomp2p.sctp.core.UdpClientLink;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpMapper;
+import net.sctp4j.core.SctpSocketBuilder;
+import net.sctp4j.core.UdpClientLink;
+import net.sctp4j.origin.Sctp;
 
 public class SampleClient {
 

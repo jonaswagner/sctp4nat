@@ -1,8 +1,10 @@
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.net.InetSocketAddress;
 
 import org.jdeferred.Promise;
+
+import net.sctp4j.origin.SctpSocket;
 
 public interface SctpAdapter extends SctpChannelFacade{
 	void listen();

@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import org.jdeferred.Deferred;
 import org.slf4j.Logger;

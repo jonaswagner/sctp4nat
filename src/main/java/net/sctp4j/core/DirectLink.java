@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.tomp2p.sctp.core;
+package net.sctp4j.core;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.tomp2p.sctp.connection.SctpUtils;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.origin.SctpSocket;
 
 /**
  * A direct connection that passes packets between two <tt>SctpSocket</tt>

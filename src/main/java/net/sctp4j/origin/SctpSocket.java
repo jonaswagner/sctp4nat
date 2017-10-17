@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.tomp2p.sctp.core;
+package net.sctp4j.origin;
 
 import java.io.IOException;
 
@@ -21,6 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
+import net.sctp4j.core.NetworkLink;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpMapper;
+import net.sctp4j.core.SctpNotification;
 
 /**
  * SCTP socket implemented using "usrsctp" lib.

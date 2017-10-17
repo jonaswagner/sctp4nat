@@ -1,12 +1,12 @@
-package net.tomp2p.sctp.connection;
+package net.sctp4j.connection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpDataCallback;
 
 /**
  * 

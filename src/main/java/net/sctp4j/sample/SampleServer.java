@@ -1,4 +1,4 @@
-package net.tomp2p.sctp.sample;
+package net.sctp4j.sample;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -6,11 +6,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
-import net.tomp2p.sctp.core.Sctp;
-import net.tomp2p.sctp.core.SctpAdapter;
-import net.tomp2p.sctp.core.SctpDataCallback;
-import net.tomp2p.sctp.core.SctpMapper;
-import net.tomp2p.sctp.core.UdpServerLink;
+import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpMapper;
+import net.sctp4j.core.UdpServerLink;
+import net.sctp4j.origin.Sctp;
 
 public class SampleServer {
 

@@ -25,7 +25,6 @@ import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpMapper;
-import net.sctp4j.core.SctpNotification;
 
 /**
  * SCTP socket implemented using "usrsctp" lib.

@@ -17,13 +17,15 @@ import net.tomp2p.sctp.core.UdpServerLink;
 
 public class SctpUtils {
 
+	private static final int THREADPOOL_MULTIPLIER = 3;
+
 	private static final Logger LOG = LoggerFactory.getLogger(SctpUtils.class);
 
 	@Getter
 	private static final SctpMapper mapper = new SctpMapper();
 	@Getter
 	private static final ExecutorService threadPoolExecutor = Executors
-			.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*THREADPOOL_MULTIPLIER);
 
 	@Getter
 	private static volatile boolean isInitialized = false;

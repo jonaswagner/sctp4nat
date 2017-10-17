@@ -1,10 +1,15 @@
 package net.sctp4j.connection;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.jdeferred.Deferred;
+import org.jdeferred.FailCallback;
+import org.jdeferred.Promise;
+import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,19 +67,40 @@ public class SctpUtils {
 		return sctpServerPort <= 65535 || sctpServerPort > 0;
 	}
 
-	public static void shutdownSctp(UdpServerLink customLink, SctpMapper customMapper) {
- 		if (customLink == null) {
-			link.close();
-		} else {
-			customLink.close();
-		}
+	public static Promise<Object, Exception, Object> shutdownSctp(UdpServerLink customLink, SctpMapper customMapper) {
+ 		Deferred<Object, Exception, Object> d = new DeferredObject<>();
 		
-		if (customMapper == null) {
-			mapper.shutdown();
-		} else {
-			customMapper.shutdown();
-		}
+ 		threadPoolExecutor.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				LOG.debug("sctp4j shutdown initialized");
+				
+				if (customLink == null) {
+					link.close();
+				} else {
+					customLink.close();
+				}
+				
+				if (customMapper == null) {
+					mapper.shutdown();
+				} else {
+					customMapper.shutdown();
+				}
+				
+				SctpPorts.shutdown();
+				
+				try {
+					Sctp.finish();
+				} catch (IOException e) {
+					d.reject(e);
+				}
+				
+				LOG.debug("sctp4j shutdown done");
+				d.resolve(null);
+			}
+		});
 		
-		SctpPorts.shutdown();
+		return d.promise();
 	}
 }

@@ -1,11 +1,13 @@
 package core;
 
+import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
+import org.jdeferred.Promise;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
@@ -15,14 +17,13 @@ import net.sctp4j.origin.Sctp;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class SctpServerTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SctpServerTest.class);
-
     private InetSocketAddress local;
     private SctpMapper mapper;
-    private boolean isInit = false;
 
     @Before
     public void setUp() throws Exception {
@@ -32,12 +33,35 @@ public class SctpServerTest {
 
     @Test
     public void simpleSetUpTest() throws Exception {
+    	CountDownLatch simpleSetUpTest = new CountDownLatch(1);
 		SctpUtils.init(local.getAddress(), local.getPort(), null);
-		SctpUtils.shutdownSctp(null, null);
+		Promise<Object, Exception, Object> p = SctpUtils.shutdownSctp(null, null);
+		p.done(new DoneCallback<Object>() {
+			
+			@Override
+			public void onDone(Object result) {
+				simpleSetUpTest.countDown();
+			}
+		});
+		
+		p.fail(new FailCallback<Exception>() {
+			
+			@Override
+			public void onFail(Exception result) {
+				fail();
+			}
+		});
+		
+		simpleSetUpTest.await(10, TimeUnit.SECONDS);
+		
+		if (simpleSetUpTest.getCount() > 0) {
+			fail();
+		}
     }
     
     @Test
     public void extendedSetUpTest() throws Exception {
+        CountDownLatch extendedSetUpTest = new CountDownLatch(1);
     	
     	Sctp.init();
     	
@@ -51,6 +75,28 @@ public class SctpServerTest {
 		};
 		
 		UdpServerLink link = new UdpServerLink(mapper, local.getAddress(), cb);
-		SctpUtils.shutdownSctp(link, mapper);
+		Promise<Object, Exception, Object> p = SctpUtils.shutdownSctp(link, mapper);
+		
+		p.done(new DoneCallback<Object>() {
+			
+			@Override
+			public void onDone(Object result) {
+				extendedSetUpTest.countDown();
+			}
+		});
+		
+		p.fail(new FailCallback<Exception>() {
+
+			@Override
+			public void onFail(Exception result) {
+				fail();
+			}
+		});
+		
+		extendedSetUpTest.await(10, TimeUnit.SECONDS);
+		
+		if (extendedSetUpTest.getCount() > 0) {
+			fail();
+		}
     }
 }

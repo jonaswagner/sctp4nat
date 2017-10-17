@@ -12,9 +12,10 @@ import java.util.concurrent.TimeUnit;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
-import org.junit.Assert;
-import org.junit.Before;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class SctpTest {
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 							SctpAdapter so) {
 						LOG.debug("SERVER GOT DATA: " + new String(data, StandardCharsets.UTF_8));
-						Assert.assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
+						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						so.send(data, 0, data.length, false, sid, (int) ppid);
 						comCd.countDown();
 					}
@@ -102,7 +103,7 @@ public class SctpTest {
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 							SctpAdapter so) {
 						LOG.debug("REPLY SUCCESS");
-						Assert.assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
+						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						so.close();
 						comCd.countDown();
 					}
@@ -168,5 +169,9 @@ public class SctpTest {
 		client.run();
 
 		comCd.await(10, TimeUnit.SECONDS);
+		
+		if (comCd.getCount() > 0) {
+			fail();
+		}
 	}
 }

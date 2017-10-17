@@ -29,7 +29,7 @@ public class SctpListenThread extends Thread {
 		
 		boolean visited = false;
 		try {
-			while (!so.accept()) { //TODO jwa remove busy polling
+			while (!so.accept()) {
 				Thread.sleep(100);
 				if (!visited) {
 					LOG.debug("new connection attempt accepted successfully!");

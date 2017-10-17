@@ -76,8 +76,13 @@ public class UdpServerLink implements NetworkLink {
                         if (so == null) {
                             so = replyHandshake(localAddress, localPort, p.getAddress(), p.getPort(), cb);
                             mapper.register(remote, so);
+                            so.setNotificationListener(new SctpSocket.NotificationListener() {
+                                @Override
+                                public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+                                    System.err.println("SERVER: "+notification.toString());
+                                }
+                            });
                             so.onConnIn(p.getData(), p.getOffset(), p.getLength());
-                            so.accept();
                         } else {
                         	so.onConnIn(p.getData(), p.getOffset(), p.getLength());
                         }

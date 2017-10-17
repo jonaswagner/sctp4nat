@@ -76,6 +76,8 @@ public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketA
 							if(notification.toString().indexOf("COMM_UP")>=0) {
 								System.err.println("comm up!! " + notification.toString());
 								d.resolve(SctpSocketAdapter.this);
+							} else {
+								System.err.println("rest up!! " + notification.toString());
 							}
 						}
 					});

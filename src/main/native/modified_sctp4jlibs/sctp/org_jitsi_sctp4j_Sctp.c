@@ -345,6 +345,14 @@ Java_net_sctp4j_origin_Sctp_usrsctp_1socket
         return 0;
     }
 
+    /*int reuse = 1;
+    if (usrsctp_setsockopt(so, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)))
+        {
+            perror("Failed to set SO_REUSEADDR.");
+            free(sctpSocket);
+            return 0;
+        }*/
+
     // Enable stream ID resets.
     stream_rst.assoc_id = SCTP_ALL_ASSOC;
     stream_rst.assoc_value = 1;

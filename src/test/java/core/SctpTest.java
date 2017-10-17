@@ -64,31 +64,11 @@ public class SctpTest {
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 							SctpAdapter so) {
+						so.accept();
 						LOG.debug("SERVER GOT DATA: " + new String(data, StandardCharsets.UTF_8));
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						so.send(data, 0, data.length, false, sid, (int) ppid);
 						comCd.countDown();
-						
-						Promise<Object, Exception, Object> p = SctpUtils.shutdownSctp(null, mapper);
-						p.done(new DoneCallback<Object>() {
-
-							@Override
-							public void onDone(Object result) {
-								try {
-									comCd.await(10, TimeUnit.SECONDS);
-								} catch (InterruptedException e) {
-									fail();
-								}
-								shutdownCd.countDown();
-							}
-						});
-						p.fail(new FailCallback<Exception>() {
-
-							@Override
-							public void onFail(Exception result) {
-								fail();
-							}
-						});
 					}
 				};
 
@@ -128,14 +108,14 @@ public class SctpTest {
 						LOG.debug("REPLY SUCCESS");
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						comCd.countDown();
-						Promise<Object, Exception, Object> p = so.close();
+						/*Promise<Object, Exception, Object> p = so.close();
 						p.done(new DoneCallback<Object>() {
 
 							@Override
 							public void onDone(Object result) {
 								shutdownCd.countDown();
 							}
-						});
+						});*/
 					}
 				};
 

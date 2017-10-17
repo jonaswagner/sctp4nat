@@ -2,6 +2,7 @@ package core;
 
 import net.tomp2p.sctp.core.SctpMapper;
 import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,8 @@ public class SctpClientTest {
         mapper = new SctpMapper();
     }
 
+    @Test
     public void serverSetUpTest() throws Exception {
-
+    	
     }
 }

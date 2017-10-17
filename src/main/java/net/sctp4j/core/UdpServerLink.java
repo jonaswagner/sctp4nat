@@ -7,13 +7,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
-import net.sctp4j.origin.SctpNotification;
-import net.sctp4j.origin.SctpSocket;
-import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
-import org.jdeferred.Promise;
-import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,32 +65,19 @@ public class UdpServerLink implements NetworkLink {
 
 						InetSocketAddress remote = new InetSocketAddress(p.getAddress(), p.getPort());
 						so = SctpMapper.locate(p.getAddress().getHostAddress(), p.getPort());
-
-						/*
-						 * If so is null it means that we don't know the other Sctp endpoint yet. Thus,
-						 * we need to reply their handshake with INIT ACK.
-						 */
 						if (so == null) {
-							so = replyHandshake(localAddress, localPort, p.getAddress(), p.getPort(), cb);
+							so = setupSocket(localAddress, localPort, p.getAddress(), p.getPort(), cb);
 							mapper.register(remote, so);
-//							so.setNotificationListener(new SctpSocket.NotificationListener() {
-//								@Override
-//								public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
-//									if (notification.toString().contains("COMM_UP")) {
-//										try {
-//											socket.acceptNative();
-//										} catch (IOException e) {
-//											LOG.error("Could not accept endpoint!", e);
-//										}
-//									}
-//								}
-//							});
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
 						} else {
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
 						}
 					} catch (IOException e) {
-						LOG.error("Error while receiving packet in UDPClientLink.class!", e);
+						if (!isShutdown) {
+							LOG.error("Error while receiving packet in UDPClientLink.class!", e);
+						} else {
+							LOG.debug("receive aborted because of shutdown!");
+						}
 					}
 				}
 				LOG.debug("Link shutdown, stop listening, closing udp connection");
@@ -111,9 +91,18 @@ public class UdpServerLink implements NetworkLink {
 		udpSocket.send(packet);
 	}
 
-	private SctpAdapter replyHandshake(final InetAddress localAddress, final int localPort,
+	/**
+	 * Since there is no socket yet, we need to create one first.
+	 * 
+	 * @param localAddress {@link InetAddress}
+	 * @param localPort {@link Integer}
+	 * @param remoteAddress {@link InetAddress}
+	 * @param remotePort {@link Integer}
+	 * @param cb {@link SctpDataCallback}
+	 * @return so {@link SctpAdapter}
+	 */
+	private SctpAdapter setupSocket(final InetAddress localAddress, final int localPort,
 			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) {
-		// since there is no socket yet, we need to create one first
 		SctpAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
 				.localPort(localPort).localSctpPort(localPort).sctpDataCallBack(cb).remoteAddress(remoteAddress)
 				.remotePort(remotePort).mapper(mapper).build();

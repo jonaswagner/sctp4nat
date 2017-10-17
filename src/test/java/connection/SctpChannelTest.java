@@ -146,9 +146,9 @@ public class SctpChannelTest {
 					public void onDone(SctpChannelFacade result) {
 						int success = result.send("Hello World!".getBytes(), false, 0, 0);
 						if (success > 0) {
-							System.out.println("Message sent");
+							LOG.debug("Message sent");
 						} else {
-							System.out.println("ERROR WHILE SENDING THE MESSAGE!");
+							LOG.error("ERROR WHILE SENDING THE MESSAGE!");
 						}
 					}
 				});

@@ -56,7 +56,6 @@ public class SctpTest {
 				
 				InetSocketAddress local = new InetSocketAddress(localhost, 9899);
 
-				UdpServerLink link = null;
 				SctpMapper mapper = new SctpMapper();
 
 				SctpDataCallback cb = new SctpDataCallback() {
@@ -82,6 +81,7 @@ public class SctpTest {
 					}
 				};
 
+				UdpServerLink link = null;
 				try {
 					link = new UdpServerLink(mapper, local.getAddress(), cb);
 				} catch (SocketException e) {

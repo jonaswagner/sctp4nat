@@ -40,7 +40,7 @@ public class SctpSocket {
 	private final static Logger logger = LoggerFactory.getLogger(SctpSocket.class);
 
 	private boolean isAccepted = true;
-	
+
 	/**
 	 * Reads 32 bit unsigned int from the buffer at specified offset
 	 *
@@ -206,7 +206,6 @@ public class SctpSocket {
 		 */
 		@Override
 		public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
-			System.err.println("HHHHEEEEREREE");
 			if (logger.isTraceEnabled()) {
 				logger.trace("SctpSocket 0x" + Long.toHexString(ptr) + " notification: " + notification);
 			}
@@ -356,7 +355,7 @@ public class SctpSocket {
 	 */
 	public void listenNative() throws IOException {
 		isAccepted = false;
-		
+
 		long ptr = lockPtr();
 
 		try {
@@ -451,13 +450,12 @@ public class SctpSocket {
 	 * @param flags
 	 * @param so
 	 */
-	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpAdapter so) {
+	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpAdapter so) {
 		if (!isAccepted) {
 			so.accept();
 			isAccepted = true;
 		}
-		
+
 		if (dataCallback != null) {
 			dataCallback.onSctpPacket(data, sid, ssn, tsn, ppid, context, flags, so);
 		} else {
@@ -599,7 +597,7 @@ public class SctpSocket {
 	 *            the {@link NotificationListener} to set.
 	 */
 	public void setNotificationListener(NotificationListener l) {
-		System.err.println("CALLED");
+		logger.debug("Changed NotificationListener for SctpSocket" + this.ptr);
 		this.notificationListener = l;
 	}
 

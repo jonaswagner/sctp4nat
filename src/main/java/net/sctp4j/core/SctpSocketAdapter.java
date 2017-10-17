@@ -36,17 +36,9 @@ public class SctpSocketAdapter implements SctpAdapter{
 		this(local, localSctpPort, null, link, cb, mapper);
 	}
 
-public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketAddress remote, NetworkLink link,
+	public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketAddress remote, NetworkLink link,
 			SctpDataCallback cb, SctpMapper mapper) {
 		this.so = Sctp.createSocket(localSctpPort);
-
-		this.so.setNotificationListener(new SctpSocket.NotificationListener() {
-			@Override
-			public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
-				System.err.println("TEST: "+notification.toString());
-			}
-		});
-
 		this.so.setLink(link); //forwards all onConnOut to the corresponding link
 		this.link = link;
 		this.local = local;
@@ -74,10 +66,9 @@ public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketA
 						@Override
 						public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
 							if(notification.toString().indexOf("COMM_UP")>=0) {
-								System.err.println("comm up!! " + notification.toString());
 								d.resolve(SctpSocketAdapter.this);
 							} else {
-								System.err.println("rest up!! " + notification.toString());
+								LOG.debug(notification.toString());
 							}
 						}
 					});

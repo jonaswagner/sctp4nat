@@ -39,6 +39,8 @@ public class SctpSocket {
 	 */
 	private final static Logger logger = LoggerFactory.getLogger(SctpSocket.class);
 
+	private boolean isAccepted = true;
+	
 	/**
 	 * Reads 32 bit unsigned int from the buffer at specified offset
 	 *
@@ -353,6 +355,8 @@ public class SctpSocket {
 	 * Makes SCTP socket passive.
 	 */
 	public void listenNative() throws IOException {
+		isAccepted = false;
+		
 		long ptr = lockPtr();
 
 		try {
@@ -449,6 +453,11 @@ public class SctpSocket {
 	 */
 	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 			SctpAdapter so) {
+		if (!isAccepted) {
+			so.accept();
+			isAccepted = true;
+		}
+		
 		if (dataCallback != null) {
 			dataCallback.onSctpPacket(data, sid, ssn, tsn, ppid, context, flags, so);
 		} else {

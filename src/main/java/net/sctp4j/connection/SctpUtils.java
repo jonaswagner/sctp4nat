@@ -20,18 +20,21 @@ public class SctpUtils {
 	private static final int THREADPOOL_MULTIPLIER = 3;
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpUtils.class);
-
+	
 	@Getter
 	private static final SctpMapper mapper = new SctpMapper();
 	@Getter
 	private static final ExecutorService threadPoolExecutor = Executors
-			.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*THREADPOOL_MULTIPLIER);
+			.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * THREADPOOL_MULTIPLIER);
 
+	@Getter
+	private static UdpServerLink link;
+	
 	@Getter
 	private static volatile boolean isInitialized = false;
 
-	public static synchronized void init(final InetAddress serverAddress, final int sctpServerPort,
-			SctpDataCallback cb) {
+	public static synchronized void init(final InetAddress serverAddress, final int sctpServerPort, SctpDataCallback cb)
+			throws SocketException {
 
 		if (isInitialized) {
 			return; // we only need to init once
@@ -44,14 +47,10 @@ public class SctpUtils {
 			cb = new SctpDefaultConfig().getCb();
 		}
 
-		try {
-			if (!checkFreePort(sctpServerPort) || !checkRange(sctpServerPort)) {
-				new UdpServerLink(mapper, serverAddress, cb);
-			} else {
-				new UdpServerLink(mapper, serverAddress, sctpServerPort, cb);
-			}
-		} catch (SocketException e) {
-			LOG.error("Could not create UdpServerLink!", e);
+		if (!checkFreePort(sctpServerPort) || !checkRange(sctpServerPort)) {
+			link = new UdpServerLink(mapper, serverAddress, cb);
+		} else {
+			link = new UdpServerLink(mapper, serverAddress, sctpServerPort, cb);
 		}
 	}
 
@@ -61,5 +60,21 @@ public class SctpUtils {
 
 	private static boolean checkRange(final int sctpServerPort) {
 		return sctpServerPort <= 65535 || sctpServerPort > 0;
+	}
+
+	public static void shutdownSctp(UdpServerLink customLink, SctpMapper customMapper) {
+ 		if (customLink == null) {
+			link.close();
+		} else {
+			customLink.close();
+		}
+		
+		if (customMapper == null) {
+			mapper.shutdown();
+		} else {
+			customMapper.shutdown();
+		}
+		
+		SctpPorts.shutdown();
 	}
 }

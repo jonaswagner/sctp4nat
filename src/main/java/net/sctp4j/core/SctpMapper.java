@@ -14,8 +14,14 @@ public class SctpMapper {
 	private static final Logger LOG = LoggerFactory.getLogger(SctpMapper.class);
 
 	private static final ConcurrentHashMap<InetSocketAddress, SctpAdapter> socketMap = new ConcurrentHashMap<>();
+	
+	private static boolean isShutdown = false;
 
 	public synchronized void register(final InetSocketAddress remote, final SctpAdapter so) {
+		if (isShutdown) {
+			return;
+		}
+		
 		if (remote != null && so != null) {
 			socketMap.put(remote, so);
 		} else {
@@ -29,6 +35,10 @@ public class SctpMapper {
 	 * used anywhere else!
 	 */
 	public synchronized void unregister(SctpAdapter so) {
+		if (isShutdown) {
+			return;
+		}
+		
 		if (so == null) {
 			LOG.error("Invalid input, null can't be removed!");
 			return;
@@ -46,6 +56,10 @@ public class SctpMapper {
 	 * used anywhere else!
 	 */
 	public synchronized void unregister(InetSocketAddress remote) {
+		if (isShutdown) {
+			return;
+		}
+		
 		if (remote == null) {
 			LOG.error("Invalid input, null can't be removed!");
 			return;
@@ -58,6 +72,10 @@ public class SctpMapper {
 	}
 
 	public synchronized static SctpAdapter locate(final String remoteAddress, final int remotePort) {
+		if (isShutdown) {
+			return null;
+		}
+		
 		for (Map.Entry<InetSocketAddress, SctpAdapter> element : socketMap.entrySet()) {
 			int port = element.getKey().getPort();
 			String address = element.getKey().getAddress().getHostAddress();
@@ -72,6 +90,10 @@ public class SctpMapper {
 	}
 
 	public synchronized static SctpAdapter locate(final SctpSocket sctpSocket) {
+		if (isShutdown) {
+			return null;
+		}
+		
 		if (socketMap.isEmpty()) {
 			return null;
 		}
@@ -85,6 +107,19 @@ public class SctpMapper {
 		} else {
 			return facade;
 		}
+	}
+
+	public void shutdown() {
+		isShutdown = true;
+		
+		for (Map.Entry<InetSocketAddress, SctpAdapter> element : socketMap.entrySet()) {
+			element.getValue().close();
+		}
+		LOG.debug("all sctp connections closed");
+		
+		socketMap.clear();
+		LOG.debug("socketMap cleared");
+
 	}
 
 }

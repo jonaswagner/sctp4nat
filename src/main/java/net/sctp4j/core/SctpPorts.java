@@ -4,7 +4,12 @@ import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SctpPorts {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SctpPorts.class);
 
 	public static final int MAX_PORT = 65535;
 	public static final int MIN_DYN_PORT = 49152;
@@ -64,5 +69,10 @@ public class SctpPorts {
 
 	public synchronized boolean isFreePort(final int port) {
 		return portMap.contains(port);
+	}
+
+	public static void shutdown() {
+		portMap.clear();
+		LOG.debug("portMap cleared");
 	}
 }

@@ -91,8 +91,6 @@ public class UdpServerLink implements NetworkLink {
                         LOG.error("Error while receiving packet in UDPClientLink.class!", e);
                     }
                 }
-                
-                udpSocket.close();
 				LOG.debug("Link shutdown, stop listening, closing udp connection");
             }
         });
@@ -126,6 +124,7 @@ public class UdpServerLink implements NetworkLink {
 
 	@Override
 	public void close() {
-//		this.isShutdown = true; TODO jwa do nothing I guess! maybe implement a volatile for this
+		this.isShutdown = true;
+        udpSocket.close();
 	}
 }

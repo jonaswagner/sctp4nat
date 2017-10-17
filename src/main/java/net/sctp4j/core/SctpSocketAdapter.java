@@ -94,13 +94,24 @@ public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketA
 	}
 
 	@Override
-	public int close() {
-		LOG.debug("Closing connection to " + remote.getHostString()+ ":" + remote.getPort());
-		so.closeNative();
-		mapper.unregister(this);
-		SctpPorts.getInstance().removePort(this);
-		link.close();
-		return 0;
+	public Promise<Object, Exception, Object> close() {
+		Deferred<Object, Exception, Object> d = new DeferredObject<>();
+		
+		final SctpSocketAdapter currentInstance = this;
+		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				LOG.debug("Closing connection to " + remote.getHostString()+ ":" + remote.getPort());
+				so.closeNative();
+				mapper.unregister(currentInstance);
+				SctpPorts.getInstance().removePort(currentInstance);
+				link.close();
+				d.resolve(null);
+			}
+		});
+		
+		return d.promise();
 	}
 
 	@Override

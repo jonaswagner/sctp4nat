@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.SctpPorts;
@@ -33,6 +34,7 @@ public class SctpUtils {
 			.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * THREADPOOL_MULTIPLIER);
 
 	@Getter
+	@Setter
 	private static UdpServerLink link;
 	
 	@Getter

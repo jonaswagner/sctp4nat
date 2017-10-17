@@ -48,6 +48,7 @@ public class SctpTest {
 		CountDownLatch serverCd = new CountDownLatch(1);
 		CountDownLatch clientCd = new CountDownLatch(1);
 		CountDownLatch comCd = new CountDownLatch(2);
+		CountDownLatch shutdownCd = new CountDownLatch(2);
 
 		server = new Thread(new Runnable() {
 			public void run() {
@@ -55,6 +56,7 @@ public class SctpTest {
 				
 				InetSocketAddress local = new InetSocketAddress(localhost, 9899);
 
+				UdpServerLink link = null;
 				SctpMapper mapper = new SctpMapper();
 
 				SctpDataCallback cb = new SctpDataCallback() {
@@ -66,11 +68,27 @@ public class SctpTest {
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						so.send(data, 0, data.length, false, sid, (int) ppid);
 						comCd.countDown();
+						
+						Promise<Object, Exception, Object> p = SctpUtils.shutdownSctp(null, mapper);
+						p.done(new DoneCallback<Object>() {
+
+							@Override
+							public void onDone(Object result) {
+								shutdownCd.countDown();
+							}
+						});
+						p.fail(new FailCallback<Exception>() {
+
+							@Override
+							public void onFail(Exception result) {
+								fail();
+							}
+						});
 					}
 				};
 
 				try {
-					new UdpServerLink(mapper, local.getAddress(), cb);
+					link = new UdpServerLink(mapper, local.getAddress(), cb);
 				} catch (SocketException e) {
 					e.printStackTrace();
 				}
@@ -104,8 +122,15 @@ public class SctpTest {
 							SctpAdapter so) {
 						LOG.debug("REPLY SUCCESS");
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
-						so.close();
 						comCd.countDown();
+						Promise<Object, Exception, Object> p = so.close();
+						p.done(new DoneCallback<Object>() {
+
+							@Override
+							public void onDone(Object result) {
+								shutdownCd.countDown();
+							}
+						});
 					}
 				};
 
@@ -171,7 +196,12 @@ public class SctpTest {
 		comCd.await(10, TimeUnit.SECONDS);
 		
 		if (comCd.getCount() > 0) {
-			fail();
+			fail("communication error");
+		}
+		
+		shutdownCd.await(10, TimeUnit.SECONDS);
+		if (shutdownCd.getCount() > 0) {
+			fail("shutdown could not complete");
 		}
 	}
 }

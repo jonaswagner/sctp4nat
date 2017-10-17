@@ -3,6 +3,7 @@ package net.sctp4j.core;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import net.sctp4j.origin.SctpNotification;
 import org.jdeferred.Deferred;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
@@ -38,6 +39,14 @@ public class SctpSocketAdapter implements SctpAdapter{
 public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketAddress remote, NetworkLink link,
 			SctpDataCallback cb, SctpMapper mapper) {
 		this.so = Sctp.createSocket(localSctpPort);
+
+		this.so.setNotificationListener(new SctpSocket.NotificationListener() {
+			@Override
+			public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+				System.err.println("TEST: "+notification.toString());
+			}
+		});
+
 		this.so.setLink(link); //forwards all onConnOut to the corresponding link
 		this.link = link;
 		this.local = local;
@@ -45,6 +54,10 @@ public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketA
 		this.so.setDataCallbackNative(cb);
 		this.cb = cb;
 		this.mapper = mapper;
+	}
+
+	public void setNotificationListener(SctpSocket.NotificationListener l) {
+		so.setNotificationListener(l);
 	}
 
 	@Override
@@ -56,9 +69,19 @@ public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketA
 			public void run() {
 				super.run();
 				try {
+
+					so.setNotificationListener(new SctpSocket.NotificationListener() {
+						@Override
+						public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+							if(notification.toString().indexOf("COMM_UP")>=0) {
+								System.err.println("comm up!! " + notification.toString());
+								d.resolve(SctpSocketAdapter.this);
+							}
+						}
+					});
+
 					so.connectNative(remote.getPort());
 					mapper.register(remote, SctpSocketAdapter.this);
-					d.resolve(SctpSocketAdapter.this);
 				} catch (IOException e) {
 					LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);
 					mapper.unregister(remote);

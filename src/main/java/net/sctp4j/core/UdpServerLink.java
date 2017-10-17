@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
+import net.sctp4j.origin.SctpNotification;
+import net.sctp4j.origin.SctpSocket;
 import org.jdeferred.Deferred;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
@@ -67,23 +69,10 @@ public class UdpServerLink implements NetworkLink {
 						 * If so is null it means that we don't know the other Sctp endpoint yet. Thus, we need to reply their handshake with INIT ACK.
 						 * */
                         if (so == null) {
-                            Promise<SctpAdapter, Exception, Object> promise = replyHandshake(localAddress, localPort, p.getAddress(), p.getPort(), cb);
-                            promise.done(new DoneCallback<SctpAdapter>() {
-
-                                @Override
-                                public void onDone(final SctpAdapter so) {
-                                	mapper.register(remote, so);
-                                    so.onConnIn(p.getData(), p.getOffset(), p.getLength());
-                                }
-                            });
-
-                            promise.fail(new FailCallback<Exception>() {
-                                @Override
-                                public void onFail(Exception result) {
-                                	mapper.unregister(remote);
-                                    LOG.error("Unknown error: Incoming connection attempt could not be answered.", result);
-                                }
-                            });
+                            so = replyHandshake(localAddress, localPort, p.getAddress(), p.getPort(), cb);
+                            mapper.register(remote, so);
+                            so.onConnIn(p.getData(), p.getOffset(), p.getLength());
+                            so.accept();
                         } else {
                         	so.onConnIn(p.getData(), p.getOffset(), p.getLength());
                         }
@@ -102,10 +91,7 @@ public class UdpServerLink implements NetworkLink {
     	udpSocket.send(packet);
     }
 
-    private Promise<SctpAdapter, Exception, Object> replyHandshake(final InetAddress localAddress, final int localPort, final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb){
-  	
-    	Deferred<SctpAdapter, Exception, Object> d = new DeferredObject<>();
-
+    private SctpAdapter replyHandshake(final InetAddress localAddress, final int localPort, final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb){
         //since there is no socket yet, we need to create one first
         SctpAdapter so = new SctpSocketBuilder().
                 networkLink(UdpServerLink.this).
@@ -117,9 +103,8 @@ public class UdpServerLink implements NetworkLink {
                 remotePort(remotePort).
                 mapper(mapper).
                 build();
-        
-        SctpUtils.getThreadPoolExecutor().execute(new SctpListenThread(so, d));
-        return d.promise();
+        so.listen();
+        return so;
     }
 
 	@Override

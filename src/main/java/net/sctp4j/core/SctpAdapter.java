@@ -15,4 +15,5 @@ public interface SctpAdapter extends SctpChannelFacade{
 	void setSctpDataCallback(SctpDataCallback cb);
 	void setLink(NetworkLink link);
 	InetSocketAddress getRemote();
+	public void setNotificationListener(SctpSocket.NotificationListener l);
 }

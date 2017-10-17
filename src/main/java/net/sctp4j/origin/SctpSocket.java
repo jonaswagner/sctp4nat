@@ -204,6 +204,7 @@ public class SctpSocket {
 		 */
 		@Override
 		public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+			System.err.println("HHHHEEEEREREE");
 			if (logger.isTraceEnabled()) {
 				logger.trace("SctpSocket 0x" + Long.toHexString(ptr) + " notification: " + notification);
 			}
@@ -589,6 +590,7 @@ public class SctpSocket {
 	 *            the {@link NotificationListener} to set.
 	 */
 	public void setNotificationListener(NotificationListener l) {
+		System.err.println("CALLED");
 		this.notificationListener = l;
 	}
 

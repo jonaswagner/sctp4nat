@@ -17,7 +17,7 @@
 CC=gcc
 
 #JNI_HEADERS = -I"$(JAVA_HOME)/include" -I"$(JAVA_HOME)/include/linux"
-JNI_HEADERS = -I"/usr/lib/jvm/java-8-openjdk-amd64/include" -I"/usr/lib/jvm/java-8-openjdk-amd64/include/linux"
+JNI_HEADERS = -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux"
 #SCTP_HEADERS = -I"usrsctp/usrsctplib"
 
 CFLAGS = -Wall -Werror -std=c99 $(JNI_HEADERS) -DSCTP_DEBUG=1 -DINET6=1
@@ -31,10 +31,10 @@ libjnsctp.so: clean
 	$(CC) $(CFLAGS) -fPIC -shared $(OBJS) -o libjnsctp.so $(LIBS)
 
 install32: libjnsctp.so
-	cp libjnsctp.so "../../../lib/native/linux-x86/libjnsctp.so"
-	cp libjnsctp.so "../../../../jitsi-videobridge/lib/native/linux/libjnsctp.so"
+	cp libjnsctp.so "../../../resources/linux-x86-64/libjnsctp.so"
 
 install64: libjnsctp.so
+	cp libjnsctp.so "../../../resources/linux-x86-64/libjnsctp.so"
 
 clean:
 	rm -f *.so

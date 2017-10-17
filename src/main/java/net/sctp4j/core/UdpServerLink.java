@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
+import lombok.Getter;
 import net.sctp4j.connection.SctpUtils;
 
 public class UdpServerLink implements NetworkLink {
@@ -33,6 +34,9 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	private boolean isShutdown = false;
     
+	@Getter
+	private int port = -1;
+	
     /**
      * Creates new instance of <tt>UdpConnection</tt>. The default port used will be 9899.
      */
@@ -45,6 +49,7 @@ public class UdpServerLink implements NetworkLink {
      */
     public UdpServerLink(final SctpMapper mapper, final InetAddress localAddress, final int localPort, final SctpDataCallback cb) throws SocketException {
         this.mapper = mapper;
+        this.port = localPort;
         this.udpSocket = new DatagramSocket(localPort, localAddress);
         SctpUtils.setLink(this);
         SctpUtils.getThreadPoolExecutor().execute(new Runnable() {

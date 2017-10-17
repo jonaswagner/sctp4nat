@@ -74,6 +74,11 @@ public class SctpTest {
 
 							@Override
 							public void onDone(Object result) {
+								try {
+									comCd.await(10, TimeUnit.SECONDS);
+								} catch (InterruptedException e) {
+									fail();
+								}
 								shutdownCd.countDown();
 							}
 						});

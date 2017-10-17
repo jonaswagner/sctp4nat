@@ -56,7 +56,7 @@ public class Sctp {
 	 * The logger.
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(Sctp.class);
-
+	
 	/**
 	 * SCTP notification
 	 */

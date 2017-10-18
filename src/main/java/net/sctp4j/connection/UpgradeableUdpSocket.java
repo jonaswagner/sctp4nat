@@ -64,9 +64,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 
 	@Override
 	public synchronized void receive(final DatagramPacket packet) throws IOException {
-		System.err.println("HEEEEERE");
-		System.err.println(new String(packet.getData(), StandardCharsets.UTF_8));
-		if (new String(packet.getData(), StandardCharsets.UTF_8).trim().equals(UPGRADE)) {
+		if (new String(packet.getData(), 0, UPGRADE.length(), StandardCharsets.UTF_8).equals(UPGRADE)) {
 			isUgrading = true;
 			LOG.debug("SctpUpgrade request received! starting upgrade procedure with remote endpoint: "
 					+ packet.getAddress().getHostName() + ":" + packet.getPort());
@@ -175,7 +173,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 
 				try {
 					receive(reply);
-					if (new String(reply.getData(), StandardCharsets.UTF_8).trim().equals(UPGRADE_COMPLETE)) {
+					if (new String(reply.getData(), 0, UPGRADE_COMPLETE.length(), StandardCharsets.UTF_8).trim().equals(UPGRADE_COMPLETE)) {
 						Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
 
 						p.done(new DoneCallback<SctpAdapter>() {

@@ -22,7 +22,7 @@ import net.sctp4j.origin.Sctp;
 
 public class SctpUtils {
 
-	private static final int THREADPOOL_MULTIPLIER = 3;
+	private static final int THREADPOOL_MULTIPLIER = 10;
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpUtils.class);
 	

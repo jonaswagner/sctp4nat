@@ -48,6 +48,20 @@ public class UdpClientLink implements NetworkLink {
 		this.udpSocket = new DatagramSocket(local.getPort(), local.getAddress());
 
 		// Listening thread
+		receive(remote, so);
+	}
+	
+	public UdpClientLink(InetSocketAddress local, InetSocketAddress remote, SctpAdapter so, DatagramSocket udpSocket) {
+		this.so = so;
+		this.so.setLink(this);
+		this.remote = remote;
+		this.udpSocket = udpSocket;
+		
+		//Listening thread
+		receive(remote, so);
+	}
+
+	private void receive(InetSocketAddress remote, SctpAdapter so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 			public void run() {
 				try {

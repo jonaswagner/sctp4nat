@@ -49,7 +49,20 @@ public class UdpServerLink implements NetworkLink {
 		this.mapper = mapper;
 		this.port = localPort;
 		this.udpSocket = new DatagramSocket(localPort, localAddress);
-		SctpUtils.setLink(this);
+		SctpUtils.setLink(this); //set this as main Link
+		receive(mapper, localAddress, localPort, cb);
+	}
+	
+	public UdpServerLink(SctpMapper mapper, InetSocketAddress local, SctpDataCallback cb,
+			DatagramSocket udpSocket) {
+		this.mapper = mapper;
+		this.port = local.getPort();
+		this.udpSocket = udpSocket;
+		receive(mapper, local.getAddress(), local.getPort(), cb);
+	}
+
+	private void receive(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
+			final SctpDataCallback cb) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 
 			@Override

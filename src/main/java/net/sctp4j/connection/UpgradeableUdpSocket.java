@@ -31,13 +31,13 @@ import net.sctp4j.core.UdpServerLink;
 
 public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradeable {
 
-	private static final String UPGRADE = "upgrade"; // TODO jwa change this to something better
-	private static final String UPGRADE_COMPLETE = "upgradeComplete"; // TODO jwa change this to something better
+	private String UPGRADE = "upgrade"; // TODO jwa change this to something better
+	private String UPGRADE_COMPLETE = "upgradeComplete"; // TODO jwa change this to something better
 	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocket.class);
 
 	@Getter
 	private boolean isUgrading = false;
-
+	
 	@Getter
 	@Setter
 	private SctpDataCallback cb;
@@ -64,7 +64,9 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 
 	@Override
 	public synchronized void receive(final DatagramPacket packet) throws IOException {
-		if (new String(packet.getData(), 0, UPGRADE.length(), StandardCharsets.UTF_8).equals(UPGRADE)) {
+		byte[] data = new byte[packet.getLength()];
+        System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
+		if (new String(data).equals(UPGRADE) && !isUgrading) {
 			isUgrading = true;
 			LOG.debug("SctpUpgrade request received! starting upgrade procedure with remote endpoint: "
 					+ packet.getAddress().getHostName() + ":" + packet.getPort());
@@ -75,14 +77,14 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	}
 
 	private void replyUpgrade(final DatagramPacket packet) throws IOException {
-		Promise<NetworkLink, Exception, Object> p = initUpgrade(this.getChannel().getLocalAddress());
+		Promise<NetworkLink, Exception, Object> p = initUpgrade(this.getLocalSocketAddress());
 
 		p.done(new DoneCallback<NetworkLink>() {
 
 			@Override
 			public void onDone(NetworkLink result) {
 				byte[] buff = new byte[2048];
-				DatagramPacket reply = new DatagramPacket(buff, 2048);
+				DatagramPacket reply = new DatagramPacket(buff, buff.length);
 				reply.setAddress(packet.getAddress());
 				reply.setPort(packet.getPort());
 				reply.setData(UPGRADE_COMPLETE.getBytes());
@@ -144,7 +146,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 		// TODO jwa implement config
 
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
-
+			
 			@Override
 			public void run() {
 
@@ -168,40 +170,47 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 					d.reject(e);
 				}
 
-				byte[] buff = new byte[2048];
-				DatagramPacket reply = new DatagramPacket(buff, 2048);
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						byte[] buff = new byte[2048];
+						DatagramPacket reply = new DatagramPacket(buff, 2048);
 
-				try {
-					receive(reply);
-					if (new String(reply.getData(), 0, UPGRADE_COMPLETE.length(), StandardCharsets.UTF_8).trim().equals(UPGRADE_COMPLETE)) {
-						Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+						try {
+							receive(reply);
+							if (new String(reply.getData(), 0, UPGRADE_COMPLETE.length(), StandardCharsets.UTF_8).equals(UPGRADE_COMPLETE)) {
+								Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
 
-						p.done(new DoneCallback<SctpAdapter>() {
-							@Override
-							public void onDone(SctpAdapter result) {
-								isUgrading = false;
-								LOG.debug("Upgrade procedure successfully finished.");
-								d.resolve(result);
+								p.done(new DoneCallback<SctpAdapter>() {
+									@Override
+									public void onDone(SctpAdapter result) {
+										isUgrading = false;
+										LOG.debug("Upgrade procedure successfully finished.");
+										d.resolve(result);
+									}
+								});
+
+								p.fail(new FailCallback<Exception>() {
+									@Override
+									public void onFail(Exception result) {
+										isUgrading = false;
+										d.reject(result);
+									}
+								});
+
+							} else {
+								throw new IOException(
+										"wrong reply received! reply:" + new String(reply.getData(), StandardCharsets.UTF_8));
 							}
-						});
-
-						p.fail(new FailCallback<Exception>() {
-							@Override
-							public void onFail(Exception result) {
-								isUgrading = false;
-								d.reject(result);
-							}
-						});
-
-					} else {
-						throw new IOException(
-								"wrong reply received! reply:" + new String(reply.getData(), StandardCharsets.UTF_8));
+						} catch (IOException e) {
+							LOG.error(e.getMessage(), e);
+							isUgrading = false;
+							d.reject(e);
+						}
 					}
-				} catch (IOException e) {
-					LOG.error(e.getMessage(), e);
-					isUgrading = false;
-					d.reject(e);
-				}
+				}).start();
+				
 			}
 		});
 

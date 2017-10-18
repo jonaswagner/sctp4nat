@@ -83,8 +83,8 @@ public class UdpUpgradeTest {
 								}
 								String current = new String(packet.getData(), StandardCharsets.UTF_8);
 								current = current.trim();
-								System.err.println(current);
 								if (TEST_STR.equals(current)) {
+									LOG.debug("Server ready");
 									udpCom.countDown();
 								}
 							}
@@ -122,6 +122,8 @@ public class UdpUpgradeTest {
 					});
 
 					clientSetup.countDown();
+					LOG.error("client ready");
+					
 					DatagramPacket testPacket = new DatagramPacket(TEST_STR.getBytes(), TEST_STR.length());
 					testPacket.setAddress(serverSoAddr.getAddress());
 					testPacket.setPort(serverSoAddr.getPort());

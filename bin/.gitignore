@@ -1,7 +1,2 @@
-/connection/
-/core/
-/darwin/
-/linux-x86-64/
-/linux-x86/
-/logback.xml
 /net/
+/connection/

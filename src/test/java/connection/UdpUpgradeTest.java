@@ -56,7 +56,8 @@ public class UdpUpgradeTest {
 			public void run() {
 				try {
 					SctpUtils.init(serverSoAddr.getAddress(), serverSoAddr.getPort(), null);
-					UpgradeableUdpSocket udpSocket = new UpgradeableUdpSocket(serverSoAddr.getPort(), serverSoAddr.getAddress());
+					UpgradeableUdpSocket udpSocket = new UpgradeableUdpSocket(serverSoAddr.getPort(),
+							serverSoAddr.getAddress());
 					udpSocket.setCb(new SctpDataCallback() {
 
 						@Override
@@ -69,7 +70,7 @@ public class UdpUpgradeTest {
 						}
 					});
 					new Thread(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							while (!udpSocket.isUgrading()) {
@@ -95,20 +96,21 @@ public class UdpUpgradeTest {
 					e.printStackTrace();
 					fail(e.getMessage());
 				}
-				
+
 				serverSetup.countDown();
 			}
 
 		});
 
 		client = new Thread(new Runnable() {
-						
+
 			@Override
 			public void run() {
-				
+
 				try {
 					SctpUtils.init(clientSoAddr.getAddress(), clientSoAddr.getPort(), null);
-					UpgradeableUdpSocket udpSocket = new UpgradeableUdpSocket(clientSoAddr.getPort(), clientSoAddr.getAddress());
+					UpgradeableUdpSocket udpSocket = new UpgradeableUdpSocket(clientSoAddr.getPort(),
+							clientSoAddr.getAddress());
 					udpSocket.setCb(new SctpDataCallback() {
 
 						@Override
@@ -123,37 +125,39 @@ public class UdpUpgradeTest {
 
 					clientSetup.countDown();
 					LOG.error("client ready");
-					
+
 					DatagramPacket testPacket = new DatagramPacket(TEST_STR.getBytes(), TEST_STR.length());
 					testPacket.setAddress(serverSoAddr.getAddress());
 					testPacket.setPort(serverSoAddr.getPort());
 					udpSocket.send(testPacket);
 
-					new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							while (!udpSocket.isUgrading()) {
-								byte[] buff = new byte[2048];
-								DatagramPacket packet = new DatagramPacket(buff, 2048);
-								try {
-									udpSocket.receive(packet);
-									System.err.println(new String(packet.getData(), StandardCharsets.UTF_8));
-								} catch (IOException e) {
-									e.printStackTrace();
-									fail(e.getMessage());
-								}
-
-							}
-						}
-					}).start();
+//					Thread receiveThread = new Thread(new Runnable() {
+//
+//						@Override
+//						public void run() {
+//							while (!udpSocket.isUgrading()) {
+//								byte[] buff = new byte[2048];
+//								DatagramPacket packet = new DatagramPacket(buff, 2048);
+//								try {
+//									udpSocket.receive(packet);
+//									System.err.println(new String(packet.getData(), StandardCharsets.UTF_8));
+//								} catch (IOException e) {
+//									e.printStackTrace();
+//									fail(e.getMessage());
+//								}
+//
+//							}
+//						}
+//					});
+//					
+//					receiveThread.start();
 
 					if (!udpCom.await(10, TimeUnit.SECONDS)) {
 						fail("timeout");
 					} else {
 						SctpDefaultConfig config = new SctpDefaultConfig();
-						Promise<SctpChannelFacade, Exception, NetworkLink> promise = udpSocket.upgrade(config, serverSoAddr,
-								clientSoAddr);
+						Promise<SctpChannelFacade, Exception, NetworkLink> promise = udpSocket.upgrade(config,
+								clientSoAddr, serverSoAddr);
 
 						promise.done(new DoneCallback<SctpChannelFacade>() {
 
@@ -194,8 +198,8 @@ public class UdpUpgradeTest {
 		} else {
 
 		}
-		
-		sctpCom.await(10, TimeUnit.SECONDS);
+
+		sctpCom.await(10000, TimeUnit.SECONDS);
 		if (sctpCom.getCount() > 0) {
 			fail("timeout");
 		}

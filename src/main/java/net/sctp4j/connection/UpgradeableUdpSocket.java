@@ -35,6 +35,10 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	private String UPGRADE_COMPLETE = "upgradeComplete"; // TODO jwa change this to something better
 	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocket.class);
 
+	private Deferred<SctpChannelFacade, Exception, NetworkLink> d;
+	private SctpAdapter so;
+	InetSocketAddress remote;
+	
 	@Getter
 	private boolean isUgrading = false;
 	
@@ -64,18 +68,23 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 
 	@Override
 	public synchronized void receive(final DatagramPacket packet) throws IOException {
-		byte[] data = new byte[packet.getLength()];
-        System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
-		if (new String(data).equals(UPGRADE) && !isUgrading) {
+		super.receive(packet);
+		if (decodeString(packet).equals(UPGRADE) && !isUgrading) {
 			isUgrading = true;
 			LOG.debug("SctpUpgrade request received! starting upgrade procedure with remote endpoint: "
 					+ packet.getAddress().getHostName() + ":" + packet.getPort());
 			replyUpgrade(packet);
-		} else {
-			super.receive(packet);
+		} else if (decodeString(packet).equals(UPGRADE_COMPLETE) && isUgrading) {
+			setUpSctp();
 		}
 	}
 
+	private String decodeString(final DatagramPacket packet) {
+		String current = new String(packet.getData(), StandardCharsets.UTF_8);
+		current = current.trim();
+		return current;
+	}
+	
 	private void replyUpgrade(final DatagramPacket packet) throws IOException {
 		Promise<NetworkLink, Exception, Object> p = initUpgrade(this.getLocalSocketAddress());
 
@@ -83,11 +92,9 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 
 			@Override
 			public void onDone(NetworkLink result) {
-				byte[] buff = new byte[2048];
-				DatagramPacket reply = new DatagramPacket(buff, buff.length);
+				DatagramPacket reply = new DatagramPacket(UPGRADE_COMPLETE.getBytes(), UPGRADE_COMPLETE.length());
 				reply.setAddress(packet.getAddress());
 				reply.setPort(packet.getPort());
-				reply.setData(UPGRADE_COMPLETE.getBytes());
 				try {
 					LOG.debug("Upgrade procedure finished.");
 					UpgradeableUdpSocket.this.send(reply);
@@ -137,11 +144,12 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	public Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(final SctpDefaultConfig config,
 			final InetSocketAddress local, final InetSocketAddress remote) {
 		isUgrading = true;
-
+		
 		LOG.debug("Upgrade procedure started! Trying to establish sctp connection to "
 				+ remote.getAddress().getHostName() + ":" + remote.getPort());
-
-		Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
+		
+		this.remote = remote;
+		d = new DeferredObject<>();
 
 		// TODO jwa implement config
 
@@ -150,7 +158,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 			@Override
 			public void run() {
 
-				SctpAdapter so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
+				so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
 						.localSctpPort(local.getPort()).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
 						.mapper(SctpUtils.getMapper()).sctpDataCallBack(cb).build();
 
@@ -158,9 +166,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 				d.notify(link);
 
 				try {
-					byte[] buff = new byte[2048];
-					DatagramPacket request = new DatagramPacket(buff, 2048);
-					request.setData(UPGRADE.getBytes());
+					DatagramPacket request = new DatagramPacket(UPGRADE.getBytes(), UPGRADE.length());
 					request.setAddress(remote.getAddress());
 					request.setPort(remote.getPort());
 					send(request);
@@ -169,52 +175,33 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 					isUgrading = false;
 					d.reject(e);
 				}
-
-				new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						byte[] buff = new byte[2048];
-						DatagramPacket reply = new DatagramPacket(buff, 2048);
-
-						try {
-							receive(reply);
-							if (new String(reply.getData(), 0, UPGRADE_COMPLETE.length(), StandardCharsets.UTF_8).equals(UPGRADE_COMPLETE)) {
-								Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
-
-								p.done(new DoneCallback<SctpAdapter>() {
-									@Override
-									public void onDone(SctpAdapter result) {
-										isUgrading = false;
-										LOG.debug("Upgrade procedure successfully finished.");
-										d.resolve(result);
-									}
-								});
-
-								p.fail(new FailCallback<Exception>() {
-									@Override
-									public void onFail(Exception result) {
-										isUgrading = false;
-										d.reject(result);
-									}
-								});
-
-							} else {
-								throw new IOException(
-										"wrong reply received! reply:" + new String(reply.getData(), StandardCharsets.UTF_8));
-							}
-						} catch (IOException e) {
-							LOG.error(e.getMessage(), e);
-							isUgrading = false;
-							d.reject(e);
-						}
-					}
-				}).start();
-				
 			}
 		});
 
 		return d.promise();
+	}
+	
+	private void setUpSctp() {
+		LOG.debug("upgrade procedure finished received, now starting to connect via sctp...");
+		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+
+		p.done(new DoneCallback<SctpAdapter>() {
+			@Override
+			public void onDone(SctpAdapter result) {
+				isUgrading = false;
+				LOG.debug("Sctp connection success!");
+				LOG.debug("Upgrade procedure successfully finished. This udp socket is now connected via sctp!");
+				d.resolve(result);
+			}
+		});
+
+		p.fail(new FailCallback<Exception>() {
+			@Override
+			public void onFail(Exception result) {
+				isUgrading = false;
+				d.reject(result);
+			}
+		});
 	}
 
 }

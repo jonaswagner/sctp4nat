@@ -131,27 +131,6 @@ public class UdpUpgradeTest {
 					testPacket.setPort(serverSoAddr.getPort());
 					udpSocket.send(testPacket);
 
-//					Thread receiveThread = new Thread(new Runnable() {
-//
-//						@Override
-//						public void run() {
-//							while (!udpSocket.isUgrading()) {
-//								byte[] buff = new byte[2048];
-//								DatagramPacket packet = new DatagramPacket(buff, 2048);
-//								try {
-//									udpSocket.receive(packet);
-//									System.err.println(new String(packet.getData(), StandardCharsets.UTF_8));
-//								} catch (IOException e) {
-//									e.printStackTrace();
-//									fail(e.getMessage());
-//								}
-//
-//							}
-//						}
-//					});
-//					
-//					receiveThread.start();
-
 					if (!udpCom.await(10, TimeUnit.SECONDS)) {
 						fail("timeout");
 					} else {

@@ -1,7 +1,5 @@
 package net.sctp4j.connection.sample;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -67,7 +65,6 @@ public class SampleUdpUpgradeableClient {
 				@Override
 				public void onFail(Exception result) {
 					result.printStackTrace();
-					fail(result.getMessage());
 				}
 			});
 	}

@@ -1,7 +1,5 @@
 package net.sctp4j.connection.sample;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -52,7 +50,6 @@ public class SampleUdpUpgradeableServer {
 						LOG.debug("SERVER GOT UDP DATA: " + new String(packet.getData(), StandardCharsets.UTF_8));
 					} catch (IOException e) {
 						e.printStackTrace();
-						fail(e.getMessage());
 					}
 				}
 			}

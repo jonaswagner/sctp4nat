@@ -35,7 +35,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	private String UPGRADE_COMPLETE = "upgradeComplete"; // TODO jwa change this to something better
 	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocket.class);
 
-	private Deferred<SctpChannelFacade, Exception, NetworkLink> d;
+	private final Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
 	private SctpAdapter so;
 	InetSocketAddress remote;
 	
@@ -154,8 +154,8 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 				+ remote.getAddress().getHostName() + ":" + remote.getPort());
 		
 		this.remote = remote;
-		d = new DeferredObject<>();
-
+		
+		// TODO check if defereed is not used 
 		// TODO jwa implement config
 
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {

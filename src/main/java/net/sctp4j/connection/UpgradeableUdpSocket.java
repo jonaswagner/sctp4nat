@@ -70,12 +70,17 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	public synchronized void receive(final DatagramPacket packet) throws IOException {
 		super.receive(packet);
 		if (decodeString(packet).equals(UPGRADE) && !isUgrading) {
+			synchronized (this) {
 			isUgrading = true;
 			LOG.debug("SctpUpgrade request received! starting upgrade procedure with remote endpoint: "
 					+ packet.getAddress().getHostName() + ":" + packet.getPort());
-			replyUpgrade(packet);
+				replyUpgrade(packet);
+			}
 		} else if (decodeString(packet).equals(UPGRADE_COMPLETE) && isUgrading) {
-			setUpSctp();
+			synchronized (this) {
+				LOG.debug("upgrade procedure finished received, now starting to connect via sctp...");
+				setUpSctp();
+			}
 		}
 	}
 
@@ -182,7 +187,6 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	}
 	
 	private void setUpSctp() {
-		LOG.debug("upgrade procedure finished received, now starting to connect via sctp...");
 		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
 
 		p.done(new DoneCallback<SctpAdapter>() {

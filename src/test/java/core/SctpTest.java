@@ -105,7 +105,7 @@ public class SctpTest {
 					e2.printStackTrace();
 				}
 
-				InetSocketAddress local = new InetSocketAddress(localhost, 2000);
+				InetSocketAddress local = new InetSocketAddress(localhost, 1234);
 				InetSocketAddress remote = new InetSocketAddress(localhost, 9899);
 				int localSctpPort = 12345;
 				SctpMapper mapper = new SctpMapper();

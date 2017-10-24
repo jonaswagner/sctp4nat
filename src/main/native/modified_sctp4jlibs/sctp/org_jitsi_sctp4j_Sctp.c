@@ -144,22 +144,18 @@ Java_net_sctp4j_origin_Sctp_usrsctp_1close
 }
 
 /*
- * Changed by jonaswagner
- *
  * Class:     net_sctp4j_origin_Sctp
  * Method:    usrsctp_shutdown
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL
 Java_net_sctp4j_origin_Sctp_usrsctp_1shutdown
-    (JNIEnv *env, jclass clazz, jlong ptr)
+    (JNIEnv *env, jclass clazz, jlong ptr, jint how)
 {
     SctpSocket *sctpSocket;
 
     sctpSocket = (SctpSocket *) (intptr_t) ptr;
-    usrsctp_shutdown(sctpSocket->so);
-    usrsctp_close(sctpSocket->so);
-    free(sctpSocket);
+    usrsctp_shutdown(sctpSocket->so, how);
 }
 
 /*

@@ -33,12 +33,13 @@ JNIEXPORT jboolean JNICALL Java_org_jitsi_sctp4j_Sctp_usrsctp_1accept
 JNIEXPORT void JNICALL Java_org_jitsi_sctp4j_Sctp_usrsctp_1close
   (JNIEnv *, jclass, jlong);
   
-   * Class:     org_jitsi_sctp4j_Sctp
+/* 
+ * Class:     org_jitsi_sctp4j_Sctp
  * Method:    usrsctp_shutdown
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_jitsi_sctp4j_Sctp_usrsctp_1shutdown
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     org_jitsi_sctp4j_Sctp

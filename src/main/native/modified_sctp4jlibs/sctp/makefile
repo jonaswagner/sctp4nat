@@ -15,25 +15,20 @@
 #
 
 CC=gcc
+JAVA_HOME=$(shell readlink -f /usr/bin/javac | sed "s:bin/javac::")
+JNI_HEADERS = -I"$(JAVA_HOME)/include" -I"$(JAVA_HOME)/include/linux"
+SCTP_HEADERS = -I"usrsctp/usrsctplib"
 
-#JNI_HEADERS = -I"$(JAVA_HOME)/include" -I"$(JAVA_HOME)/include/linux"
-JNI_HEADERS = -I"/usr/lib/jvm/java-8-openjdk/include" -I"/usr/lib/jvm/java-8-openjdk/include/linux"
-#SCTP_HEADERS = -I"usrsctp/usrsctplib"
-
-CFLAGS = -Wall -Werror -std=c99 $(JNI_HEADERS) -DSCTP_DEBUG=1 -DINET6=1
-#CFLAGS = -Wall -Werror -std=c99 $(JNI_HEADERS) $(SCTP_HEADERS) -DINET6=1
+CFLAGS = -Wall -Werror -std=c99 $(JNI_HEADERS) $(SCTP_HEADERS) -DSCTP_DEBUG=1 -DINET6=1
 
 OBJS = org_jitsi_sctp4j_Sctp.c
 
-LIBS = -L"usrsctp/.libs" -lusrsctp -lpthread
+LIBS = -Lusrsctp/usrsctplib/.libs -Wl,-Bstatic -lusrsctp -Wl,-Bdynamic -lpthread
 
 libjnsctp.so: clean
 	$(CC) $(CFLAGS) -fPIC -shared $(OBJS) -o libjnsctp.so $(LIBS)
 
-install32: libjnsctp.so
-	cp libjnsctp.so "../../../resources/linux-x86-64/libjnsctp.so"
-
-install64: libjnsctp.so
+install: libjnsctp.so
 	cp libjnsctp.so "../../../resources/linux-x86-64/libjnsctp.so"
 
 clean:

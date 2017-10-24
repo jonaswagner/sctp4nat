@@ -15,11 +15,13 @@ import lombok.Setter;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.origin.Sctp;
 import net.sctp4j.origin.SctpSocket;
+import net.sctp4j.origin.SctpSocket.NotificationListener;
 
-public class SctpSocketAdapter implements SctpAdapter{
+public class SctpSocketAdapter implements SctpAdapter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpSocketAdapter.class);
-	
+	private static final long SHUTDOWN_TIMEOUT = 2000L;
+
 	private final SctpSocket so;
 	@Getter
 	private final InetSocketAddress local;
@@ -31,15 +33,18 @@ public class SctpSocketAdapter implements SctpAdapter{
 	private InetSocketAddress remote;
 	@Getter
 	private SctpMapper mapper;
-	
-	public SctpSocketAdapter(final InetSocketAddress local, int localSctpPort, final NetworkLink link, final SctpDataCallback cb, SctpMapper mapper) {
+	@Getter
+	private NotificationListener l;
+
+	public SctpSocketAdapter(final InetSocketAddress local, int localSctpPort, final NetworkLink link,
+			final SctpDataCallback cb, SctpMapper mapper) {
 		this(local, localSctpPort, null, link, cb, mapper);
 	}
 
 	public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketAddress remote, NetworkLink link,
 			SctpDataCallback cb, SctpMapper mapper) {
 		this.so = Sctp.createSocket(localSctpPort);
-		this.so.setLink(link); //forwards all onConnOut to the corresponding link
+		this.so.setLink(link); // forwards all onConnOut to the corresponding link
 		this.link = link;
 		this.local = local;
 		this.remote = remote;
@@ -49,42 +54,53 @@ public class SctpSocketAdapter implements SctpAdapter{
 	}
 
 	public void setNotificationListener(SctpSocket.NotificationListener l) {
+		this.l = l;
 		so.setNotificationListener(l);
 	}
 
 	@Override
 	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote) {
 		Deferred<SctpAdapter, Exception, Object> d = new DeferredObject<>();
-		
+
 		class SctpConnectThread extends Thread {
 			@Override
 			public void run() {
 				super.run();
 				try {
 
-					so.setNotificationListener(new SctpSocket.NotificationListener() {
+					l = new NotificationListener() {
+
 						@Override
 						public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
-							if(notification.toString().indexOf("COMM_UP")>=0) {
+							if (notification.toString().indexOf("COMM_UP") >= 0) {
 								d.resolve(SctpSocketAdapter.this);
+							} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
+								LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
+								try {
+									SctpSocketAdapter.this.close().wait(SHUTDOWN_TIMEOUT);
+								} catch (InterruptedException e) {
+									LOG.error(e.getMessage(), e);
+								}
 							} else {
 								LOG.debug(notification.toString());
 							}
 						}
-					});
-
+					};
+					SctpSocketAdapter.this.setNotificationListener(l);
 					so.connectNative(remote.getPort());
 					mapper.register(remote, SctpSocketAdapter.this);
-				} catch (IOException e) {
+				} catch (
+
+				IOException e) {
 					LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);
 					mapper.unregister(remote);
 					d.reject(e);
 				}
 			}
 		}
-		
+
 		SctpUtils.getThreadPoolExecutor().execute(new SctpConnectThread());
-		
+
 		return d.promise();
 	}
 
@@ -100,7 +116,7 @@ public class SctpSocketAdapter implements SctpAdapter{
 
 	@Override
 	public int send(byte[] data, int offset, int len, boolean ordered, int sid, int ppid) {
-		
+
 		try {
 			return so.sendNative(data, offset, len, ordered, sid, ppid);
 		} catch (IOException e) {
@@ -112,13 +128,13 @@ public class SctpSocketAdapter implements SctpAdapter{
 	@Override
 	public Promise<Object, Exception, Object> close() {
 		Deferred<Object, Exception, Object> d = new DeferredObject<>();
-		
+
 		final SctpSocketAdapter currentInstance = this;
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				LOG.debug("Closing connection to " + remote.getHostString()+ ":" + remote.getPort());
+				LOG.debug("Closing connection to " + remote.getHostString() + ":" + remote.getPort());
 				so.closeNative();
 				mapper.unregister(currentInstance);
 				SctpPorts.getInstance().removePort(currentInstance);
@@ -126,7 +142,7 @@ public class SctpSocketAdapter implements SctpAdapter{
 				d.resolve(null);
 			}
 		});
-		
+
 		return d.promise();
 	}
 
@@ -145,7 +161,8 @@ public class SctpSocketAdapter implements SctpAdapter{
 	}
 
 	/**
-	 * This method is an indirection for SctpSocket, which needs to be unaccessible for a third party user.
+	 * This method is an indirection for SctpSocket, which needs to be unaccessible
+	 * for a third party user.
 	 */
 	@Override
 	public void onConnIn(byte[] data, int offset, int length) {
@@ -162,7 +179,7 @@ public class SctpSocketAdapter implements SctpAdapter{
 			return so.acceptNative();
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
-			return false; //this signals a accept failure
+			return false; // this signals a accept failure
 		}
 	}
 

@@ -68,8 +68,9 @@ public class SctpUtils {
 		return sctpServerPort <= 65535 || sctpServerPort > 0;
 	}
 
-	public static Promise<Object, Exception, Object> shutdownSctp(UdpServerLink customLink, SctpMapper customMapper) {
- 		Deferred<Object, Exception, Object> d = new DeferredObject<>();
+	public static Promise<Object, Exception, Object> shutdownAll(UdpServerLink customLink, SctpMapper customMapper) {
+ 		//TODO jwa shutdown every single connection
+		Deferred<Object, Exception, Object> d = new DeferredObject<>();
 		
  		threadPoolExecutor.execute(new Runnable() {
 			

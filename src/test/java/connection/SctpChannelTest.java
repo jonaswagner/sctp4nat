@@ -60,7 +60,7 @@ public class SctpChannelTest {
 						so.send(data, 0, data.length, false, sid, (int) ppid);
 						comCd.countDown();
 						
-						Promise<Object, Exception, Object> p = SctpUtils.shutdownSctp(null, null);
+						Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
 						p.done(new DoneCallback<Object>() {
 
 							@Override

@@ -364,5 +364,13 @@ public class Sctp {
 	/*
 	 * FIXME to be added? int usrsctp_shutdown(struct socket *so, int how);
 	 */
+	
+	/**
+	 * @author jonaswagner
+	 * @param ptr 
+	 * 			native socket pointer.
+	 * @return sent bytes count or <tt>-1</tt> in case of an error.
+	 */
+	static native int usrsctp_shutdown(long ptr);
 
 }

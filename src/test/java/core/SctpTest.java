@@ -1,5 +1,7 @@
 package core;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -12,10 +14,8 @@ import java.util.concurrent.TimeUnit;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +48,12 @@ public class SctpTest {
 		CountDownLatch serverCd = new CountDownLatch(1);
 		CountDownLatch clientCd = new CountDownLatch(1);
 		CountDownLatch comCd = new CountDownLatch(2);
-		CountDownLatch shutdownCd = new CountDownLatch(2);
+		CountDownLatch shutdownCd = new CountDownLatch(3);
 
 		server = new Thread(new Runnable() {
 			public void run() {
 				Sctp.init();
-				
+
 				InetSocketAddress local = new InetSocketAddress(localhost, 9899);
 
 				SctpMapper mapper = new SctpMapper();
@@ -68,9 +68,19 @@ public class SctpTest {
 						so.send(data, 0, data.length, false, sid, (int) ppid);
 						so.send(data, false, sid, (int) ppid);
 						comCd.countDown();
+
+						Promise<Object, Exception, Object> p2= so.close();
+						p2.done(new DoneCallback<Object>() {
+
+							@Override
+							public void onDone(Object result) {
+								shutdownCd.countDown();
+							}
+						});
 						
-						Promise<Object, Exception, Object> p = SctpUtils.shutdownSctp(null, null);
 						
+						Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
+
 						p.done(new DoneCallback<Object>() {
 
 							@Override
@@ -118,7 +128,7 @@ public class SctpTest {
 						LOG.debug("REPLY SUCCESS");
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						comCd.countDown();
-						
+
 						Promise<Object, Exception, Object> p = so.close();
 						p.done(new DoneCallback<Object>() {
 
@@ -171,9 +181,9 @@ public class SctpTest {
 						});
 					}
 				});
-				
+
 				p.fail(new FailCallback<Exception>() {
-					
+
 					@Override
 					public void onFail(Exception result) {
 						LOG.error("CLIENT SETUP FAILED");
@@ -190,14 +200,15 @@ public class SctpTest {
 		client.run();
 
 		comCd.await(10, TimeUnit.SECONDS);
-		
+
 		if (comCd.getCount() > 0) {
 			fail("communication error");
 		}
-		
+
 		shutdownCd.await(10, TimeUnit.SECONDS);
 		if (shutdownCd.getCount() > 0) {
 			fail("shutdown could not complete");
 		}
 	}
+	
 }

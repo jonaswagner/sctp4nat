@@ -22,3 +22,14 @@
 hs_err_pid*
 /.gradle/
 /build/
+/bin
+/.idea
+/.gradle
+/.settings
+gradle/
+src/main/main.iml
+src/test/test.iml
+
+#eclipse stuff
+.classpath
+.project

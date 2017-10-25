@@ -123,8 +123,14 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 		});
 	}
 
-	@Override
-	public Promise<NetworkLink, Exception, Object> initUpgrade(SocketAddress local) {
+	/**
+	 * This method answers the transition attempt from the server side and
+	 * transitions the connection from plain udp to sctp via udp.
+	 * 
+	 * @param local
+	 * @return	promise
+	 */
+	private Promise<NetworkLink, Exception, Object> initUpgrade(SocketAddress local) {
 		Deferred<NetworkLink, Exception, Object> d = new DeferredObject<>();
 
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {

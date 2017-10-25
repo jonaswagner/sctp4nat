@@ -21,14 +21,5 @@ public interface SctpUpgradeable {
 	Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(SctpDefaultConfig config, InetSocketAddress local,
 			InetSocketAddress remote);
 
-	/**
-	 * This method answers the transition attempt from the server side and
-	 * transitions the connection from plain udp to sctp via udp.
-	 * 
-	 * @param local
-	 * @return
-	 */
-	Promise<NetworkLink, Exception, Object> initUpgrade(SocketAddress local);
-
 	
 }

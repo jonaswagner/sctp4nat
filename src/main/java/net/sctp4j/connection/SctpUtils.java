@@ -37,7 +37,7 @@ public class SctpUtils {
 	@Setter
 	private static UdpServerLink link;
 
-	public static synchronized void init(final InetAddress serverAddr, final int sctpServerPort, SctpDataCallback cb)
+	public static synchronized void init(final InetAddress localAddr, final int localSctpPort, SctpDataCallback cb)
 			throws SocketException, SctpInitException {
 
 		if (Sctp.isInitialized()) {
@@ -50,12 +50,12 @@ public class SctpUtils {
 			cb = new SctpDefaultConfig().getCb();
 		}
 
-		if (serverAddr == null) {
+		if (localAddr == null) {
 			throw new SctpInitException("ServerAddress was null! Can't init sctp without a valid InetSocketAddress!");
-		} else if (!checkFreePort(sctpServerPort) || !checkRange(sctpServerPort)) {
-			link = new UdpServerLink(mapper, serverAddr, cb);
+		} else if (!checkFreePort(localSctpPort) || !checkRange(localSctpPort)) {
+			link = new UdpServerLink(mapper, localAddr, cb);
 		} else {
-			link = new UdpServerLink(mapper, serverAddr, sctpServerPort, cb);
+			link = new UdpServerLink(mapper, localAddr, localSctpPort, cb);
 		}
 	}
 

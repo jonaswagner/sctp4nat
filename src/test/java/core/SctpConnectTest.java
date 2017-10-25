@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
@@ -96,6 +97,7 @@ public class SctpConnectTest {
 			@Override
 			public void onFail(Exception result) {
 				LOG.error(result.getMessage());
+				assertTrue(result instanceof TimeoutException);
 				latch.countDown();
 			}
 		});

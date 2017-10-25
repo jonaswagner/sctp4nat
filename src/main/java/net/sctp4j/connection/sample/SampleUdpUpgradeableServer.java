@@ -8,9 +8,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4j.core.SctpInitException;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.connection.UpgradeableUdpSocket;
 import net.sctp4j.core.SctpAdapter;
@@ -20,7 +22,7 @@ public class SampleUdpUpgradeableServer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SampleUdpUpgradeableServer.class);
 	
-	public static void main(String[] args) throws UnknownHostException, SocketException {
+	public static void main(String[] args) throws UnknownHostException, SocketException, SctpInitException {
 		
 		InetSocketAddress serverSoAddr = new InetSocketAddress(InetAddress.getByName("192.168.0.106"), 9876);
 		

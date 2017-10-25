@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import lombok.Getter;
 import lombok.Setter;
 import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.SctpPorts;
 import net.sctp4j.core.UdpServerLink;
@@ -25,7 +26,7 @@ public class SctpUtils {
 	private static final int THREADPOOL_MULTIPLIER = 20;
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpUtils.class);
-	
+
 	@Getter
 	private static final SctpMapper mapper = new SctpMapper();
 	@Getter
@@ -35,28 +36,26 @@ public class SctpUtils {
 	@Getter
 	@Setter
 	private static UdpServerLink link;
-	
-	@Getter
-	private static volatile boolean isInitialized = false;
 
-	public static synchronized void init(final InetAddress serverAddress, final int sctpServerPort, SctpDataCallback cb)
-			throws SocketException {
+	public static synchronized void init(final InetAddress serverAddr, final int sctpServerPort, SctpDataCallback cb)
+			throws SocketException, SctpInitException {
 
-		if (isInitialized) {
-			return; // we only need to init once
+		if (Sctp.isInitialized()) {
+			throw new SctpInitException("Sctp is already initialized. You should not initialize it twice!");
 		} else {
 			Sctp.init();
-			isInitialized = true;
 		}
 
 		if (cb == null) {
 			cb = new SctpDefaultConfig().getCb();
 		}
 
-		if (!checkFreePort(sctpServerPort) || !checkRange(sctpServerPort)) {
-			link = new UdpServerLink(mapper, serverAddress, cb);
+		if (serverAddr == null) {
+			throw new SctpInitException("ServerAddress was null! Can't init sctp without a valid InetSocketAddress!");
+		} else if (!checkFreePort(sctpServerPort) || !checkRange(sctpServerPort)) {
+			link = new UdpServerLink(mapper, serverAddr, cb);
 		} else {
-			link = new UdpServerLink(mapper, serverAddress, sctpServerPort, cb);
+			link = new UdpServerLink(mapper, serverAddr, sctpServerPort, cb);
 		}
 	}
 
@@ -69,40 +68,40 @@ public class SctpUtils {
 	}
 
 	public static Promise<Object, Exception, Object> shutdownAll(UdpServerLink customLink, SctpMapper customMapper) {
- 		//TODO jwa shutdown every single connection
+		// TODO jwa shutdown every single connection
 		Deferred<Object, Exception, Object> d = new DeferredObject<>();
-		
- 		threadPoolExecutor.execute(new Runnable() {
-			
+
+		threadPoolExecutor.execute(new Runnable() {
+
 			@Override
 			public void run() {
 				LOG.debug("sctp4j shutdown initialized");
-				
+
 				if (customLink == null) {
 					link.close();
 				} else {
 					customLink.close();
 				}
-				
+
 				if (customMapper == null) {
 					mapper.shutdown();
 				} else {
 					customMapper.shutdown();
 				}
-				
+
 				SctpPorts.shutdown();
-				
+
 				try {
 					Sctp.finish();
 				} catch (IOException e) {
 					d.reject(e);
 				}
-				
+
 				LOG.debug("sctp4j shutdown done");
 				d.resolve(null);
 			}
 		});
-		
+
 		return d.promise();
 	}
 }

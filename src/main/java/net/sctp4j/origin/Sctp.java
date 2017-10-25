@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.Getter;
 import net.sctp4j.core.Pair;
 import net.sctp4j.core.SctpMapper;
 
@@ -53,6 +54,7 @@ public class Sctp {
 	/**
 	 * FIXME Remove once usrsctp_finish is fixed
 	 */
+	@Getter
 	private static boolean initialized;
 
 	/**

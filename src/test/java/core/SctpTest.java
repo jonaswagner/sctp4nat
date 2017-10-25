@@ -171,12 +171,7 @@ public class SctpTest {
 									e.printStackTrace();
 								}
 
-								int success = result.send(TEST_STR.getBytes(), false, 0, 0);
-								if (success > 0) {
-									LOG.debug("Message sent");
-								} else {
-									LOG.error("ERROR WHILE SENDING THE MESSAGE!");
-								}
+								result.send(TEST_STR.getBytes(), false, 0, 0);
 							}
 						});
 					}

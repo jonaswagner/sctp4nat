@@ -46,6 +46,7 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	public UdpServerLink(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
 			final SctpDataCallback cb) throws SocketException {
+		
 		this.mapper = mapper;
 		this.port = localPort;
 		this.udpSocket = new DatagramSocket(localPort, localAddress);

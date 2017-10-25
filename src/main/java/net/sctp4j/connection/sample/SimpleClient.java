@@ -43,12 +43,7 @@ public class SimpleClient {
 			
 			@Override
 			public void onDone(SctpChannelFacade result) {
-				int success = result.send("Hello World!".getBytes(), false, 0, 0);
-				if (success > 0) {
-					System.out.println("Message sent");
-				} else {
-					System.out.println("ERROR WHILE SENDING THE MESSAGE!");
-				}
+				result.send("Hello World!".getBytes(), false, 0, 0);
 			}
 		});
 		

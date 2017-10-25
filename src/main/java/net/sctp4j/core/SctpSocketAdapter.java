@@ -66,6 +66,13 @@ public class SctpSocketAdapter implements SctpAdapter {
 			@Override
 			public void run() {
 				super.run();
+
+				if (!Sctp.isInitialized()) {
+					d.reject(new SctpInitException(
+							"Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
+					return;
+				}
+
 				try {
 
 					l = new NotificationListener() {
@@ -105,24 +112,51 @@ public class SctpSocketAdapter implements SctpAdapter {
 	}
 
 	@Override
-	public int send(byte[] data, boolean ordered, int sid, int ppid) {
-		try {
-			return so.sendNative(data, 0, data.length, ordered, sid, ppid);
-		} catch (IOException e) {
-			LOG.error("Could not send! Cause: " + e.getMessage(), e);
-			return -1;
-		}
+	public Promise<Integer, Exception, Object> send(byte[] data, boolean ordered, int sid, int ppid) {
+		Deferred<Integer, Exception, Object> d = new DeferredObject<>();
+		
+		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (!Sctp.isInitialized()) {
+					d.reject(new SctpInitException("Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
+				}
+
+				try {
+					d.resolve(new Integer(so.sendNative(data, 0, data.length, ordered, sid, ppid)));
+				} catch (IOException e) {
+					LOG.error("Could not send! Cause: " + e.getMessage(), e);
+					d.reject(e);
+				}
+			}
+		});
+		
+		return d.promise();
 	}
 
 	@Override
-	public int send(byte[] data, int offset, int len, boolean ordered, int sid, int ppid) {
+	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, boolean ordered, int sid, int ppid) {
+		Deferred<Integer, Exception, Object> d = new DeferredObject<>();
+		
+		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (!Sctp.isInitialized()) {
+					d.reject(new SctpInitException("Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
+				}
 
-		try {
-			return so.sendNative(data, offset, len, ordered, sid, ppid);
-		} catch (IOException e) {
-			LOG.error("Could not send! Cause: " + e.getMessage(), e);
-			return -1;
-		}
+				try {
+					d.resolve(new Integer(so.sendNative(data, offset, len, ordered, sid, ppid)));
+				} catch (IOException e) {
+					LOG.error("Could not send! Cause: " + e.getMessage(), e);
+					d.reject(e);
+				}
+			}
+		});
+		
+		return d.promise();
 	}
 
 	@Override

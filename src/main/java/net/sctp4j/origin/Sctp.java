@@ -367,13 +367,13 @@ public class Sctp {
 	
 	/**
 	 * @author jonaswagner
+	 * 
 	 * @param ptr 
 	 * 			native socket pointer.
 	 * @param how
-	 * 			SHUT_RD 1 (Disables further receive operations.  No SCTP protocol action is taken.)
-	 *			SHUT_WR 2 (Disables further send operations, and initiates the SCTP shutdown sequence.)
-	 *			SHUT_RDWR 3 (Disables further send operations, and initiates the SCTP shutdown sequence.)
-	 * @return sent bytes count or <tt>-1</tt> in case of an error.
+	 * 			SHUT_RD = 1 (Disables further receive operations.  No SCTP protocol action is taken.)
+	 *			SHUT_WR = 2 (Disables further send operations, and initiates the SCTP shutdown sequence.)
+	 *			SHUT_RDWR = 3 (Disables further send operations, and initiates the SCTP shutdown sequence.)
 	 */
 	static native void usrsctp_shutdown(long ptr, int how);
 

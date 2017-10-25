@@ -21,7 +21,7 @@ public class SctpSocketBuilder {
 	private NetworkLink link = null;
 	private SctpMapper mapper = null;
 	
-	public SctpAdapter build() {
+	public SctpAdapter build() throws SctpInitException {
 
 		if (localSctpPort == -1) {
 			localSctpPort = SctpPorts.getInstance().generateDynPort();

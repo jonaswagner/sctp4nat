@@ -186,7 +186,7 @@ public class Sctp {
 		// if(sctpEngineCount++ > 0)
 		// return;
 		if (!initialized) {
-			logger.error("Init'ing brian's & jonas' patched usrsctp");
+			logger.debug("Init'ing brian's & jonas' patched usrsctp");
 			usrsctp_init(0);
 			initialized = true;
 		}

@@ -31,5 +31,5 @@ src/main/main.iml
 src/test/test.iml
 
 #eclipse stuff
-.classpath
-.project
+*.classpath
+*.project

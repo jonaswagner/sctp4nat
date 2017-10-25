@@ -46,16 +46,15 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	public UdpServerLink(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
 			final SctpDataCallback cb) throws SocketException {
-		
+
 		this.mapper = mapper;
 		this.port = localPort;
 		this.udpSocket = new DatagramSocket(localPort, localAddress);
-		SctpUtils.setLink(this); //set this as main Link
+		SctpUtils.setLink(this); // set this as main Link
 		receive(mapper, localAddress, localPort, cb);
 	}
-	
-	public UdpServerLink(SctpMapper mapper, InetSocketAddress local, SctpDataCallback cb,
-			DatagramSocket udpSocket) {
+
+	public UdpServerLink(SctpMapper mapper, InetSocketAddress local, SctpDataCallback cb, DatagramSocket udpSocket) {
 		this.mapper = mapper;
 		this.port = local.getPort();
 		this.udpSocket = udpSocket;
@@ -92,6 +91,8 @@ public class UdpServerLink implements NetworkLink {
 						} else {
 							LOG.debug("receive aborted because of shutdown!");
 						}
+					} catch (SctpInitException e) {
+						LOG.error("Sctp is currently not initialized! Try init it with SctpUtils.init(...)", e);
 					}
 				}
 				LOG.debug("Link shutdown, stop listening, closing udp connection");
@@ -108,15 +109,21 @@ public class UdpServerLink implements NetworkLink {
 	/**
 	 * Since there is no socket yet, we need to create one first.
 	 * 
-	 * @param localAddress {@link InetAddress}
-	 * @param localPort {@link Integer}
-	 * @param remoteAddress {@link InetAddress}
-	 * @param remotePort {@link Integer}
-	 * @param cb {@link SctpDataCallback}
+	 * @param localAddress
+	 *            {@link InetAddress}
+	 * @param localPort
+	 *            {@link Integer}
+	 * @param remoteAddress
+	 *            {@link InetAddress}
+	 * @param remotePort
+	 *            {@link Integer}
+	 * @param cb
+	 *            {@link SctpDataCallback}
 	 * @return so {@link SctpAdapter}
+	 * @throws SctpInitException
 	 */
 	private SctpAdapter setupSocket(final InetAddress localAddress, final int localPort,
-			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) {
+			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) throws SctpInitException {
 		SctpAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
 				.localPort(localPort).localSctpPort(localPort).sctpDataCallBack(cb).remoteAddress(remoteAddress)
 				.remotePort(remotePort).mapper(mapper).build();

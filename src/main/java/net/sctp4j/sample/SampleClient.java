@@ -5,11 +5,15 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.SctpSocketBuilder;
 import net.sctp4j.core.UdpClientLink;
@@ -17,7 +21,9 @@ import net.sctp4j.origin.Sctp;
 
 public class SampleClient {
 
-	public static void main(String[] args) throws IOException {
+	private static final Logger LOG = LoggerFactory.getLogger(SampleClient.class);
+	
+	public static void main(String[] args) throws IOException, SctpInitException {
 
 		Sctp.init();
 		
@@ -72,6 +78,15 @@ public class SampleClient {
 						result.send("Hello World!".getBytes(), false, 0, 0);
 					}
 				});
+			}
+		});
+		
+		p.fail(new FailCallback<Exception>() {
+			
+			@Override
+			public void onFail(Exception result) {
+				LOG.error(result.getMessage());
+				so.close();
 			}
 		});
 		

@@ -19,7 +19,6 @@ import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpPorts;
 import net.sctp4j.core.SctpSocketBuilder;
 import net.sctp4j.core.UdpClientLink;
-import net.sctp4j.origin.Sctp;
 
 @Builder
 public class SctpChannel {
@@ -59,14 +58,28 @@ public class SctpChannel {
 					cb = config.getCb();
 				}
 
-				SctpAdapter so = new SctpSocketBuilder().
-						localAddress(local.getAddress()).
-						localPort(local.getPort()).
-						remoteAddress(remote.getAddress()).
-						remotePort(remote.getPort()).
-						sctpDataCallBack(cb).
-						mapper(SctpUtils.getMapper()).
-						build();
+				SctpAdapter socket = null;
+				try {
+					socket = new SctpSocketBuilder().
+							localAddress(local.getAddress()).
+							localPort(local.getPort()).
+							remoteAddress(remote.getAddress()).
+							remotePort(remote.getPort()).
+							sctpDataCallBack(cb).
+							mapper(SctpUtils.getMapper()).
+							build();
+				} catch (SctpInitException e1) {
+					LOG.error("Sctp is currently not initialized! Try init it with SctpUtils.init(...)");
+					d.reject(e1);
+					return;
+				}
+				
+				if (socket == null) {
+					d.reject(new NullPointerException("Could not create SctpAdapter!"));
+					return;
+				} 
+				
+				final SctpAdapter so = socket;
 
 				UdpClientLink link = null;
 				try {
@@ -75,6 +88,12 @@ public class SctpChannel {
 					LOG.error("Could not create UdpClientLink", e);
 					releaseAssignedParams(d, so, e);
 				}
+				
+				if (link == null) {
+					d.reject(new NullPointerException("Could not create UdpClientLink!"));
+					return;
+				}
+				
 				so.setLink(link);
 				d.notify(link);
 				

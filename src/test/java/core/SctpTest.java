@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.SctpSocketBuilder;
 import net.sctp4j.core.UdpClientLink;
@@ -140,9 +141,14 @@ public class SctpTest {
 					}
 				};
 
-				SctpAdapter so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
-						.localSctpPort(localSctpPort).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
-						.sctpDataCallBack(cb).mapper(mapper).build();
+				SctpAdapter so = null;
+				try {
+					so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
+							.localSctpPort(localSctpPort).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
+							.sctpDataCallBack(cb).mapper(mapper).build();
+				} catch (SctpInitException e2) {
+					e2.printStackTrace();
+				}
 
 				UdpClientLink link = null;
 				try {

@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
+import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,6 @@ public class SctpInitTest {
 		if (errorCountDown.getCount() > 0) {
 			fail("Not all errors reached");
 		}
-		
 	}
 	
 	private void testLaunchWithoutInit() throws InterruptedException {
@@ -122,6 +122,12 @@ public class SctpInitTest {
 		if (errorCountDown.getCount() > 0) {
 			fail("Not all errors reached");
 		}
+	}
+	
+	@After
+	public void tearDown() throws InterruptedException {
+		Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
+		p.wait(5000);
 	}
 	
 }

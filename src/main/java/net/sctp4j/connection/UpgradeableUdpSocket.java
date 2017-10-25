@@ -25,6 +25,7 @@ import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpSocketBuilder;
 import net.sctp4j.core.UdpClientLink;
 import net.sctp4j.core.UdpServerLink;
@@ -163,9 +164,14 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 			@Override
 			public void run() {
 
-				so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
-						.localSctpPort(local.getPort()).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
-						.mapper(SctpUtils.getMapper()).sctpDataCallBack(cb).build();
+				try {
+					so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
+							.localSctpPort(local.getPort()).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
+							.mapper(SctpUtils.getMapper()).sctpDataCallBack(cb).build();
+				} catch (SctpInitException e1) {
+					LOG.error("Could not create SctpAdapter!");
+					d.reject(e1);
+				}
 
 				UdpClientLink link = new UdpClientLink(local, remote, so, UpgradeableUdpSocket.this);
 				d.notify(link);

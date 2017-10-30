@@ -43,14 +43,15 @@ import net.sctp4j.core.SctpMapper;
  *         </ul>
  */
 public class Sctp {
-	
+
 	/**
 	 * This class is a thread-safe Singleton
 	 */
 	private static final Sctp instance = new Sctp();
-	private Sctp() {}
-	
-	
+
+	private Sctp() {
+	}
+
 	/**
 	 * FIXME Remove once usrsctp_finish is fixed
 	 */
@@ -61,7 +62,7 @@ public class Sctp {
 	 * The logger.
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(Sctp.class);
-	
+
 	/**
 	 * SCTP notification
 	 */
@@ -100,6 +101,22 @@ public class Sctp {
 			else
 				throw new RuntimeException(t);
 		}
+	}
+
+	/**
+	 * Sends a shutdown control packet to the remote.
+	 * 
+	 * @param ptr
+	 *            native socket pointer.
+	 * @param how
+	 *            SHUT_RD = 1 (Disables further receive operations. No SCTP protocol
+	 *            action is taken.) SHUT_WR = 2 (Disables further send operations,
+	 *            and initiates the SCTP shutdown sequence.) SHUT_RDWR = 3 (Disables
+	 *            further send operations, and initiates the SCTP shutdown
+	 *            sequence.)
+	 */
+	static int shutdown(final long ptr, final int how) {
+		return usrsctp_shutdown(ptr, how);
 	}
 
 	/**
@@ -243,7 +260,7 @@ public class Sctp {
 	public static void onSctpInboundPacket(long socketAddr, byte[] data, int sid, int ssn, int tsn, long ppid,
 			int context, int flags) {
 		SctpSocket socket = sockets.get(Long.valueOf(socketAddr));
-		
+
 		if (socket == null) {
 			logger.error("No SctpSocket found for ptr: " + socketAddr);
 		} else {
@@ -313,7 +330,7 @@ public class Sctp {
 	 * 
 	 * @return <tt>true</tt> if stack successfully released resources.
 	 */
-	private static native  boolean usrsctp_finish();
+	private static native boolean usrsctp_finish();
 
 	/**
 	 * Initializes native SCTP counterpart.
@@ -366,17 +383,19 @@ public class Sctp {
 	/*
 	 * FIXME to be added? int usrsctp_shutdown(struct socket *so, int how);
 	 */
-	
+
 	/**
 	 * @author jonaswagner
 	 * 
-	 * @param ptr 
-	 * 			native socket pointer.
+	 * @param ptr
+	 *            native socket pointer.
 	 * @param how
-	 * 			SHUT_RD = 1 (Disables further receive operations.  No SCTP protocol action is taken.)
-	 *			SHUT_WR = 2 (Disables further send operations, and initiates the SCTP shutdown sequence.)
-	 *			SHUT_RDWR = 3 (Disables further send operations, and initiates the SCTP shutdown sequence.)
+	 *            SHUT_RD = 1 (Disables further receive operations. No SCTP protocol
+	 *            action is taken.) SHUT_WR = 2 (Disables further send operations,
+	 *            and initiates the SCTP shutdown sequence.) SHUT_RDWR = 3 (Disables
+	 *            further send and receive operations, and initiates the SCTP
+	 *            shutdown sequence.)
 	 */
-	static native void usrsctp_shutdown(long ptr, int how);
+	static native int usrsctp_shutdown(long ptr, int how);
 
 }

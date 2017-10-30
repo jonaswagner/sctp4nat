@@ -6,6 +6,10 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4j.origin.SctpNotification;
+import net.sctp4j.origin.SctpSocket;
+import net.sctp4j.origin.SctpSocket.NotificationListener;
+
 public class SctpSocketBuilder {
 
 	//TODO jwa implement all possible variables and parameters for a given SCTP connection
@@ -40,17 +44,29 @@ public class SctpSocketBuilder {
 			LOG.error("No mapper added! You need a mapper to create a new SctpFacade!");
 			return null;
 		}
+		
 
 		InetSocketAddress local = new InetSocketAddress(localAddress, localPort);
-		SctpAdapter so = null;
+		SctpAdapter candidateSo = null;
 		if (remoteAddress == null || remotePort == -1) {
-			return (SctpAdapter) new SctpSocketAdapter(local, localSctpPort, link, cb, mapper);
+			candidateSo = (SctpAdapter) new SctpSocketAdapter(local, localSctpPort, link, cb, mapper);
 		} else {
 			InetSocketAddress remote = new InetSocketAddress(remoteAddress, remotePort);
-			return (SctpAdapter) new SctpSocketAdapter(local, localSctpPort, remote, link, cb, mapper);
+			candidateSo = (SctpAdapter) new SctpSocketAdapter(local, localSctpPort, remote, link, cb, mapper);
 		}
 
+		final SctpAdapter so = candidateSo;
+		so.setNotificationListener(new NotificationListener() { //shutdownListener
+			
+			@Override
+			public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+				if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
+					so.close();
+				}
+			}
+		});
 		
+		return so;
 	}
 
 	public SctpSocketBuilder localPort(int localPort) {

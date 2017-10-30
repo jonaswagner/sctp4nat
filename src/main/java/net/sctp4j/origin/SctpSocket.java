@@ -653,4 +653,16 @@ public class SctpSocket {
 		 */
 		public void onSctpNotification(SctpSocket socket, SctpNotification notification);
 	}
+
+	public int shutdownNative(final int how) throws IOException {
+		long ptr = lockPtr();
+
+		int success = -1;
+		try {
+			success = Sctp.shutdown(ptr, how);
+		} finally {
+			unlockPtr();
+		}
+		return success;
+	}
 }

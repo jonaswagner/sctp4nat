@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +15,14 @@ public class SctpMapper {
 	private static final Logger LOG = LoggerFactory.getLogger(SctpMapper.class);
 
 	private static final ConcurrentHashMap<InetSocketAddress, SctpAdapter> socketMap = new ConcurrentHashMap<>();
-	
+
 	private static boolean isShutdown = false;
 
 	public synchronized void register(final InetSocketAddress remote, final SctpAdapter so) {
 		if (isShutdown) {
 			return;
 		}
-		
+
 		if (remote != null && so != null) {
 			socketMap.put(remote, so);
 		} else {
@@ -38,7 +39,7 @@ public class SctpMapper {
 		if (isShutdown) {
 			return;
 		}
-		
+
 		if (so == null) {
 			LOG.error("Invalid input, null can't be removed!");
 			return;
@@ -49,17 +50,17 @@ public class SctpMapper {
 			socketMap.remove(so);
 		}
 	}
-	
+
 	/**
 	 * This method removes a socket from the {@link Mapper} and shuts down the
-	 * usrsctp counterpart. Make sure this {@link SctpAdapter} instance is not
-	 * used anywhere else!
+	 * usrsctp counterpart. Make sure this {@link SctpAdapter} instance is not used
+	 * anywhere else!
 	 */
 	public synchronized void unregister(InetSocketAddress remote) {
 		if (isShutdown) {
 			return;
 		}
-		
+
 		if (remote == null) {
 			LOG.error("Invalid input, null can't be removed!");
 			return;
@@ -75,16 +76,16 @@ public class SctpMapper {
 		if (isShutdown) {
 			return null;
 		}
-		
+
 		for (Map.Entry<InetSocketAddress, SctpAdapter> element : socketMap.entrySet()) {
 			int port = element.getKey().getPort();
 			String address = element.getKey().getAddress().getHostAddress();
-			
+
 			if (port == remotePort && address.equals(remoteAddress)) {
 				return socketMap.get(element.getKey());
 			}
 		}
-		
+
 		LOG.info("No socketMap entry found for IP:" + remoteAddress + " and port: " + remotePort);
 		return null;
 	}
@@ -93,11 +94,11 @@ public class SctpMapper {
 		if (isShutdown) {
 			return null;
 		}
-		
+
 		if (socketMap.isEmpty()) {
 			return null;
 		}
-		
+
 		SctpAdapter facade = socketMap.values().stream().filter(so -> so.containsSctpSocket(sctpSocket)).findFirst()
 				.get();
 
@@ -111,12 +112,21 @@ public class SctpMapper {
 
 	public void shutdown() {
 		isShutdown = true;
-		
+
 		for (Map.Entry<InetSocketAddress, SctpAdapter> element : socketMap.entrySet()) {
-			element.getValue().close();
+			SctpAdapter so = element.getValue();
+			so.shutdownInit();		
+			Promise<Object, Exception, Object> p = so.close();
+			try {
+				p.waitSafely(2000l);
+			} catch (InterruptedException e) {
+				LOG.error(
+						"Could not shutdown connection to " + so.getRemote().getAddress().getHostAddress()
+								+ ":" + so.getRemote().getPort(), e);
+			}
 		}
 		LOG.debug("all sctp connections closed");
-		
+
 		socketMap.clear();
 		LOG.debug("socketMap cleared");
 

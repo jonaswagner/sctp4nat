@@ -70,14 +70,14 @@ public class SctpTest {
 						so.send(data, false, sid, (int) ppid);
 						comCd.countDown();
 
-						Promise<Object, Exception, Object> p2= so.close();
-						p2.done(new DoneCallback<Object>() {
-
-							@Override
-							public void onDone(Object result) {
-								shutdownCd.countDown();
-							}
-						});
+//						Promise<Object, Exception, Object> p2= so.close();
+//						p2.done(new DoneCallback<Object>() {
+//
+//							@Override
+//							public void onDone(Object result) {
+//								shutdownCd.countDown();
+//							}
+//						});
 						
 						
 						Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);

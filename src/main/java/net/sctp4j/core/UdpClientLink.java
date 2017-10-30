@@ -74,8 +74,6 @@ public class UdpClientLink implements NetworkLink {
 				} catch (IOException e) {
 					LOG.error(e.getMessage());
 				}
-				
-				udpSocket.close();
 				LOG.debug("Link shutdown, closing udp connection to " + remote.getHostString() + ":" + remote.getPort());
 			}
 		});
@@ -90,6 +88,7 @@ public class UdpClientLink implements NetworkLink {
 	@Override
 	public void close() {
 		this.isShutdown = true;
+		this.udpSocket.close();
 	}
 
 

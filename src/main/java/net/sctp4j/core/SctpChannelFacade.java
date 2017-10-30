@@ -9,5 +9,5 @@ public interface SctpChannelFacade {
 	Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, boolean ordered, int sid, int ppid);
 	Promise<Integer, Exception, Object> send(byte[] data, boolean ordered, int sid, int ppid);
 	void setSctpDataCallback(SctpDataCallback cb);
-	Promise<Object, Exception, Object> close();
+	void shutdownInit();
 }

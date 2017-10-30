@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import javassist.NotFoundException;
 import lombok.Getter;
 import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.origin.SctpNotification;
+import net.sctp4j.origin.SctpSocket;
+import net.sctp4j.origin.SctpSocket.NotificationListener;
 
 public class UdpServerLink implements NetworkLink {
 
@@ -124,9 +127,16 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	private SctpAdapter setupSocket(final InetAddress localAddress, final int localPort,
 			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) throws SctpInitException {
-		SctpAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
-				.localPort(localPort).localSctpPort(localPort).sctpDataCallBack(cb).remoteAddress(remoteAddress)
-				.remotePort(remotePort).mapper(mapper).build();
+		SctpAdapter so = new SctpSocketBuilder().
+				networkLink(UdpServerLink.this).
+				localAddress(localAddress).
+				localPort(localPort).
+				localSctpPort(localPort).
+				sctpDataCallBack(cb).
+				remoteAddress(remoteAddress).
+				remotePort(remotePort).
+				mapper(mapper).
+				build();
 		so.listen();
 		return so;
 	}

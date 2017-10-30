@@ -70,7 +70,8 @@ static int SCTP_EVENT_TYPES[]
         SCTP_PEER_ADDR_CHANGE,
         SCTP_SEND_FAILED_EVENT,
         SCTP_SENDER_DRY_EVENT,
-        SCTP_STREAM_RESET_EVENT
+        SCTP_STREAM_RESET_EVENT,
+        SCTP_SHUTDOWN_EVENT
     };
 
 /** The <tt>jclass</tt> with name <tt>SCTP_CLASSNAME</tt>. */
@@ -148,14 +149,16 @@ Java_net_sctp4j_origin_Sctp_usrsctp_1close
  * Method:    usrsctp_shutdown
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_net_sctp4j_origin_Sctp_usrsctp_1shutdown
     (JNIEnv *env, jclass clazz, jlong ptr, jint how)
 {
     SctpSocket *sctpSocket;
 
     sctpSocket = (SctpSocket *) (intptr_t) ptr;
-    usrsctp_shutdown(sctpSocket->so, how);
+    int r = -1;
+    r = usrsctp_shutdown(sctpSocket->so, how);
+    return r;
 }
 
 /*

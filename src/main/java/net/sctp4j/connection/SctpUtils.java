@@ -36,6 +36,12 @@ public class SctpUtils {
 	@Getter
 	@Setter
 	private static UdpServerLink link;
+	
+	public static final int SHUT_RD = 1;
+	public static final int SHUT_WR = 2;
+	public static final int SHUT_RDWR = 3;
+	
+	public static final long SHUTDOWN_TIMEOUT = 2000L;
 
 	public static synchronized void init(final InetAddress localAddr, final int localSctpPort, SctpDataCallback cb)
 			throws SocketException, SctpInitException {
@@ -79,19 +85,17 @@ public class SctpUtils {
 
 			@Override
 			public void run() {
-				LOG.debug("sctp4j shutdown initialized");
+				LOG.debug("sctp4j shutdownAll initialized");
 
-				if (customLink == null) {
-					link.close();
-				} else {
+				if (customLink != null) {
 					customLink.close();
 				}
+				link.close();
 
-				if (customMapper == null) {
-					mapper.shutdown();
-				} else {
+				if (customMapper != null) {
 					customMapper.shutdown();
-				}
+				} 
+				mapper.shutdown();
 
 				SctpPorts.shutdown();
 
@@ -101,7 +105,7 @@ public class SctpUtils {
 					d.reject(e);
 				}
 
-				LOG.debug("sctp4j shutdown done");
+				LOG.debug("sctp4j shutdownAll done");
 				d.resolve(null);
 			}
 		});

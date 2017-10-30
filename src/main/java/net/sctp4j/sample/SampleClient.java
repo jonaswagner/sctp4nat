@@ -15,6 +15,7 @@ import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpMapper;
+import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpSocketBuilder;
 import net.sctp4j.core.UdpClientLink;
 import net.sctp4j.origin.Sctp;
@@ -42,6 +43,9 @@ public class SampleClient {
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 					SctpAdapter so) {
 				System.out.println("I WAS HERE");
+				SctpSocketAdapter realSo = (SctpSocketAdapter) so;
+				realSo.shutdownInit();
+				realSo.close();
 			}
 		};
 

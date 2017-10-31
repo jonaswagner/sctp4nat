@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.origin.SctpNotification;
 import net.sctp4j.origin.SctpSocket;
 import net.sctp4j.origin.SctpSocket.NotificationListener;
@@ -24,7 +25,6 @@ public class SctpSocketBuilder {
 	private SctpDataCallback cb = null;
 	private NetworkLink link = null;
 	private SctpMapper mapper = null;
-	private boolean isKeepAlive = false;
 	
 	public SctpAdapter build() throws SctpInitException {
 
@@ -57,12 +57,25 @@ public class SctpSocketBuilder {
 		}
 
 		final SctpAdapter so = candidateSo;
-		so.setNotificationListener(new NotificationListener() { //shutdownListener
+		so.setNotificationListener(new NotificationListener() {
 			
 			@Override
 			public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
 				if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
-					so.close();
+					try {
+						so.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
+					} catch (InterruptedException e) {
+						LOG.error(e.getMessage(), e);
+					}
+				} else if (notification.toString().indexOf("COMM_LOST") >= 0){
+					LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
+					try {
+						so.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
+					} catch (InterruptedException e) {
+						LOG.error(e.getMessage(), e);
+					}
+				} else {
+					LOG.debug(notification.toString());
 				}
 			}
 		});

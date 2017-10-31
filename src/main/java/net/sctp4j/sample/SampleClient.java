@@ -44,8 +44,8 @@ public class SampleClient {
 					SctpAdapter so) {
 				System.out.println("I WAS HERE");
 				SctpSocketAdapter realSo = (SctpSocketAdapter) so;
-				realSo.shutdownInit();
-				realSo.close();
+//				realSo.shutdownInit();
+//				realSo.close();
 			}
 		};
 
@@ -62,7 +62,7 @@ public class SampleClient {
 		UdpClientLink link = new UdpClientLink(local, remote, so);
 		so.setLink(link);
 		
-		Promise<SctpAdapter, Exception, Object> p = so.connect(remote, false);
+		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
 		
 		p.done(new DoneCallback<SctpAdapter>() {
 			

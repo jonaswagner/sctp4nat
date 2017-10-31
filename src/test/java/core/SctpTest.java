@@ -158,7 +158,7 @@ public class SctpTest {
 				}
 				so.setLink(link);
 
-				Promise<SctpAdapter, Exception, Object> p = so.connect(remote, false);
+				Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
 
 				p.done(new DoneCallback<SctpAdapter>() {
 

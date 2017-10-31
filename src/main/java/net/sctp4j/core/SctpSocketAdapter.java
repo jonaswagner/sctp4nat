@@ -44,9 +44,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 	private SctpMapper mapper;
 	@Getter
 	private NotificationListener l;
-	@Getter
-	private boolean isKeepAlive = false;
-	private Timer connectionTimer;
 
 	public SctpSocketAdapter(final InetSocketAddress local, int localSctpPort, final NetworkLink link,
 			final SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
@@ -76,10 +73,9 @@ public class SctpSocketAdapter implements SctpAdapter {
 	}
 
 	@Override
-	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote, boolean isKeepAlive) {
+	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote) {
 		final Deferred<SctpAdapter, Exception, Object> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
-		this.isKeepAlive = isKeepAlive;
 		
 		class SctpConnectThread extends Thread {
 			@Override
@@ -93,27 +89,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 				}
 
 				try {
-					l = new NotificationListener() {
-
-						@Override
-						public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
-							if (notification.toString().indexOf("COMM_UP") >= 0) {
-								countDown.countDown();
-								d.resolve(SctpSocketAdapter.this);
-								SctpSocketAdapter.this.renewTimer();
-							} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
-								LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
-								try {
-									SctpSocketAdapter.this.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
-								} catch (InterruptedException e) {
-									LOG.error(e.getMessage(), e);
-								}
-							} else {
-								LOG.debug(notification.toString());
-							}
-						}
-						
-					};
+					addNotificationListener(d, countDown);
 					SctpSocketAdapter.this.setNotificationListener(l);
 					so.connectNative(remote.getPort());
 					mapper.register(remote, SctpSocketAdapter.this);
@@ -122,6 +98,40 @@ public class SctpSocketAdapter implements SctpAdapter {
 					mapper.unregister(remote);
 					d.reject(e);
 				}
+			}
+
+			private void addNotificationListener(final Deferred<SctpAdapter, Exception, Object> d,
+					final CountDownLatch countDown) {
+				l = new NotificationListener() {
+
+					@Override
+					public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+						if (notification.toString().indexOf("COMM_UP") >= 0) {
+							countDown.countDown();
+							d.resolve(SctpSocketAdapter.this);
+						} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
+							//TODO jwa make a clean shutdown possible closing the socket prevents any SHUTDOWN ACK to be sent...
+							LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
+							try {
+								SctpSocketAdapter.this.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
+								d.reject(new Exception("client was forced to shutdown because of shutdown request from server!"));
+							} catch (InterruptedException e) {
+								LOG.error(e.getMessage(), e);
+								d.reject(e);
+							}
+						} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0){
+							LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
+							try {
+								SctpSocketAdapter.this.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
+							} catch (InterruptedException e) {
+								LOG.error(e.getMessage(), e);
+							}
+						} else {
+							LOG.debug(notification.toString());
+						}
+					}
+					
+				};
 			}
 		}
 
@@ -147,7 +157,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 
 				try {
 					d.resolve(new Integer(so.sendNative(data, 0, data.length, ordered, sid, ppid)));
-					renewTimer();
 				} catch (IOException e) {
 					LOG.error("Could not send! Cause: " + e.getMessage(), e);
 					d.reject(e);
@@ -174,7 +183,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 
 				try {
 					d.resolve(new Integer(so.sendNative(data, offset, len, ordered, sid, ppid)));
-					renewTimer();
 				} catch (IOException e) {
 					LOG.error("Could not send! Cause: " + e.getMessage(), e);
 					d.reject(e);
@@ -244,7 +252,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 	 */
 	@Override
 	public void onConnIn(byte[] data, int offset, int length) {
-		renewTimer();
 		try {
 			this.so.onConnIn(data, offset, length);
 		} catch (IOException e) {
@@ -278,20 +285,4 @@ public class SctpSocketAdapter implements SctpAdapter {
 		return this.remote;
 	}
 	
-	private void renewTimer() {
-		if (connectionTimer != null) {
-			connectionTimer.cancel();
-			connectionTimer.purge();
-		}
-		Timer newTimer = new Timer(this.toString(), true);
-		newTimer.schedule(new TimerTask() {
-			
-			@Override
-			public void run() {
-				LOG.error("Socket timeout reached! About to shutdown the connection and the corresponding socket...");
-				SctpSocketAdapter.this.shutdownInit();
-				SctpSocketAdapter.this.close();
-			}
-		}, SctpUtils.SCTP_CONN_TIMEOUT);
-	}
 }

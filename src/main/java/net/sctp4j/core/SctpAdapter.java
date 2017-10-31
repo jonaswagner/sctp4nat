@@ -8,7 +8,7 @@ import net.sctp4j.origin.SctpSocket;
 
 public interface SctpAdapter extends SctpChannelFacade{
 	void listen();
-	Promise<SctpAdapter, Exception, Object> connect(InetSocketAddress remote, boolean isKeepalive);
+	Promise<SctpAdapter, Exception, Object> connect(InetSocketAddress remote);
 	boolean containsSctpSocket(SctpSocket so);
 	void onConnIn(byte[] data, int offset, int length);
 	boolean accept();

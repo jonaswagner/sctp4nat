@@ -39,7 +39,6 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 
 	private final Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
 	private SctpAdapter so;
-	private boolean isKeepAlive;
 	private InetSocketAddress remote;
 	
 	@Getter
@@ -155,9 +154,8 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	}
 
 	public Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(final SctpDefaultConfig config,
-			final InetSocketAddress local, final InetSocketAddress remote, final boolean isKeepAlive) {
+			final InetSocketAddress local, final InetSocketAddress remote) {
 		this.isUgrading = true;
-		this.isKeepAlive = isKeepAlive;
 		
 		LOG.debug("Upgrade procedure started! Trying to establish sctp connection to "
 				+ remote.getAddress().getHostName() + ":" + remote.getPort());
@@ -201,7 +199,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	}
 	
 	private void setUpSctp() {
-		Promise<SctpAdapter, Exception, Object> p = so.connect(remote, isKeepAlive);
+		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
 
 		p.done(new DoneCallback<SctpAdapter>() {
 			@Override

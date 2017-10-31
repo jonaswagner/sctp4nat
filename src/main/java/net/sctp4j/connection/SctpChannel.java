@@ -29,11 +29,12 @@ public class SctpChannel {
 	private InetSocketAddress local;
 	private InetSocketAddress remote;
 	private SctpDataCallback cb;
-	private boolean isKeepAlive = false;
+	private boolean isKeepAlive;
 
 	public Promise<SctpChannelFacade, Exception, UdpClientLink> connect() {
 		Deferred<SctpChannelFacade, Exception, UdpClientLink> d = new DeferredObject<>();
 
+		//TODO: get rid of runnable here
 		Runnable connectSeq = new Runnable() {
 
 			@Override

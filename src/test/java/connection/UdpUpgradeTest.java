@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4j.connection.SctpDefaultConfig;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.connection.UpgradeableUdpSocket;
+import net.sctp4j.connection.sample.UpgradeableUdpSocketSample;
 import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;

@@ -42,7 +42,6 @@ public class SctpUtils {
 	public static final int SHUT_RDWR = 3;
 	
 	public static final long SHUTDOWN_TIMEOUT = 2000l;
-
 	public static final long SCTP_CONN_TIMEOUT = 120000l;
 
 	public static synchronized void init(final InetAddress localAddr, final int localSctpPort, SctpDataCallback cb)

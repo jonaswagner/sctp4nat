@@ -1,4 +1,4 @@
-package net.sctp4j.connection;
+package net.sctp4j.connection.sample;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.sctp4j.connection.SctpUpgradeable;
+import net.sctp4j.connection.SctpDefaultConfig;
+import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;
@@ -30,11 +31,11 @@ import net.sctp4j.core.SctpSocketBuilder;
 import net.sctp4j.core.UdpClientLink;
 import net.sctp4j.core.UdpServerLink;
 
-public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradeable {
+public class UpgradeableUdpSocketSample extends DatagramSocket {
 
 	private String UPGRADE = "upgrade"; // TODO jwa change this to something better
 	private String UPGRADE_COMPLETE = "upgradeComplete"; // TODO jwa change this to something better
-	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocket.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocketSample.class);
 
 	private final Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
 	private SctpAdapter so;
@@ -48,23 +49,23 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 	@Setter
 	private SctpDataCallback cb;
 
-	public UpgradeableUdpSocket(SocketAddress bindaddr) throws SocketException {
+	public UpgradeableUdpSocketSample(SocketAddress bindaddr) throws SocketException {
 		super(bindaddr);
 	}
 
-	public UpgradeableUdpSocket(int port, InetAddress laddr) throws SocketException {
+	public UpgradeableUdpSocketSample(int port, InetAddress laddr) throws SocketException {
 		super(port, laddr);
 	}
 
-	public UpgradeableUdpSocket(int port) throws SocketException {
+	public UpgradeableUdpSocketSample(int port) throws SocketException {
 		super(port);
 	}
 
-	protected UpgradeableUdpSocket(DatagramSocketImpl impl) {
+	protected UpgradeableUdpSocketSample(DatagramSocketImpl impl) {
 		super(impl);
 	}
 
-	public UpgradeableUdpSocket() throws SocketException {
+	public UpgradeableUdpSocketSample() throws SocketException {
 		super();
 	}
 
@@ -104,7 +105,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 				reply.setPort(packet.getPort());
 				try {
 					LOG.debug("Upgrade procedure finished.");
-					UpgradeableUdpSocket.this.send(reply);
+					UpgradeableUdpSocketSample.this.send(reply);
 				} catch (IOException e) {
 					LOG.error("Could not setup sctp upgrade on udp connection!");
 					LOG.error(e.getMessage(), e);
@@ -141,7 +142,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 				try {
 					InetSocketAddress localAddress = (InetSocketAddress) local;
 					UdpServerLink link = new UdpServerLink(SctpUtils.getMapper(), localAddress, cb,
-							UpgradeableUdpSocket.this);
+							UpgradeableUdpSocketSample.this);
 					d.resolve(link);
 				} catch (Exception e) {
 					LOG.error(e.getMessage(), e);
@@ -153,10 +154,10 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 		return d.promise();
 	}
 
-	@Override
 	public Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(final SctpDefaultConfig config,
 			final InetSocketAddress local, final InetSocketAddress remote, final boolean isKeepAlive) {
-		isUgrading = true;
+		this.isUgrading = true;
+		this.isKeepAlive = isKeepAlive;
 		
 		LOG.debug("Upgrade procedure started! Trying to establish sctp connection to "
 				+ remote.getAddress().getHostName() + ":" + remote.getPort());
@@ -180,7 +181,7 @@ public class UpgradeableUdpSocket extends DatagramSocket implements SctpUpgradea
 					d.reject(e1);
 				}
 
-				UdpClientLink link = new UdpClientLink(local, remote, so, UpgradeableUdpSocket.this);
+				UdpClientLink link = new UdpClientLink(local, remote, so, UpgradeableUdpSocketSample.this);
 				d.notify(link);
 
 				try {

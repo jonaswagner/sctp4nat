@@ -9,14 +9,12 @@ import java.nio.charset.StandardCharsets;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
-import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4j.connection.SctpDefaultConfig;
 import net.sctp4j.core.SctpInitException;
-import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.connection.UpgradeableUdpSocket;
+import net.sctp4j.origin.Sctp;
 import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;
@@ -29,11 +27,11 @@ public class SampleUdpUpgradeableClient {
 
 	public static void main(String[] args) throws IOException, SctpInitException {
 		
-		InetSocketAddress clientSoAddr = new InetSocketAddress(InetAddress.getByName("192.168.0.104"), 4567);
-		InetSocketAddress serverSoAddr = new InetSocketAddress(InetAddress.getByName("192.168.0.106"), 9876);
+		InetSocketAddress clientSoAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 45678);
+		InetSocketAddress serverSoAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 5689);
 		
-		SctpUtils.init(clientSoAddr.getAddress(), clientSoAddr.getPort(), null);
-		UpgradeableUdpSocket udpSocket = new UpgradeableUdpSocket(clientSoAddr.getPort(),
+		Sctp.init();
+		UpgradeableUdpSocketSample udpSocket = new UpgradeableUdpSocketSample(clientSoAddr.getPort(),
 				clientSoAddr.getAddress());
 		udpSocket.setCb(new SctpDataCallback() {
 

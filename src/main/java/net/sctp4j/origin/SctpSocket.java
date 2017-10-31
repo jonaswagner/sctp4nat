@@ -16,6 +16,7 @@
 package net.sctp4j.origin;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpMapper;
+import net.sctp4j.core.SctpSocketAdapter;
 
 /**
  * SCTP socket implemented using "usrsctp" lib.
@@ -461,12 +463,26 @@ public class SctpSocket {
 				isAccepted = true;
 			}
 		}
+		
+//		SctpSocketAdapter socket = (SctpSocketAdapter) SctpMapper.locate(so.getRemote().getAddress().getHostAddress(), so.getRemote().getPort());
+//		socket.renewTimer();
+//		
+//		if (data.length == "heartbeat".length() && sid == 0 &&  getString(data).equals("heartbeat")) {
+//			logger.info("heartbeat received");
+//			return;
+//		}
 
 		if (dataCallback != null) {
 			dataCallback.onSctpPacket(data, sid, ssn, tsn, ppid, context, flags, so);
 		} else {
 			logger.warn("No dataCallback set, dropping a message from usrsctp");
 		}
+	}
+
+	private String getString(byte[] data) {
+		String current = new String(data, StandardCharsets.UTF_8);
+		current = current.trim();
+		return current;
 	}
 
 	/**

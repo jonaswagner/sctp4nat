@@ -71,7 +71,8 @@ static int SCTP_EVENT_TYPES[]
         SCTP_SEND_FAILED_EVENT,
         SCTP_SENDER_DRY_EVENT,
         SCTP_STREAM_RESET_EVENT,
-        SCTP_SHUTDOWN_EVENT
+        SCTP_SHUTDOWN_EVENT,
+        SCTP_ADDR_UNREACHABLE
     };
 
 /** The <tt>jclass</tt> with name <tt>SCTP_CLASSNAME</tt>. */

@@ -2,6 +2,8 @@ package net.sctp4j.core;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jdeferred.Promise;
@@ -131,5 +133,4 @@ public class SctpMapper {
 		LOG.debug("socketMap cleared");
 
 	}
-
 }

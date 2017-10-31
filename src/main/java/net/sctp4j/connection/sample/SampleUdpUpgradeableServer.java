@@ -8,13 +8,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.connection.UpgradeableUdpSocket;
 import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpDataCallback;
 
@@ -24,11 +22,11 @@ public class SampleUdpUpgradeableServer {
 	
 	public static void main(String[] args) throws UnknownHostException, SocketException, SctpInitException {
 		
-		InetSocketAddress serverSoAddr = new InetSocketAddress(InetAddress.getByName("192.168.0.106"), 9876);
+		InetSocketAddress serverSoAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 5689);
 		
 		SctpUtils.init(serverSoAddr.getAddress(), serverSoAddr.getPort(), null);
 		
-		UpgradeableUdpSocket udpSocket = new UpgradeableUdpSocket(serverSoAddr.getPort(),
+		UpgradeableUdpSocketSample udpSocket = new UpgradeableUdpSocketSample(serverSoAddr.getPort(),
 				serverSoAddr.getAddress());
 		udpSocket.setCb(new SctpDataCallback() {
 

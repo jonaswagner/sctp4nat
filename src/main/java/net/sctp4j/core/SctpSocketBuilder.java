@@ -24,6 +24,7 @@ public class SctpSocketBuilder {
 	private SctpDataCallback cb = null;
 	private NetworkLink link = null;
 	private SctpMapper mapper = null;
+	private boolean isKeepAlive = false;
 	
 	public SctpAdapter build() throws SctpInitException {
 

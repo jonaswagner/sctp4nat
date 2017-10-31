@@ -29,6 +29,7 @@ public class SctpChannel {
 	private InetSocketAddress local;
 	private InetSocketAddress remote;
 	private SctpDataCallback cb;
+	private boolean isKeepAlive = false;
 
 	public Promise<SctpChannelFacade, Exception, UdpClientLink> connect() {
 		Deferred<SctpChannelFacade, Exception, UdpClientLink> d = new DeferredObject<>();
@@ -97,7 +98,7 @@ public class SctpChannel {
 				so.setLink(link);
 				d.notify(link);
 				
-				Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+				Promise<SctpAdapter, Exception, Object> p = so.connect(remote, isKeepAlive);
 
 				p.fail(new FailCallback<Exception>() {
 

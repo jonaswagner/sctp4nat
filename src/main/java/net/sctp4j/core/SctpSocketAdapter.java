@@ -2,14 +2,13 @@ package net.sctp4j.core;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.management.Notification;
-
 import net.sctp4j.origin.SctpNotification;
 import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
@@ -42,6 +41,8 @@ public class SctpSocketAdapter implements SctpAdapter {
 	private SctpMapper mapper;
 	@Getter
 	private NotificationListener l;
+	
+	private Timer connectionTimer;
 
 	public SctpSocketAdapter(final InetSocketAddress local, int localSctpPort, final NetworkLink link,
 			final SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
@@ -52,7 +53,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 			SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
 
 		if (!Sctp.isInitialized()) {
-			throw new SctpInitException("Sctp is currently not initialized! Try init it with SctpUtils.init(...)");
+			throw new SctpInitException("Sctp is currently not initialized! Try init with SctpUtils.init(...)");
 		}
 
 		this.so = Sctp.createSocket(localSctpPort);
@@ -71,7 +72,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 	}
 
 	@Override
-	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote) {
+	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote, boolean keepAlive) {
 		final Deferred<SctpAdapter, Exception, Object> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
 
@@ -94,6 +95,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 							if (notification.toString().indexOf("COMM_UP") >= 0) {
 								countDown.countDown();
 								d.resolve(SctpSocketAdapter.this);
+								connectionTimer = renewTimer();
 							} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
 								LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
 								try {
@@ -105,6 +107,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 								LOG.debug(notification.toString());
 							}
 						}
+						
 					};
 					SctpSocketAdapter.this.setNotificationListener(l);
 					so.connectNative(remote.getPort());
@@ -175,6 +178,9 @@ public class SctpSocketAdapter implements SctpAdapter {
 		return d.promise();
 	}
 
+	/**
+	 * FIXME jwa this call is non-blocking, therefore it should be calling a callback or something similar
+	 */
 	@Override
 	public void shutdownInit() {
 		try {
@@ -231,6 +237,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 	 */
 	@Override
 	public void onConnIn(byte[] data, int offset, int length) {
+		renewTimer();
 		try {
 			this.so.onConnIn(data, offset, length);
 		} catch (IOException e) {
@@ -262,5 +269,22 @@ public class SctpSocketAdapter implements SctpAdapter {
 	@Override
 	public InetSocketAddress getRemote() {
 		return this.remote;
+	}
+	
+	private Timer renewTimer() {
+		if (connectionTimer != null) {
+			connectionTimer.cancel();
+		}
+		Timer newTimer = new Timer(this.toString(), true);
+		newTimer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				SctpSocketAdapter.this.shutdownInit();
+				SctpSocketAdapter.this.close();
+			}
+		}, SctpUtils.SCTP_CONN_TIMEOUT);
+		
+		return newTimer;
 	}
 }

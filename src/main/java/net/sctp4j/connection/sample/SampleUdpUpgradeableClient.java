@@ -52,7 +52,7 @@ public class SampleUdpUpgradeableClient {
 
 			SctpDefaultConfig config = new SctpDefaultConfig();
 			Promise<SctpChannelFacade, Exception, NetworkLink> promise = udpSocket.upgrade(config,
-					clientSoAddr, serverSoAddr);
+					clientSoAddr, serverSoAddr, true);
 
 			promise.done(new DoneCallback<SctpChannelFacade>() {
 

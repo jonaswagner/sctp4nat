@@ -62,7 +62,7 @@ public class SampleClient {
 		UdpClientLink link = new UdpClientLink(local, remote, so);
 		so.setLink(link);
 		
-		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+		Promise<SctpAdapter, Exception, Object> p = so.connect(remote, false);
 		
 		p.done(new DoneCallback<SctpAdapter>() {
 			

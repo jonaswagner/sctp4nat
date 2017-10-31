@@ -19,7 +19,7 @@ public interface SctpUpgradeable {
 	 * @return
 	 */
 	Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(SctpDefaultConfig config, InetSocketAddress local,
-			InetSocketAddress remote);
+			InetSocketAddress remote, boolean isKeepAlive);
 
 	
 }

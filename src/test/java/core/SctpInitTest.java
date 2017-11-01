@@ -1,6 +1,6 @@
 package core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -19,14 +19,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4j.connection.SctpChannel;
+import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.core.SctpChannelFacade;
+import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.UdpClientLink;
 import net.sctp4j.origin.Sctp;
-import net.sctp4j.connection.SctpChannel;
-import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpSocketAdapter;
-import net.sctp4j.core.SctpChannelFacade;
-import net.sctp4j.core.SctpDataCallback;
 
 public class SctpInitTest {
 

@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import javassist.NotFoundException;
 import lombok.Getter;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.origin.SctpNotification;
 import net.sctp4j.origin.SctpSocket;
-import net.sctp4j.origin.SctpSocket.NotificationListener;
 
 public class UdpServerLink implements NetworkLink {
 

@@ -1,15 +1,5 @@
 package net.sctp4j.connection;
 
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import net.sctp4j.core.SctpSocketAdapter;
-
 public class Heartbeat {
 
 //	private static final Logger LOG = LoggerFactory.getLogger(Heartbeat.class);

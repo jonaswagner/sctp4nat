@@ -6,7 +6,6 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.origin.SctpNotification;
 import net.sctp4j.origin.SctpSocket;
 import net.sctp4j.origin.SctpSocket.NotificationListener;

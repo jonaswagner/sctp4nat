@@ -2,12 +2,9 @@ package net.sctp4j.core;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import net.sctp4j.origin.SctpNotification;
 import org.jdeferred.Deferred;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
@@ -19,6 +16,7 @@ import lombok.Setter;
 import net.sctp4j.connection.SctpTimeoutThread;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.origin.Sctp;
+import net.sctp4j.origin.SctpNotification;
 import net.sctp4j.origin.SctpSocket;
 import net.sctp4j.origin.SctpSocket.NotificationListener;
 

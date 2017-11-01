@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
 import net.sctp4j.core.NetworkLink;
-import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.SctpSocketAdapter;

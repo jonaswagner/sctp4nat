@@ -1,6 +1,7 @@
 package connection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.Inet6Address;
@@ -23,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import net.sctp4j.connection.SctpChannel;
 import net.sctp4j.connection.SctpDefaultConfig;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;

@@ -13,11 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4j.connection.SctpDefaultConfig;
-import net.sctp4j.core.SctpInitException;
-import net.sctp4j.origin.Sctp;
 import net.sctp4j.core.NetworkLink;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
+import net.sctp4j.core.SctpInitException;
+import net.sctp4j.origin.Sctp;
 
 public class SampleUdpUpgradeableClient {
 

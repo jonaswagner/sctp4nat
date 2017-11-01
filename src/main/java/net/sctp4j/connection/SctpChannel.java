@@ -111,23 +111,12 @@ public class SctpChannel {
 
 				p.done(new DoneCallback<SctpSocketAdapter>() {
 
-					/**
-					 * There is (at the moment) no mechanism available, which allows to the usrsctp
-					 * library to notify the JNI interface about completing a task like connect.
-					 */
 					@Override
 					public void onDone(SctpSocketAdapter result) {
 						SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 
 							@Override
 							public void run() {
-
-								try {
-									Thread.sleep(config.getConnectPeriodMillis()); // wait for the connection setup
-								} catch (InterruptedException e) {
-									LOG.error("Waiting for connection failed! Cause:" + e.getMessage(), e);
-									releaseAssignedParams(d, so, e);
-								}
 								d.resolve((SctpChannelFacade) so);
 							}
 						});

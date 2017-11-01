@@ -127,7 +127,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 								LOG.error(e.getMessage(), e);
 							}
 						} else {
-							LOG.debug(notification.toString());
+							LOG.info(notification.toString());
 						}
 					}
 					

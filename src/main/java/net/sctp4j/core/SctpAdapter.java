@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import org.jdeferred.Promise;
 
 import net.sctp4j.origin.SctpSocket;
+import net.sctp4j.origin.SctpSocket.NotificationListener;
 
 public interface SctpAdapter extends SctpChannelFacade{
 	void listen();
@@ -15,6 +16,6 @@ public interface SctpAdapter extends SctpChannelFacade{
 	void setSctpDataCallback(SctpDataCallback cb);
 	void setLink(NetworkLink link);
 	InetSocketAddress getRemote();
-	public void setNotificationListener(SctpSocket.NotificationListener l);
+	public void setNotificationListener(NotificationListener l);
 	Promise<Object, Exception, Object> close();
 }

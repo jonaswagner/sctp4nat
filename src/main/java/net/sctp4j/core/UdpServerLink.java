@@ -127,20 +127,17 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	private SctpAdapter setupSocket(final InetAddress localAddress, final int localPort,
 			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) throws SctpInitException {
-		SctpAdapter so = new SctpSocketBuilder().
-				networkLink(UdpServerLink.this).
-				localAddress(localAddress).
-				localPort(localPort).
-				localSctpPort(localPort).
-				sctpDataCallBack(cb).
-				remoteAddress(remoteAddress).
-				remotePort(remotePort).
-				mapper(mapper).
-				build();
+		SctpAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
+				.localPort(localPort).localSctpPort(localPort).sctpDataCallBack(cb).remoteAddress(remoteAddress)
+				.remotePort(remotePort).mapper(mapper).build();
 		so.listen();
 		return so;
 	}
 
+	/**
+	 * Do not call this method while the corresponding {@link SctpSocket} is still
+	 * open!!! This method closes the {@link DatagramSocket}.
+	 */
 	@Override
 	public void close() {
 		this.isShutdown = true;

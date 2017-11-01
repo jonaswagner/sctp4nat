@@ -56,7 +56,7 @@ public class DirectLink
     /**
      * {@inheritDoc}
      */
-    public void onConnOut(final SctpAdapter s, final byte[] packet)
+    public void onConnOut(final SctpChannelFacade s, final byte[] packet)
         throws IOException
     {
         final SctpSocket dest = s == this.a ? this.b : this.a;
@@ -79,6 +79,7 @@ public class DirectLink
 
 	@Override
 	public void close() {
-		// TODO jwa do nothing I guess
+		a.closeNative();
+		b.closeNative();
 	}
 }

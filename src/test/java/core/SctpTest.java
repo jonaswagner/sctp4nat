@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
+import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpMapper;
@@ -63,7 +64,7 @@ public class SctpTest {
 
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-							SctpAdapter so) {
+							SctpChannelFacade so) {
 						LOG.debug("SERVER GOT DATA: " + new String(data, StandardCharsets.UTF_8));
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						so.send(data, 0, data.length, false, sid, (int) ppid);
@@ -125,7 +126,7 @@ public class SctpTest {
 
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-							SctpAdapter so) {
+							SctpChannelFacade so) {
 						LOG.debug("REPLY SUCCESS");
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						comCd.countDown();
@@ -141,7 +142,7 @@ public class SctpTest {
 					}
 				};
 
-				SctpAdapter so = null;
+				SctpSocketAdapter so = null;
 				try {
 					so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
 							.localSctpPort(localSctpPort).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
@@ -158,12 +159,12 @@ public class SctpTest {
 				}
 				so.setLink(link);
 
-				Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+				Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
 
-				p.done(new DoneCallback<SctpAdapter>() {
+				p.done(new DoneCallback<SctpSocketAdapter>() {
 
 					@Override
-					public void onDone(SctpAdapter result) {
+					public void onDone(SctpSocketAdapter result) {
 						SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 
 							@Override

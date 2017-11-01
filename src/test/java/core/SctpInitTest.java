@@ -24,7 +24,7 @@ import net.sctp4j.core.UdpClientLink;
 import net.sctp4j.origin.Sctp;
 import net.sctp4j.connection.SctpChannel;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 
@@ -54,7 +54,7 @@ public class SctpInitTest {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpAdapter so) {
+					SctpChannelFacade so) {
 				LOG.debug("Ignored message: " + new String(data, StandardCharsets.UTF_8));
 			}
 		};
@@ -96,7 +96,7 @@ public class SctpInitTest {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpAdapter so) {
+					SctpChannelFacade so) {
 				LOG.debug("Ignored message: " + new String(data, StandardCharsets.UTF_8));
 			}
 		};

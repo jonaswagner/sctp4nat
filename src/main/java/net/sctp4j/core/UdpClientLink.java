@@ -20,7 +20,7 @@ public class UdpClientLink implements NetworkLink {
 	 * <tt>SctpFacade</tt> instance that is used in this connection.
 	 */
 	@Getter
-	private final SctpAdapter so;
+	private final SctpSocketAdapter so;
 
 	/**
 	 * Udp socket used for transport.
@@ -41,7 +41,7 @@ public class UdpClientLink implements NetworkLink {
 	/**
 	 * Creates new instance of <tt>UdpConnection</tt>.
 	 */
-	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpAdapter so) throws IOException {
+	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so) throws IOException {
 		this.so = so;
 		this.so.setLink(this);
 		this.remote = remote;
@@ -51,7 +51,7 @@ public class UdpClientLink implements NetworkLink {
 		receive(remote, so);
 	}
 	
-	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpAdapter so, final DatagramSocket udpSocket) {
+	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so, final DatagramSocket udpSocket) {
 		this.so = so;
 		this.so.setLink(this);
 		this.remote = remote;
@@ -61,7 +61,7 @@ public class UdpClientLink implements NetworkLink {
 		receive(remote, so);
 	}
 
-	private void receive(final InetSocketAddress remote, final SctpAdapter so) {
+	private void receive(final InetSocketAddress remote, final SctpSocketAdapter so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 			public void run() {
 				try {
@@ -80,7 +80,7 @@ public class UdpClientLink implements NetworkLink {
 	}
 	
 	@Override
-	public void onConnOut(final SctpAdapter so, final byte[] data) throws IOException, NotFoundException {
+	public void onConnOut(final SctpChannelFacade so, final byte[] data) throws IOException, NotFoundException {
 		DatagramPacket packet = new DatagramPacket(data, data.length, this.remote.getAddress(), this.remote.getPort());
 		udpSocket.send(packet);
 	}

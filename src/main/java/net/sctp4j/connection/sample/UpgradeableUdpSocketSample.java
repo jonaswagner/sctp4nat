@@ -23,7 +23,7 @@ import lombok.Setter;
 import net.sctp4j.connection.SctpDefaultConfig;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.core.NetworkLink;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;
@@ -38,7 +38,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocketSample.class);
 
 	private final Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
-	private SctpAdapter so;
+	private SctpSocketAdapter so;
 	private InetSocketAddress remote;
 	
 	@Getter
@@ -175,7 +175,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 							.localSctpPort(local.getPort()).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
 							.mapper(SctpUtils.getMapper()).sctpDataCallBack(cb).build();
 				} catch (SctpInitException e1) {
-					LOG.error("Could not create SctpAdapter!");
+					LOG.error("Could not create SctpSocketAdapter!");
 					d.reject(e1);
 				}
 
@@ -199,11 +199,11 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	}
 	
 	private void setUpSctp() {
-		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+		Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
 
-		p.done(new DoneCallback<SctpAdapter>() {
+		p.done(new DoneCallback<SctpSocketAdapter>() {
 			@Override
-			public void onDone(SctpAdapter result) {
+			public void onDone(SctpSocketAdapter result) {
 				isUgrading = false;
 				LOG.debug("Sctp connection success!");
 				LOG.debug("Upgrade procedure successfully finished. This udp socket is now connected via sctp!");

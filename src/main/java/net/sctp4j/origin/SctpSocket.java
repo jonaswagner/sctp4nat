@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
 import net.sctp4j.core.NetworkLink;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.SctpSocketAdapter;
@@ -455,7 +455,7 @@ public class SctpSocket {
 	 * @param flags
 	 * @param so
 	 */
-	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpAdapter so) {
+	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpSocketAdapter so) {
 		
 		synchronized (this) {
 			if (!isAccepted) {
@@ -501,7 +501,7 @@ public class SctpSocket {
 	 * @param so
 	 */
 	void onSctpInboundPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpAdapter so) {
+			SctpSocketAdapter so) {
 		if ((flags & Sctp.MSG_NOTIFICATION) != 0) {
 			onNotification(SctpNotification.parse(data));
 		} else {

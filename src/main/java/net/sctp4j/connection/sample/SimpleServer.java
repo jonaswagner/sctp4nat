@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 
 import net.sctp4j.connection.SctpDefaultConfig;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpPorts;
@@ -21,8 +20,7 @@ public class SimpleServer {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpAdapter so) {
-				SctpChannelFacade facade = (SctpChannelFacade) so;
+					SctpChannelFacade so) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
 				try {
@@ -30,7 +28,7 @@ public class SimpleServer {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				facade.send(data, false, sid, (int) ppid);
+				so.send(data, false, sid, (int) ppid);
 			}
 		};
 		

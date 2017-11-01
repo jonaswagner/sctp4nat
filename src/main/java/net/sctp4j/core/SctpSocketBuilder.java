@@ -26,7 +26,7 @@ public class SctpSocketBuilder {
 	private NetworkLink link = null;
 	private SctpMapper mapper = null;
 	
-	public SctpAdapter build() throws SctpInitException {
+	public SctpSocketAdapter build() throws SctpInitException {
 
 		if (localSctpPort == -1) {
 			localSctpPort = SctpPorts.getInstance().generateDynPort();
@@ -35,7 +35,7 @@ public class SctpSocketBuilder {
 		if (cb == null) {
 			cb = new SctpDataCallback() {
 				@Override
-				public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpAdapter so) {
+				public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpChannelFacade so) {
 					//do nothing
 				}
 			};
@@ -48,15 +48,15 @@ public class SctpSocketBuilder {
 		
 
 		InetSocketAddress local = new InetSocketAddress(localAddress, localPort);
-		SctpAdapter candidateSo = null;
+		SctpSocketAdapter candidateSo = null;
 		if (remoteAddress == null || remotePort == -1) {
-			candidateSo = (SctpAdapter) new SctpSocketAdapter(local, localSctpPort, link, cb, mapper);
+			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(local, localSctpPort, link, cb, mapper);
 		} else {
 			InetSocketAddress remote = new InetSocketAddress(remoteAddress, remotePort);
-			candidateSo = (SctpAdapter) new SctpSocketAdapter(local, localSctpPort, remote, link, cb, mapper);
+			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(local, localSctpPort, remote, link, cb, mapper);
 		}
 
-		final SctpAdapter so = candidateSo;
+		final SctpSocketAdapter so = candidateSo;
 		so.setNotificationListener(new NotificationListener() {
 			
 			@Override

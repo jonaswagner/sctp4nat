@@ -22,7 +22,7 @@ import net.sctp4j.origin.Sctp;
 import net.sctp4j.origin.SctpSocket;
 import net.sctp4j.origin.SctpSocket.NotificationListener;
 
-public class SctpSocketAdapter implements SctpAdapter {
+public class SctpSocketAdapter implements SctpChannelFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpSocketAdapter.class);
 	private static final int NUMBER_OF_CONNECT_TASKS = 1;
@@ -72,9 +72,8 @@ public class SctpSocketAdapter implements SctpAdapter {
 		so.setNotificationListener(l);
 	}
 
-	@Override
-	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote) {
-		final Deferred<SctpAdapter, Exception, Object> d = new DeferredObject<>();
+	public Promise<SctpSocketAdapter, Exception, Object> connect(final InetSocketAddress remote) {
+		final Deferred<SctpSocketAdapter, Exception, Object> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
 
 		class SctpConnectThread extends Thread {
@@ -100,7 +99,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 				}
 			}
 
-			private void addNotificationListener(final Deferred<SctpAdapter, Exception, Object> d,
+			private void addNotificationListener(final Deferred<SctpSocketAdapter, Exception, Object> d,
 					final CountDownLatch countDown) {
 				l = new NotificationListener() {
 
@@ -234,7 +233,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 
 	}
 
-	@Override
 	public void listen() {
 		try {
 			this.so.listenNative();
@@ -243,7 +241,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 		}
 	}
 
-	@Override
 	public boolean containsSctpSocket(SctpSocket so) {
 		return this.so.equals(so);
 	}
@@ -252,7 +249,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 	 * This method is an indirection for SctpSocket, which needs to be unaccessible
 	 * for a third party user.
 	 */
-	@Override
 	public void onConnIn(byte[] data, int offset, int length) {
 		try {
 			this.so.onConnIn(data, offset, length);
@@ -261,7 +257,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 		}
 	}
 
-	@Override
 	public boolean accept() {
 		try {
 			return so.acceptNative();
@@ -276,7 +271,6 @@ public class SctpSocketAdapter implements SctpAdapter {
 		so.setDataCallbackNative(cb);
 	}
 
-	@Override
 	public void setLink(NetworkLink link) {
 		so.setLink(link);
 		this.link = link;

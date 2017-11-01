@@ -1,5 +1,13 @@
 package net.sctp4j.core;
 
+/**
+ * This class is taken from net.tomp2p.utils. No changes were made.
+ * 
+ * @author Thomas Bocek
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class Pair<K, V> {
 
 	private final K element0;

@@ -11,7 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
+import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.SctpMapper;
@@ -41,15 +42,15 @@ public class SampleClient {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpAdapter so) {
+					SctpChannelFacade so) {
 				System.out.println("I WAS HERE");
 				SctpSocketAdapter realSo = (SctpSocketAdapter) so;
-//				realSo.shutdownInit();
-//				realSo.close();
+				realSo.shutdownInit();
+				realSo.close();
 			}
 		};
 
-		SctpAdapter so = new SctpSocketBuilder().
+		SctpSocketAdapter so = new SctpSocketBuilder().
 				localAddress(local.getAddress()).
 				localPort(local.getPort()).
 				localSctpPort(localSctpPort).
@@ -62,12 +63,12 @@ public class SampleClient {
 		UdpClientLink link = new UdpClientLink(local, remote, so);
 		so.setLink(link);
 		
-		Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+		Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
 		
-		p.done(new DoneCallback<SctpAdapter>() {
+		p.done(new DoneCallback<SctpSocketAdapter>() {
 			
 			@Override
-			public void onDone(SctpAdapter result) {
+			public void onDone(SctpSocketAdapter result) {
 				SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 					
 					@Override

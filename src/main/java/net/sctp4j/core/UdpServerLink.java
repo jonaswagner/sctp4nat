@@ -70,7 +70,7 @@ public class UdpServerLink implements NetworkLink {
 
 			@Override
 			public void run() {
-				SctpAdapter so = null;
+				SctpSocketAdapter so = null;
 
 				while (!isShutdown) {
 					byte[] buff = new byte[2048];
@@ -104,7 +104,7 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	@Override
-	public void onConnOut(SctpAdapter so, byte[] data) throws IOException, NotFoundException {
+	public void onConnOut(SctpChannelFacade so, byte[] data) throws IOException, NotFoundException {
 		DatagramPacket packet = new DatagramPacket(data, data.length, so.getRemote());
 		udpSocket.send(packet);
 	}
@@ -122,12 +122,12 @@ public class UdpServerLink implements NetworkLink {
 	 *            {@link Integer}
 	 * @param cb
 	 *            {@link SctpDataCallback}
-	 * @return so {@link SctpAdapter}
+	 * @return so {@link SctpSocketAdapter}
 	 * @throws SctpInitException
 	 */
-	private SctpAdapter setupSocket(final InetAddress localAddress, final int localPort,
+	private SctpSocketAdapter setupSocket(final InetAddress localAddress, final int localPort,
 			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) throws SctpInitException {
-		SctpAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
+		SctpSocketAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
 				.localPort(localPort).localSctpPort(localPort).sctpDataCallBack(cb).remoteAddress(remoteAddress)
 				.remotePort(remotePort).mapper(mapper).build();
 		so.listen();

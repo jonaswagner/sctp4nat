@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import net.sctp4j.connection.SctpChannel;
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpPorts;
@@ -55,7 +55,7 @@ public class SctpChannelTest {
 
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-							SctpAdapter so) {
+							SctpChannelFacade so) {
 						LOG.debug("SERVER GOT DATA: " + new String(data, StandardCharsets.UTF_8));
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						so.send(data, 0, data.length, false, sid, (int) ppid);
@@ -126,7 +126,7 @@ public class SctpChannelTest {
 
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-							SctpAdapter so) {
+							SctpChannelFacade so) {
 						LOG.debug("REPLY SUCCESS");
 						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
 						comCd.countDown();

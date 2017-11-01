@@ -9,7 +9,6 @@ import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 
 import net.sctp4j.connection.SctpChannel;
-import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpPorts;
@@ -29,7 +28,7 @@ public class SimpleClient {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpAdapter so) {
+					SctpChannelFacade so) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
 				System.out.println("Now closing channel");

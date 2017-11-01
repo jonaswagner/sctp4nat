@@ -9,7 +9,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
+import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpMapper;
 import net.sctp4j.core.UdpServerLink;
@@ -73,7 +74,7 @@ public class SctpServerTest {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpAdapter so) {
+					SctpChannelFacade so) {
 				//doNothing
 			}
 		};

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
-import net.sctp4j.core.SctpAdapter;
+import net.sctp4j.core.SctpSocketAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 import net.sctp4j.core.SctpInitException;
@@ -59,7 +59,7 @@ public class SctpChannel {
 					cb = config.getCb();
 				}
 
-				SctpAdapter socket = null;
+				SctpSocketAdapter socket = null;
 				try {
 					socket = new SctpSocketBuilder().
 							localAddress(local.getAddress()).
@@ -76,11 +76,11 @@ public class SctpChannel {
 				}
 				
 				if (socket == null) {
-					d.reject(new NullPointerException("Could not create SctpAdapter!"));
+					d.reject(new NullPointerException("Could not create SctpSocketAdapter!"));
 					return;
 				} 
 				
-				final SctpAdapter so = socket;
+				final SctpSocketAdapter so = socket;
 
 				UdpClientLink link = null;
 				try {
@@ -98,7 +98,7 @@ public class SctpChannel {
 				so.setLink(link);
 				d.notify(link);
 				
-				Promise<SctpAdapter, Exception, Object> p = so.connect(remote);
+				Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
 
 				p.fail(new FailCallback<Exception>() {
 
@@ -109,14 +109,14 @@ public class SctpChannel {
 					}
 				});
 
-				p.done(new DoneCallback<SctpAdapter>() {
+				p.done(new DoneCallback<SctpSocketAdapter>() {
 
 					/**
 					 * There is (at the moment) no mechanism available, which allows to the usrsctp
 					 * library to notify the JNI interface about completing a task like connect.
 					 */
 					@Override
-					public void onDone(SctpAdapter result) {
+					public void onDone(SctpSocketAdapter result) {
 						SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 
 							@Override
@@ -135,7 +135,7 @@ public class SctpChannel {
 				});
 			}
 
-			private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, UdpClientLink> d, SctpAdapter so,
+			private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, UdpClientLink> d, SctpSocketAdapter so,
 					Exception e) {
 				d.reject(e);
 				SctpPorts.getInstance().removePort(so);

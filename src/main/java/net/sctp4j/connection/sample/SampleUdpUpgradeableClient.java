@@ -16,7 +16,6 @@ import net.sctp4j.connection.SctpDefaultConfig;
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.origin.Sctp;
 import net.sctp4j.core.NetworkLink;
-import net.sctp4j.core.SctpAdapter;
 import net.sctp4j.core.SctpChannelFacade;
 import net.sctp4j.core.SctpDataCallback;
 
@@ -37,7 +36,7 @@ public class SampleUdpUpgradeableClient {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context,
-					int flags, SctpAdapter so) {
+					int flags, SctpChannelFacade so) {
 				LOG.debug("CLIENT GOT MESSAGE: "+ new String(data, StandardCharsets.UTF_8));
 				LOG.debug("REPLY SUCCESS");
 			}

@@ -1,4 +1,4 @@
-package net.sctp4j.connection.sample;
+package net.sctp4j.sample.simple;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;

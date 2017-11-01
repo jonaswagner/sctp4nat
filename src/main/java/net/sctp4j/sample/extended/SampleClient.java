@@ -1,4 +1,4 @@
-package net.sctp4j.sample;
+package net.sctp4j.sample.extended;
 
 import java.io.IOException;
 import java.net.InetAddress;

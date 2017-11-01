@@ -529,7 +529,7 @@ public class SctpSocket {
 				link.onConnOut(SctpMapper.locate(this), packet);
 				ret = 0;
 			} catch (IOException | NotFoundException e) {
-				logger.error("Error while sending packet trough the link: " + link, e);
+				logger.error("Error while sending packet through the link: " + link, e);
 			}
 		}
 		return ret;

@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.junit.After;
 import org.junit.Test;
@@ -37,15 +38,16 @@ public class AddrUnreachableTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AddrUnreachableTest.class);
 	
+	Thread server;
+	Thread client;
+	
 	@Test
 	public void lostConnectionTest() {
-
-		Thread server;
-		Thread client;
 
 		CountDownLatch serverSetup = new CountDownLatch(1);
 		CountDownLatch clientMessageExchange = new CountDownLatch(1);
 		CountDownLatch addrUnreachable = new CountDownLatch(1);
+		CountDownLatch serverSocketClosed = new CountDownLatch(1);
 
 		InetAddress localhostCandidate = null;
 		try {
@@ -70,17 +72,27 @@ public class AddrUnreachableTest {
 						SctpChannelFacade facade = (SctpChannelFacade) so;
 						System.out.println("I WAS HERE");
 						System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
-						try {
-							Thread.sleep(config.getConnectPeriodMillis());
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
 						facade.send(data, false, sid, (int) ppid);
 						
 						try {
-							clientMessageExchange.wait(5000l);
-							SctpUtils.getLink().close(); //fake crash without 
-							facade.close(); 
+							clientMessageExchange.await(5, TimeUnit.SECONDS);
+							SctpUtils.getLink().close(); //fake crash
+							Promise<Object, Exception, Object> p = facade.close();
+							p.done(new DoneCallback<Object>() {
+
+								@Override
+								public void onDone(Object result) {
+									serverSocketClosed.countDown();
+								}
+							});
+							
+							p.fail(new FailCallback<Exception>() {
+								
+								@Override
+								public void onFail(Exception result) {
+									fail(result.getMessage());
+								}
+							});
 						} catch (InterruptedException e) {
 							fail(e.getMessage());
 						}
@@ -124,17 +136,39 @@ public class AddrUnreachableTest {
 							public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
 								if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0){
 									LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
-									try {
-										so.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
-										addrUnreachable.countDown();
-									} catch (InterruptedException e) {
-										LOG.error(e.getMessage(), e);
-									}
+									Promise<Object, Exception, Object> p = so.close();
+									p.done(new DoneCallback<Object>() {
+
+										@Override
+										public void onDone(Object result) {
+											addrUnreachable.countDown();
+										}
+									});
+									
+									p.fail(new FailCallback<Exception>() {
+
+										@Override
+										public void onFail(Exception result) {
+											fail(result.getMessage());
+										}
+									});
 								} else {
 									LOG.debug(notification.toString());
 								}
 							}
 						});
+						
+						try {
+							serverSocketClosed.await(5, TimeUnit.SECONDS);
+						} catch (InterruptedException e) {
+							fail(e.getMessage());
+						}
+						
+						if (serverSocketClosed.getCount()>0) {
+							fail("serverSocket was not closed!");
+						}
+						
+						server.interrupt();
 					}
 				};
 
@@ -170,6 +204,8 @@ public class AddrUnreachableTest {
 	
 	@After
 	public void tearDown() throws IOException {
+		server.interrupt();
+		client.interrupt();
 		Sctp.finish();
 	}
 }

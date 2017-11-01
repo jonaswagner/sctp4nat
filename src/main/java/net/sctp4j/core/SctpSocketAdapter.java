@@ -76,7 +76,7 @@ public class SctpSocketAdapter implements SctpAdapter {
 	public Promise<SctpAdapter, Exception, Object> connect(final InetSocketAddress remote) {
 		final Deferred<SctpAdapter, Exception, Object> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
-		
+
 		class SctpConnectThread extends Thread {
 			@Override
 			public void run() {
@@ -106,31 +106,32 @@ public class SctpSocketAdapter implements SctpAdapter {
 
 					@Override
 					public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+						LOG.debug(notification.toString());
 						if (notification.toString().indexOf("COMM_UP") >= 0) {
 							countDown.countDown();
 							d.resolve(SctpSocketAdapter.this);
 						} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
-							//TODO jwa make a clean shutdown possible closing the socket prevents any SHUTDOWN ACK to be sent...
+							// TODO jwa make a clean shutdown possible closing the socket prevents any
+							// SHUTDOWN ACK to be sent...
 							LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
-							try {
-								SctpSocketAdapter.this.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
-								d.reject(new Exception("client was forced to shutdown because of shutdown request from server!"));
-							} catch (InterruptedException e) {
-								LOG.error(e.getMessage(), e);
-								d.reject(e);
-							}
-						} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0){
+							SctpSocketAdapter.this.close();
+							d.reject(new Exception(
+									"we are forced to shutdown because of shutdown request from server!"));
+						} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0) {
 							LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
-							try {
-								SctpSocketAdapter.this.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
-							} catch (InterruptedException e) {
-								LOG.error(e.getMessage(), e);
-							}
-						} else {
-							LOG.info(notification.toString());
+							SctpSocketAdapter.this.close();
+							d.reject(new Exception(
+									"we are forced to close the connection because the remote is not answering! (remote: "
+											+ remote.getAddress().getHostAddress() + ":" + remote.getPort() + ")"));
+						} else if (notification.toString().indexOf("COMM_LOST") >= 0) {
+							LOG.error("Communication aborted! Now shutting down the udp connection...");
+							SctpSocketAdapter.this.close();
+							d.reject(new Exception(
+									"we are forced to close the connection because we lost the connection to remote: "
+											+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
 						}
 					}
-					
+
 				};
 			}
 		}
@@ -194,7 +195,8 @@ public class SctpSocketAdapter implements SctpAdapter {
 	}
 
 	/**
-	 * FIXME jwa this call is non-blocking, therefore it should be calling a callback or something similar
+	 * FIXME jwa this call is non-blocking, therefore it should be calling a
+	 * callback or something similar
 	 */
 	@Override
 	public void shutdownInit() {
@@ -284,5 +286,5 @@ public class SctpSocketAdapter implements SctpAdapter {
 	public InetSocketAddress getRemote() {
 		return this.remote;
 	}
-	
+
 }

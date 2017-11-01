@@ -61,22 +61,16 @@ public class SctpSocketBuilder {
 			
 			@Override
 			public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+				LOG.debug(notification.toString());
 				if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
-					try {
-						so.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
-					} catch (InterruptedException e) {
-						LOG.error(e.getMessage(), e);
-					}
+					so.close();
 				} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0){
 					LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
-					try {
-						so.close().wait(SctpUtils.SHUTDOWN_TIMEOUT);
-					} catch (InterruptedException e) {
-						LOG.error(e.getMessage(), e);
-					}
-				} else {
-					LOG.debug(notification.toString());
-				}
+					so.close();
+				}  else if (notification.toString().indexOf("COMM_LOST") >= 0){
+					LOG.error("Communication aborted! Now shutting down the udp connection...");
+					so.close();
+				} 
 			}
 		});
 		

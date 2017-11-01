@@ -33,7 +33,7 @@ public class SimpleClient {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
 				System.out.println("Now closing channel");
-//				so.close();
+				so.close();
 			}
 		};
 

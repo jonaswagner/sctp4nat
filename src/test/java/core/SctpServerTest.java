@@ -32,6 +32,11 @@ public class SctpServerTest {
     }
 
     @Test
+    public void testAll() throws Exception {
+    	simpleSetUpTest();
+    	extendedSetUpTest();
+    }
+    
     public void simpleSetUpTest() throws Exception {
     	CountDownLatch simpleSetUpTest = new CountDownLatch(1);
 		SctpUtils.init(local.getAddress(), local.getPort(), null);
@@ -59,7 +64,6 @@ public class SctpServerTest {
 		}
     }
     
-    @Test
     public void extendedSetUpTest() throws Exception {
         CountDownLatch extendedSetUpTest = new CountDownLatch(1);
     	

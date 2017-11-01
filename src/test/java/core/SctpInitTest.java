@@ -2,6 +2,7 @@ package core;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4j.core.SctpInitException;
 import net.sctp4j.core.UdpClientLink;
+import net.sctp4j.origin.Sctp;
 import net.sctp4j.connection.SctpChannel;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.core.SctpAdapter;
@@ -125,9 +127,8 @@ public class SctpInitTest {
 	}
 	
 	@After
-	public void tearDown() throws InterruptedException {
-		Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
-		p.wait(5000);
+	public void tearDown() throws InterruptedException, IOException {
+		Sctp.finish();
 	}
 	
 }

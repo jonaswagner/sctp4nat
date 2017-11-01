@@ -1,5 +1,6 @@
 package net.sctp4j.core;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,6 +73,12 @@ public class SctpMapper {
 		}
 	}
 
+	/**
+	 * This method locates a {@link SctpSocketAdapter} object given the remote {@link InetAddress} and port.
+	 * @param remoteAddress
+	 * @param remotePort
+	 * @return {@link SctpSocketAdapter}
+	 */
 	public synchronized static SctpSocketAdapter locate(final String remoteAddress, final int remotePort) {
 		if (isShutdown) {
 			return null;
@@ -90,6 +97,13 @@ public class SctpMapper {
 		return null;
 	}
 
+	/**
+	 * This method locates a {@link SctpSocketAdapter} object given a {@link SctpSocket}.
+	 * 
+	 * @param remoteAddress
+	 * @param remotePort
+	 * @return {@link SctpSocketAdapter}
+	 */
 	public synchronized static SctpSocketAdapter locate(final SctpSocket sctpSocket) {
 		if (isShutdown) {
 			return null;
@@ -110,6 +124,9 @@ public class SctpMapper {
 		}
 	}
 
+	/**
+	 * This method shuts down all remaining connections and closes them.
+	 */
 	public void shutdown() {
 		isShutdown = true;
 

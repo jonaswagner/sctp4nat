@@ -16,13 +16,21 @@ import lombok.Getter;
 import net.sctp4j.connection.SctpUtils;
 import net.sctp4j.origin.SctpSocket;
 
+/**
+ * @author Jonas Wagner
+ * 
+ *         This class holds the common {@link DatagramSocket} for all incoming
+ *         SCTP connection attempts. By default it should be using port 9899
+ *         (default SCTP via UDP port).
+ *
+ */
 public class UdpServerLink implements NetworkLink {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UdpServerLink.class);
 	private final SctpMapper mapper;
 
 	/**
-	 * Udp socket used for transport.
+	 * UDP socket used for transport.
 	 */
 	private final DatagramSocket udpSocket;
 
@@ -31,6 +39,9 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	private boolean isShutdown = false;
 
+	/**
+	 * UDP port used.
+	 */
 	@Getter
 	private int port = -1;
 
@@ -126,9 +137,13 @@ public class UdpServerLink implements NetworkLink {
 	 */
 	private SctpSocketAdapter setupSocket(final InetAddress localAddress, final int localPort,
 			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb) throws SctpInitException {
-		SctpSocketAdapter so = new SctpSocketBuilder().networkLink(UdpServerLink.this).localAddress(localAddress)
-				.localPort(localPort).localSctpPort(localPort).sctpDataCallBack(cb).remoteAddress(remoteAddress)
-				.remotePort(remotePort).mapper(mapper).build();
+		SctpSocketAdapter so = new SctpSocketBuilder()
+				.networkLink(UdpServerLink.this)
+				.localSctpPort(localPort)
+				.sctpDataCallBack(cb)
+				.remoteAddress(remoteAddress)
+				.remotePort(remotePort)
+				.mapper(mapper).build();
 		so.listen();
 		return so;
 	}

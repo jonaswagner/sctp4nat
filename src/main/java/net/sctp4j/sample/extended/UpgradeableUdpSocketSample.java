@@ -171,9 +171,12 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 			public void run() {
 
 				try {
-					so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
-							.localSctpPort(local.getPort()).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
-							.mapper(SctpUtils.getMapper()).sctpDataCallBack(cb).build();
+					so = new SctpSocketBuilder()
+							.localSctpPort(local.getPort())
+							.remoteAddress(remote.getAddress())
+							.remotePort(remote.getPort())
+							.mapper(SctpUtils.getMapper())
+							.sctpDataCallBack(cb).build();
 				} catch (SctpInitException e1) {
 					LOG.error("Could not create SctpSocketAdapter!");
 					d.reject(e1);

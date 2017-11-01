@@ -145,9 +145,12 @@ public class SctpTest {
 
 				SctpSocketAdapter so = null;
 				try {
-					so = new SctpSocketBuilder().localAddress(local.getAddress()).localPort(local.getPort())
-							.localSctpPort(localSctpPort).remoteAddress(remote.getAddress()).remotePort(remote.getPort())
-							.sctpDataCallBack(cb).mapper(mapper).build();
+					so = new SctpSocketBuilder()
+							.localSctpPort(localSctpPort)
+							.remoteAddress(remote.getAddress())
+							.remotePort(remote.getPort())
+							.sctpDataCallBack(cb).mapper(mapper)
+							.build();
 				} catch (SctpInitException e2) {
 					e2.printStackTrace();
 				}

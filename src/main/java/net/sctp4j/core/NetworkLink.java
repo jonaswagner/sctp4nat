@@ -26,7 +26,7 @@ import net.sctp4j.origin.SctpSocket;
  * FIXME: introduce offset and length parameters in order to be able to
  *        re-use single buffer instance
  *        
- * Modified slighly by Jonas Wagner
+ * Modified slighly by Jonas Wagner (added {@link SctpChannelFacade} and the close() method.
  *
  * @author Pawel Domas
  * @author Jonas Wagner
@@ -42,8 +42,11 @@ public interface NetworkLink
      * @throws IOException in case of transport error.
      * @throws NotFoundException 
      */
-    public void onConnOut(final SctpChannelFacade so, final byte[] packet)
+    void onConnOut(final SctpChannelFacade so, final byte[] packet)
         throws IOException, NotFoundException;
 
-	public void close();
+    /**
+     * This method initiates the shutdown of the {@link NetworkLink}.
+     */
+	void close();
 }

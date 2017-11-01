@@ -10,6 +10,11 @@ import net.sctp4j.origin.SctpNotification;
 import net.sctp4j.origin.SctpSocket;
 import net.sctp4j.origin.SctpSocket.NotificationListener;
 
+/**
+ * This class helps instantiating a clean {@link SctpSocketAdapter}. 
+ * @author root
+ *
+ */
 public class SctpSocketBuilder {
 
 	//TODO jwa implement all possible variables and parameters for a given SCTP connection
@@ -17,8 +22,6 @@ public class SctpSocketBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(SctpSocketBuilder.class);
 
 	private int localSctpPort = -1;
-	private int localPort = -1;
-	private InetAddress localAddress = null;
 	private int remotePort = -1;
 	private InetAddress remoteAddress = null;
 	private SctpDataCallback cb = null;
@@ -44,15 +47,13 @@ public class SctpSocketBuilder {
 			LOG.error("No mapper added! You need a mapper to create a new SctpFacade!");
 			return null;
 		}
-		
 
-		InetSocketAddress local = new InetSocketAddress(localAddress, localPort);
 		SctpSocketAdapter candidateSo = null;
 		if (remoteAddress == null || remotePort == -1) {
-			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(local, localSctpPort, link, cb, mapper);
+			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(localSctpPort, link, cb, mapper);
 		} else {
 			InetSocketAddress remote = new InetSocketAddress(remoteAddress, remotePort);
-			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(local, localSctpPort, remote, link, cb, mapper);
+			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(localSctpPort, remote, link, cb, mapper);
 		}
 
 		final SctpSocketAdapter so = candidateSo;
@@ -76,16 +77,6 @@ public class SctpSocketBuilder {
 		return so;
 	}
 
-	public SctpSocketBuilder localPort(int localPort) {
-		if (isInRange(localPort)) {
-			this.localPort = localPort;
-		} else {
-			LOG.error("Port is out of range (possible range: 0-65535)!");
-			return null;
-		}
-		return this;
-	}
-
 	public SctpSocketBuilder localSctpPort(int localSctpPort) {
 		if (isInRange(localSctpPort)) {
 			this.localSctpPort = localSctpPort;
@@ -100,14 +91,6 @@ public class SctpSocketBuilder {
 		return localPort >= 0 && localPort < SctpPorts.MAX_PORT;
 	}
 
-	public SctpSocketBuilder localAddress(InetAddress localAddress) {
-		if (localAddress != null) {
-			this.localAddress = localAddress;
-		} else {
-			LOG.error("Null can't be added as localAddress!");
-		}
-		return this;
-	}
 
 	public SctpSocketBuilder remotePort(int remotePort) {
 		if (isInRange(remotePort)) {

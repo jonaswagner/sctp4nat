@@ -62,8 +62,6 @@ public class SctpChannel {
 				SctpSocketAdapter socket = null;
 				try {
 					socket = new SctpSocketBuilder().
-							localAddress(local.getAddress()).
-							localPort(local.getPort()).
 							remoteAddress(remote.getAddress()).
 							remotePort(remote.getPort()).
 							sctpDataCallBack(cb).

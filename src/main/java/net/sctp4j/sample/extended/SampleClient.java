@@ -50,8 +50,6 @@ public class SampleClient {
 		};
 
 		SctpSocketAdapter so = new SctpSocketBuilder().
-				localAddress(local.getAddress()).
-				localPort(local.getPort()).
 				localSctpPort(localSctpPort).
 				remoteAddress(remote.getAddress()).
 				remotePort(remote.getPort()).

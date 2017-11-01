@@ -1,6 +1,7 @@
 package net.sctp4j.core;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -30,19 +31,18 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	 * The corresponding native {@link SctpSocket}
 	 */
 	private final SctpSocket so;
-	private final InetSocketAddress local;
 	private final SctpDataCallback cb;
 	private NetworkLink link;
 	private InetSocketAddress remote;
 	private SctpMapper mapper;
 	private NotificationListener l;
 
-	public SctpSocketAdapter(final InetSocketAddress local, int localSctpPort, final NetworkLink link,
+	public SctpSocketAdapter(final int localSctpPort, final NetworkLink link,
 			final SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
-		this(local, localSctpPort, null, link, cb, mapper);
+		this(localSctpPort, null, link, cb, mapper);
 	}
 
-	public SctpSocketAdapter(InetSocketAddress local, int localSctpPort, InetSocketAddress remote, NetworkLink link,
+	public SctpSocketAdapter(final int localSctpPort, InetSocketAddress remote, NetworkLink link,
 			SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
 
 		if (!Sctp.isInitialized()) {
@@ -52,7 +52,6 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 		this.so = Sctp.createSocket(localSctpPort);
 		this.so.setLink(link); // forwards all onConnOut to the corresponding link
 		this.link = link;
-		this.local = local;
 		this.remote = remote;
 		this.so.setDataCallbackNative(cb);
 		this.cb = cb;

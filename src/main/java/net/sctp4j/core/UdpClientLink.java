@@ -12,6 +12,13 @@ import javassist.NotFoundException;
 import lombok.Getter;
 import net.sctp4j.connection.SctpUtils;
 
+/**
+ * @author Jonas Wagner
+ * 
+ *         This class holds the {@link DatagramSocket} the outgoing
+ *         SCTP connection attempts.
+ *
+ */
 public class UdpClientLink implements NetworkLink {
 
 	private final static Logger LOG = LoggerFactory.getLogger(UdpClientLink.class);
@@ -37,11 +44,12 @@ public class UdpClientLink implements NetworkLink {
 	 * Trigger to end the wrapper thread.
 	 */
 	private boolean isShutdown = false;
-	
+
 	/**
-	 * Creates new instance of <tt>UdpConnection</tt>.
+	 * Creates new instance of <tt>UdpClientLink</tt>.
 	 */
-	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so) throws IOException {
+	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so)
+			throws IOException {
 		this.so = so;
 		this.so.setLink(this);
 		this.remote = remote;
@@ -50,17 +58,28 @@ public class UdpClientLink implements NetworkLink {
 		// Listening thread
 		receive(remote, so);
 	}
-	
-	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so, final DatagramSocket udpSocket) {
+
+	/**
+	 * Do not use this constructor without a valid {@link DatagramSocket}! Creates
+	 * new instance of <tt>UdpClientLink</tt>.
+	 */
+	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so,
+			final DatagramSocket udpSocket) {
 		this.so = so;
 		this.so.setLink(this);
 		this.remote = remote;
 		this.udpSocket = udpSocket;
-		
-		//Listening thread
+
+		// Listening thread
 		receive(remote, so);
 	}
 
+	/**
+	 * Forwards the UDP packets to the native counterpart.
+	 * @param remote
+	 * 			{@link SctpSocketAdapter}
+	 * @param so
+	 */
 	private void receive(final InetSocketAddress remote, final SctpSocketAdapter so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 			public void run() {
@@ -74,11 +93,12 @@ public class UdpClientLink implements NetworkLink {
 				} catch (IOException e) {
 					LOG.error(e.getMessage());
 				}
-				LOG.debug("Link shutdown, closing udp connection to " + remote.getHostString() + ":" + remote.getPort());
+				LOG.debug(
+						"Link shutdown, closing udp connection to " + remote.getHostString() + ":" + remote.getPort());
 			}
 		});
 	}
-	
+
 	@Override
 	public void onConnOut(final SctpChannelFacade so, final byte[] data) throws IOException, NotFoundException {
 		DatagramPacket packet = new DatagramPacket(data, data.length, this.remote.getAddress(), this.remote.getPort());
@@ -90,6 +110,5 @@ public class UdpClientLink implements NetworkLink {
 		this.isShutdown = true;
 		this.udpSocket.close();
 	}
-
 
 }

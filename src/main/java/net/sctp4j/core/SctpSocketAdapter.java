@@ -1,7 +1,6 @@
 package net.sctp4j.core;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -12,38 +11,93 @@ import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.sctp4j.connection.SctpTimeoutThread;
 import net.sctp4j.connection.SctpUtils;
+import net.sctp4j.origin.JNIUtils;
 import net.sctp4j.origin.Sctp;
 import net.sctp4j.origin.SctpNotification;
 import net.sctp4j.origin.SctpSocket;
 import net.sctp4j.origin.SctpSocket.NotificationListener;
 
+/**
+ * This class implements features from {@link SctpChannelFacade} and
+ * {@link SctpSocket}. It is meant to wrap and shield the original classes
+ * ({@link Sctp}, {@link SctpSocket}, {@link SctpNotification},
+ * {@link JNIUtils}) provided by sctp4j from changing too much code.
+ * 
+ * <br>
+ * <br>
+ * This class provides the user with all five service primitives, which are
+ * connect, disconnect, send, reply and close.
+ * 
+ * @author Jonas Wagner
+ *
+ */
 public class SctpSocketAdapter implements SctpChannelFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpSocketAdapter.class);
 	private static final int NUMBER_OF_CONNECT_TASKS = 1;
-	private static final long CONNECT_TIMEOUT = 5;
+	private static final long CONNECT_TIMEOUT = 5; // TODO jwa remove or explain this
 
 	/**
 	 * The corresponding native {@link SctpSocket}
 	 */
 	private final SctpSocket so;
-	private final SctpDataCallback cb;
+	/**
+	 * The corresponding {@link NetworkLink}.
+	 */
 	private NetworkLink link;
+	/**
+	 * {@link InetSocketAddress} of the remote counterpart.
+	 */
 	private InetSocketAddress remote;
+	/**
+	 * The {@link SctpMapper} used by the session
+	 */
 	private SctpMapper mapper;
+	/**
+	 * The {@link SctpNotification} callback, which is triggered by the native
+	 * counterpart.
+	 */
 	private NotificationListener l;
 
-	public SctpSocketAdapter(final int localSctpPort, final NetworkLink link,
-			final SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
+	/**
+	 * Creates an Instance of {@link SctpSocketAdapter}.
+	 * 
+	 * @param localSctpPort
+	 *            the port, which is used by the native counterpart
+	 * @param link
+	 *            the corresponding {@link NetworkLink}.
+	 * @param cb
+	 *            the {@link SctpDataCallback}, which will be triggered by the
+	 *            native counterpart.
+	 * @param mapper
+	 *            the {@link SctpMapper} used by the session
+	 * @throws SctpInitException
+	 */
+	public SctpSocketAdapter(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb,
+			SctpMapper mapper) throws SctpInitException {
 		this(localSctpPort, null, link, cb, mapper);
 	}
 
-	public SctpSocketAdapter(final int localSctpPort, InetSocketAddress remote, NetworkLink link,
-			SctpDataCallback cb, SctpMapper mapper) throws SctpInitException {
+	/**
+	 * Creates an Instance of {@link SctpSocketAdapter}.
+	 * 
+	 * @param localSctpPort
+	 *            the port, which is used by the native counterpart
+	 * @param remote
+	 *            {@link InetSocketAddress} of the remote.
+	 * @param link
+	 *            the corresponding {@link NetworkLink}.
+	 * @param cb
+	 *            the {@link SctpDataCallback}, which will be triggered by the
+	 *            native counterpart.
+	 * @param mapper
+	 *            the {@link SctpMapper} used by the session
+	 * @throws SctpInitException
+	 */
+	public SctpSocketAdapter(final int localSctpPort, InetSocketAddress remote, NetworkLink link, SctpDataCallback cb,
+			SctpMapper mapper) throws SctpInitException {
 
 		if (!Sctp.isInitialized()) {
 			throw new SctpInitException("Sctp is currently not initialized! Try init with SctpUtils.init(...)");
@@ -51,10 +105,9 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 
 		this.so = Sctp.createSocket(localSctpPort);
 		this.so.setLink(link); // forwards all onConnOut to the corresponding link
+		this.so.setDataCallbackNative(cb);
 		this.link = link;
 		this.remote = remote;
-		this.so.setDataCallbackNative(cb);
-		this.cb = cb;
 		this.mapper = mapper;
 	}
 
@@ -63,6 +116,17 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 		so.setNotificationListener(l);
 	}
 
+	/**
+	 * This method connects this {@link SctpSocketAdapter} to the remote
+	 * counterpart. It uses {@link SctpSocket} to prepare the init messages and its
+	 * {@link NetworkLink} to send it. Afterwards the SCTP four way handshake will
+	 * be done. If this method is not answered within time it will return a
+	 * {@link SctpInitException}.
+	 * 
+	 * @param remote
+	 *            {@link InetSocketAddress} of the remote.
+	 * @return p {@link Promise}
+	 */
 	public Promise<SctpSocketAdapter, Exception, Object> connect(final InetSocketAddress remote) {
 		final Deferred<SctpSocketAdapter, Exception, Object> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
@@ -90,6 +154,12 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 				}
 			}
 
+			/**
+			 * This method catches the notifications send by the native counterpart
+			 * 
+			 * @param d
+			 * @param countDown
+			 */
 			private void addNotificationListener(final Deferred<SctpSocketAdapter, Exception, Object> d,
 					final CountDownLatch countDown) {
 				l = new NotificationListener() {
@@ -224,6 +294,9 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 
 	}
 
+	/**
+	 * This method makes the SCTP socket listen to incoming connections.
+	 */
 	public void listen() {
 		try {
 			this.so.listenNative();
@@ -232,13 +305,12 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 		}
 	}
 
-	public boolean containsSctpSocket(SctpSocket so) {
+	public boolean containsSctpSocket(final SctpSocket so) {
 		return this.so.equals(so);
 	}
 
 	/**
-	 * This method is an indirection for SctpSocket, which needs to be unaccessible
-	 * for a third party user.
+	 * Forwards the incoming SCTP message to the native counterpart
 	 */
 	public void onConnIn(byte[] data, int offset, int length) {
 		try {
@@ -248,6 +320,10 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 		}
 	}
 
+	/**
+	 * triggers the state change of the incoming connection to "COMM_UP"
+	 * @return
+	 */
 	public boolean accept() {
 		try {
 			return so.acceptNative();

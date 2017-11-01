@@ -30,17 +30,11 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	 * The corresponding native {@link SctpSocket}
 	 */
 	private final SctpSocket so;
-	@Getter
 	private final InetSocketAddress local;
-	@Getter
 	private final SctpDataCallback cb;
-	@Getter
 	private NetworkLink link;
-	@Setter
 	private InetSocketAddress remote;
-	@Getter
 	private SctpMapper mapper;
-	@Getter
 	private NotificationListener l;
 
 	public SctpSocketAdapter(final InetSocketAddress local, int localSctpPort, final NetworkLink link,

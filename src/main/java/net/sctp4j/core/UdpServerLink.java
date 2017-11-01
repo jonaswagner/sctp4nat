@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 
 import org.slf4j.Logger;
@@ -103,7 +104,7 @@ public class UdpServerLink implements NetworkLink {
 
 	@Override
 	public void onConnOut(SctpChannelFacade so, byte[] data) throws IOException, NotFoundException {
-		DatagramPacket packet = new DatagramPacket(data, data.length, so.getRemote());
+		DatagramPacket packet = new DatagramPacket(data, data.length, (SocketAddress) so.getRemote());
 		udpSocket.send(packet);
 	}
 

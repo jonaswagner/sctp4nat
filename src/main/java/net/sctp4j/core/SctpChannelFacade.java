@@ -1,5 +1,6 @@
 package net.sctp4j.core;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.jdeferred.Promise;
@@ -14,8 +15,8 @@ public interface SctpChannelFacade {
 	Promise<Integer, Exception, Object> send(byte[] data, boolean ordered, int sid, int ppid);
 	Promise<Object, Exception, Object> close();
 	void setSctpDataCallback(SctpDataCallback cb);
+	InetSocketAddress getRemote();
 	void shutdownInit();
-	public void setNotificationListener(NotificationListener l);
-	SocketAddress getRemote();
+	void setNotificationListener(NotificationListener l);
 
 }

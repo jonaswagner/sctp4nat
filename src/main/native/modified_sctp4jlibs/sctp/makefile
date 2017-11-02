@@ -21,7 +21,7 @@ SCTP_HEADERS = -I"usrsctp/usrsctplib"
 
 CFLAGS = -Wall -Werror -std=c99 $(JNI_HEADERS) $(SCTP_HEADERS) -DSCTP_DEBUG=1 -DINET6=1
 
-OBJS = org_jitsi_sctp4j_Sctp.c
+OBJS = net_sctp4nat_Sctp.c
 
 LIBS = -Lusrsctp/usrsctplib/.libs -Wl,-Bstatic -lusrsctp -Wl,-Bdynamic -lpthread
 

@@ -22,7 +22,7 @@
 hs_err_pid*
 /.gradle/
 /build/
-/bin
+/bin/
 /.idea
 /.gradle
 /.settings
@@ -33,3 +33,12 @@ src/test/test.iml
 #eclipse stuff
 *.classpath
 *.project
+
+#logs
+*.log
+
+#specific files
+bin/darwin/libjnsctp.jnilib
+bin/linux-x86-64/libjnsctp.so
+bin/linux-x86/libjnsctp.so
+bin/logback.xml

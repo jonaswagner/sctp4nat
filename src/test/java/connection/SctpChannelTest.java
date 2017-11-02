@@ -19,14 +19,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4j.connection.SctpChannel;
-import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpChannelFacade;
-import net.sctp4j.core.SctpDataCallback;
-import net.sctp4j.core.SctpInitException;
-import net.sctp4j.core.SctpPorts;
-import net.sctp4j.core.UdpClientLink;
-import net.sctp4j.origin.Sctp;
+import net.sctp4nat.connection.SctpChannel;
+import net.sctp4nat.connection.SctpUtils;
+import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.core.SctpInitException;
+import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.core.UdpClientLink;
+import net.sctp4nat.origin.Sctp;
 
 public class SctpChannelTest {
 

@@ -13,12 +13,12 @@ import org.jdeferred.Promise;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.sctp4j.connection.SctpUtils;
-import net.sctp4j.core.SctpChannelFacade;
-import net.sctp4j.core.SctpDataCallback;
-import net.sctp4j.core.SctpMapper;
-import net.sctp4j.core.UdpServerLink;
-import net.sctp4j.origin.Sctp;
+import net.sctp4nat.connection.SctpUtils;
+import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.core.SctpMapper;
+import net.sctp4nat.core.UdpServerLink;
+import net.sctp4nat.origin.Sctp;
 
 public class SctpServerTest {
 

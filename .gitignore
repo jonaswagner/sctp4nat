@@ -42,3 +42,4 @@ bin/darwin/libjnsctp.jnilib
 bin/linux-x86-64/libjnsctp.so
 bin/linux-x86/libjnsctp.so
 bin/logback.xml
+org.eclipse.buildship.core.prefs

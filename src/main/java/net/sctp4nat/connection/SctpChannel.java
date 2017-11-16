@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
+import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
@@ -29,12 +30,14 @@ public class SctpChannel {
 	private InetSocketAddress local;
 	private InetSocketAddress remote;
 	private SctpDataCallback cb;
+	private int localSctpPort;
 
-	public Promise<SctpChannelFacade, Exception, UdpClientLink> connect() {
-		Deferred<SctpChannelFacade, Exception, UdpClientLink> d = new DeferredObject<>();
+	public Promise<SctpChannelFacade, Exception, NetworkLink> connect(final NetworkLink link) {
+		Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
 
 		//TODO: get rid of runnable here
 		Runnable connectSeq = new Runnable() {
+
 
 			@Override
 			public void run() {
@@ -58,6 +61,10 @@ public class SctpChannel {
 				if (cb == null) {
 					cb = config.getCb();
 				}
+				
+				if (localSctpPort == -1) {
+					localSctpPort = remote.getPort();
+				}
 
 				SctpSocketAdapter socket = null;
 				try {
@@ -80,18 +87,13 @@ public class SctpChannel {
 				
 				final SctpSocketAdapter so = socket;
 
-				UdpClientLink link = null;
-				try {
-					link = new UdpClientLink(local, remote, so);
-				} catch (IOException e) {
-					LOG.error("Could not create UdpClientLink", e);
-					releaseAssignedParams(d, so, e);
-				}
-				
-				if (link == null) {
-					d.reject(new NullPointerException("Could not create UdpClientLink!"));
+				if(link == null  ) {
+					LOG.error("Could not create UdpClientLink");
+					releaseAssignedParams(d, so, new IOException("Could not create UdpClientLink"));
 					return;
 				}
+				
+				
 				
 				so.setLink(link);
 				d.notify(link);
@@ -122,7 +124,7 @@ public class SctpChannel {
 				});
 			}
 
-			private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, UdpClientLink> d, SctpSocketAdapter so,
+			private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, NetworkLink> d, SctpSocketAdapter so,
 					Exception e) {
 				d.reject(e);
 				SctpPorts.getInstance().removePort(so);

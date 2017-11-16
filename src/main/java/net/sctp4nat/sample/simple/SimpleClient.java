@@ -37,7 +37,7 @@ public class SimpleClient {
 		};
 
 		SctpChannel channel = SctpChannel.builder().cb(cb).local(local).remote(remote).build();
-		Promise<SctpChannelFacade, Exception, UdpClientLink> p = channel.connect();
+		Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override

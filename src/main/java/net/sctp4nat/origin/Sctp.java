@@ -256,9 +256,10 @@ public class Sctp {
 	 *            payload protocol identifier
 	 * @param context
 	 * @param flags
+	 * @throws IOException 
 	 */
 	public static void onSctpInboundPacket(long socketAddr, byte[] data, int sid, int ssn, int tsn, long ppid,
-			int context, int flags) {
+			int context, int flags) throws IOException {
 		SctpSocket socket = sockets.get(Long.valueOf(socketAddr));
 
 		if (socket == null) {

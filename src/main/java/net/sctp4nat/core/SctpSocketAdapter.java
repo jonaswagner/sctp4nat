@@ -15,6 +15,7 @@ import net.sctp4nat.connection.SctpTimeoutThread;
 import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpAcceptable;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
@@ -127,8 +128,8 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	 *            {@link InetSocketAddress} of the remote.
 	 * @return p {@link Promise}
 	 */
-	public Promise<SctpSocketAdapter, Exception, Object> connect(final InetSocketAddress remote) {
-		final Deferred<SctpSocketAdapter, Exception, Object> d = new DeferredObject<>();
+	public Promise<SctpChannelFacade, Exception, Object> connect(final InetSocketAddress remote) {
+		final Deferred<SctpChannelFacade, Exception, Object> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
 
 		class SctpConnectThread extends Thread {
@@ -160,12 +161,12 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 			 * @param d
 			 * @param countDown
 			 */
-			private void addNotificationListener(final Deferred<SctpSocketAdapter, Exception, Object> d,
+			private void addNotificationListener(final Deferred<SctpChannelFacade, Exception, Object> d,
 					final CountDownLatch countDown) {
 				l = new NotificationListener() {
 
 					@Override
-					public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+					public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
 						LOG.debug(notification.toString());
 						if (notification.toString().indexOf("COMM_UP") >= 0) {
 							countDown.countDown();

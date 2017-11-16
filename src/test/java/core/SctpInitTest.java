@@ -36,7 +36,7 @@ public class SctpInitTest {
 	private SctpDataCallback cb;
 	
 	@Test
-	public void testAll() throws InterruptedException {
+	public void testAll() throws Exception {
 		testLaunchWithoutInit();
 		testLaunch();
 	}
@@ -81,7 +81,7 @@ public class SctpInitTest {
 		}
 	}
 	
-	private void testLaunchWithoutInit() throws InterruptedException {
+	private void testLaunchWithoutInit() throws Exception {
 		CountDownLatch errorCountDown = new CountDownLatch(1);
 		
 		try {
@@ -101,7 +101,7 @@ public class SctpInitTest {
 		};
 		
 		SctpChannel channel = SctpChannel.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
-		Promise<SctpChannelFacade, Exception, UdpClientLink> p = channel.connect();
+		Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override

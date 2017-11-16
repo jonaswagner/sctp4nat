@@ -28,11 +28,10 @@ import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.origin.Sctp;
 
-public class SctpChannelTest {
+public class SctpChannelLargeDataTest {
 
 	private static final int TIMEOUT = 30;
-	private static final String TEST_STR = "Hello World!";
-	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelLargeDataTest.class);
 
 	@Test
 	public void sctpChannelTest() throws InterruptedException {
@@ -55,9 +54,7 @@ public class SctpChannelTest {
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 							SctpChannelFacade so) {
-						LOG.debug("SERVER GOT DATA: " + new String(data, StandardCharsets.UTF_8));
-						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
-						so.send(data, 0, data.length, false, sid, (int) ppid);
+						System.err.println("len: "+data.length+ "/ " + sid+" / "+ssn+" :tsn "+ tsn+ " F:"+flags+ " cxt:"+context);
 						comCd.countDown();
 
 						Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
@@ -126,17 +123,6 @@ public class SctpChannelTest {
 					@Override
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 							SctpChannelFacade so) {
-						LOG.debug("REPLY SUCCESS");
-						assertEquals(TEST_STR, new String(data, StandardCharsets.UTF_8));
-						comCd.countDown();
-						Promise<Object, Exception, Object> p = so.close();
-						p.done(new DoneCallback<Object>() {
-
-							@Override
-							public void onDone(Object result) {
-								shutdownCd.countDown();
-							}
-						});
 					}
 				};
 
@@ -152,7 +138,7 @@ public class SctpChannelTest {
 
 					@Override
 					public void onDone(SctpChannelFacade result) {
-						result.send("Hello World!".getBytes(), false, 0, 0);
+						result.send(new byte[(1024 * 900)-1], true, 0, 0);
 					}
 				});
 
@@ -167,11 +153,6 @@ public class SctpChannelTest {
 
 		if (comCd.getCount() > 0) {
 			fail("communication error");
-		}
-
-		shutdownCd.await(TIMEOUT, TimeUnit.SECONDS);
-		if (shutdownCd.getCount() > 0) {
-			fail("shutdown could not complete");
 		}
 	}
 }

@@ -34,7 +34,7 @@ import net.sctp4nat.core.SctpSocketAdapter;
  * @author George Politis
  * @author Lyubomir Marinov
  */
-public class SctpSocket {
+public class SctpSocket implements SctpAcceptable {
 	/**
 	 * The logger.
 	 */
@@ -206,7 +206,7 @@ public class SctpSocket {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+		public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("SctpSocket 0x" + Long.toHexString(ptr) + " notification: " + notification);
 			}
@@ -276,11 +276,11 @@ public class SctpSocket {
 	}
 
 	/**
-	 * Accepts incoming SCTP connection. FIXME: Usrscp is currently configured to
-	 * work in non blocking mode thus this method should be polled in intervals.
+	 * Accepts incoming SCTP connection.
 	 *
 	 * @return <tt>true</tt> if we have accepted incoming connection successfully.
 	 */
+	@Override
 	public boolean acceptNative() throws IOException {
 		long ptr = lockPtr();
 		boolean r;
@@ -355,9 +355,9 @@ public class SctpSocket {
 	 * Makes SCTP socket passive.
 	 */
 	public void listenNative() throws IOException {
-		
+
 		synchronized (this) {
-			isAccepted = false;	
+			isAccepted = false;
 		}
 
 		long ptr = lockPtr();
@@ -454,22 +454,26 @@ public class SctpSocket {
 	 * @param flags
 	 * @param so
 	 */
-	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpSocketAdapter so) {
-		
+	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
+			SctpSocketAdapter so) throws IOException {
+
 		synchronized (this) {
 			if (!isAccepted) {
-				so.accept();
+				acceptNative();
 				isAccepted = true;
 			}
 		}
-		
-//		SctpSocketAdapter socket = (SctpSocketAdapter) SctpMapper.locate(so.getRemote().getAddress().getHostAddress(), so.getRemote().getPort());
-//		socket.renewTimer();
-//		
-//		if (data.length == "heartbeat".length() && sid == 0 &&  getString(data).equals("heartbeat")) {
-//			logger.info("heartbeat received");
-//			return;
-//		}
+
+		// SctpSocketAdapter socket = (SctpSocketAdapter)
+		// SctpMapper.locate(so.getRemote().getAddress().getHostAddress(),
+		// so.getRemote().getPort());
+		// socket.renewTimer();
+		//
+		// if (data.length == "heartbeat".length() && sid == 0 &&
+		// getString(data).equals("heartbeat")) {
+		// logger.info("heartbeat received");
+		// return;
+		// }
 
 		if (dataCallback != null) {
 			dataCallback.onSctpPacket(data, sid, ssn, tsn, ppid, context, flags, so);
@@ -498,9 +502,10 @@ public class SctpSocket {
 	 * @param context
 	 * @param flags
 	 * @param so
+	 * @throws IOException 
 	 */
 	void onSctpInboundPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpSocketAdapter so) {
+			SctpSocketAdapter so) throws IOException {
 		if ((flags & Sctp.MSG_NOTIFICATION) != 0) {
 			onNotification(SctpNotification.parse(data));
 		} else {
@@ -575,12 +580,12 @@ public class SctpSocket {
 		if (data == null) {
 			throw new NullPointerException("data");
 		}
-		
+
 		if (!isAccepted) {
 			acceptNative();
 			isAccepted = true;
 		}
-		
+
 		if (offset < 0 || len <= 0 || offset + len > data.length) {
 			throw new IllegalArgumentException("o: " + offset + " l: " + len + " data l: " + data.length);
 		}
@@ -672,7 +677,10 @@ public class SctpSocket {
 		 * @param notification
 		 *            the <tt>SctpNotification</tt> triggered.
 		 */
-		public void onSctpNotification(SctpSocket socket, SctpNotification notification);
+		public void onSctpNotification(SctpAcceptable socket, SctpNotification notification); // TODO jwa I might
+																								// retrieve the
+																								// corresponding
+																								// SctpChannelFacade
 	}
 
 	public int shutdownNative(final int how) throws IOException {

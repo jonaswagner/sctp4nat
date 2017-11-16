@@ -8,6 +8,7 @@ import org.jdeferred.Deferred;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpSocketAdapter;
 
 /**
@@ -19,7 +20,7 @@ public class SctpTimeoutThread extends Thread {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpTimeoutThread.class);
 	
-	private final Deferred<SctpSocketAdapter, Exception, Object> d;
+	private final Deferred<SctpChannelFacade, Exception, Object> d;
 	private final long timeout;
 	private final TimeUnit unit;
 	private final CountDownLatch countDown;
@@ -34,7 +35,7 @@ public class SctpTimeoutThread extends Thread {
 	 * @param countDown
 	 * 			the {@link CountDownLatch}, which specifies when the task is finished
 	 */
-	public SctpTimeoutThread(final Deferred<SctpSocketAdapter, Exception, Object> d, final long timeout, final TimeUnit unit, final CountDownLatch countDown) {
+	public SctpTimeoutThread(final Deferred<SctpChannelFacade, Exception, Object> d, final long timeout, final TimeUnit unit, final CountDownLatch countDown) {
 		this.d = d;
 		this.timeout = timeout;
 		this.unit = unit;

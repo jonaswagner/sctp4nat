@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4nat.origin.SctpAcceptable;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
@@ -60,7 +61,7 @@ public class SctpSocketBuilder {
 		so.setNotificationListener(new NotificationListener() {
 			
 			@Override
-			public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+			public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
 				LOG.debug(notification.toString());
 				if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
 					so.close();

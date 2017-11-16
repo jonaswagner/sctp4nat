@@ -163,12 +163,12 @@ public class SctpTest {
 				}
 				so.setLink(link);
 
-				Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
+				Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
 
-				p.done(new DoneCallback<SctpSocketAdapter>() {
+				p.done(new DoneCallback<SctpChannelFacade>() {
 
 					@Override
-					public void onDone(SctpSocketAdapter result) {
+					public void onDone(SctpChannelFacade result) {
 						SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 
 							@Override

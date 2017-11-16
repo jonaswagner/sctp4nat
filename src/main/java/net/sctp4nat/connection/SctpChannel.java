@@ -32,106 +32,69 @@ public class SctpChannel {
 	private SctpDataCallback cb;
 	private int localSctpPort;
 
-	public void connect(final NetworkLink link) {
-		Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
+	public Promise<SctpChannelFacade, Exception, Object> connect(final NetworkLink link) throws Exception {
 
-		//TODO: get rid of runnable here
-		/*Runnable connectSeq = new Runnable() {
+		if (remote == null) {
+			LOG.error("Remote InetSocketAddress was null. We can't connect to null!");
+			throw new NullPointerException("Remote InetSocketAddress was null. We can't connect to null!");
+		}
 
+		if (local == null) {
+			LOG.error("Local InetSocketAddress was null. We can't connect to null!");
+			throw new NullPointerException("Local InetSocketAddress was null. We can't connect to null!");
+		}
+
+		if (config == null) {
+			config = new SctpDefaultConfig();
+		}
+
+		if (cb == null) {
+			cb = config.getCb();
+		}
+
+		if (localSctpPort == -1) {
+			localSctpPort = remote.getPort();
+		}
+
+		SctpSocketAdapter socket = null;
+		socket = new SctpSocketBuilder().remoteAddress(remote.getAddress()).remotePort(remote.getPort())
+				.sctpDataCallBack(cb).mapper(SctpUtils.getMapper()).localSctpPort(localSctpPort).build();
+
+		if (socket == null) {
+			throw new NullPointerException("Could not create SctpSocketAdapter!");
+		}
+
+		NetworkLink link2 = link;
+		if (link == null) {
+			link2 = new UdpClientLink(local, remote, socket);
+		}
+
+		final SctpSocketAdapter so = socket;
+
+		if (link2 == null) {
+			LOG.error("Could not create NetworkLink");
+			releaseAssignedParams(so, new IOException("Could not create UdpClientLink"));
+			throw new NullPointerException("NetworkLink was null!");
+		}
+
+		so.setLink(link);
+
+		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
+
+		p.fail(new FailCallback<Exception>() {
 
 			@Override
-			public void run() {*/
-					
-				if (remote == null) {
-					LOG.error("Remote InetSocketAddress was null. We can't connect to null!");
-					d.reject(new NullPointerException("Remote InetSocketAddress was null. We can't connect to null!"));
-					return;
-				}
+			public void onFail(Exception e) {
+				LOG.error("Could not connect to remote host", e);
+				releaseAssignedParams(so, e);
+			}
+		});
 
-				if (local == null) {
-					LOG.error("Local InetSocketAddress was null. We can't connect to null!");
-					d.reject(new NullPointerException("Local InetSocketAddress was null. We can't connect to null!"));
-					return;
-				}
+		return p;
 
-				if (config == null) {
-					config = new SctpDefaultConfig();
-				}
-				
-				if (cb == null) {
-					cb = config.getCb();
-				}
-				
-				if (localSctpPort == -1) {
-					localSctpPort = remote.getPort();
-				}
-
-				SctpSocketAdapter socket = null;
-				try {
-					socket = new SctpSocketBuilder().
-							remoteAddress(remote.getAddress()).
-							remotePort(remote.getPort()).
-							sctpDataCallBack(cb).
-							mapper(SctpUtils.getMapper()).
-							localSctpPort(localSctpPort).
-							build();
-				} catch (SctpInitException e1) {
-					LOG.error("Sctp is currently not initialized! Try init it with SctpUtils.init(...)");
-					d.reject(e1);
-					return;
-				}
-				
-				if (socket == null) {
-					d.reject(new NullPointerException("Could not create SctpSocketAdapter!"));
-					return;
-				} 
-				
-				final SctpSocketAdapter so = socket;
-
-				if(link == null  ) {
-					LOG.error("Could not create UdpClientLink");
-					releaseAssignedParams(d, so, new IOException("Could not create UdpClientLink"));
-					return;
-				}
-				
-				
-				
-				so.setLink(link);
-				d.notify(link);
-				
-				Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
-
-				p.fail(new FailCallback<Exception>() {
-
-					@Override
-					public void onFail(Exception e) {
-						LOG.error("Could not connect to remote host", e);
-						releaseAssignedParams(d, so, e);
-					}
-				});
-
-				p.done(new DoneCallback<SctpSocketAdapter>() {
-
-					@Override
-					public void onDone(SctpSocketAdapter result) {
-						SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
-
-							@Override
-							public void run() {
-								d.resolve((SctpChannelFacade) so);
-							}
-						});
-					}
-				});
-			
-
-		//SctpUtils.getThreadPoolExecutor().execute(connectSeq);
-		//return d.promise();
 	}
-	
-	private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, NetworkLink> d, SctpSocketAdapter so,
-			Exception e) {
-		d.reject(e);
+
+	private void releaseAssignedParams(SctpSocketAdapter so, Exception e) {
 		SctpPorts.getInstance().removePort(so);
 		so.close();
 	}

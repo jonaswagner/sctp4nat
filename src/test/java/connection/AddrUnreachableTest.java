@@ -30,6 +30,7 @@ import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpAcceptable;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
@@ -133,7 +134,7 @@ public class AddrUnreachableTest {
 						so.setNotificationListener(new NotificationListener() {
 							
 							@Override
-							public void onSctpNotification(SctpSocket socket, SctpNotification notification) {
+							public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
 								if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0){
 									LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
 									Promise<Object, Exception, Object> p = so.close();
@@ -173,7 +174,14 @@ public class AddrUnreachableTest {
 				};
 
 				SctpChannel channel = SctpChannel.builder().cb(cb).local(local).remote(remote).build();
-				Promise<SctpChannelFacade, Exception, UdpClientLink> p = channel.connect();
+				Promise<SctpChannelFacade, Exception, Object> p = null;
+				try {
+					p = channel.connect(null);
+				} catch (Exception e) {
+					e.printStackTrace();
+					fail(e.getMessage());
+				}
+				
 				p.done(new DoneCallback<SctpChannelFacade>() {
 
 					@Override

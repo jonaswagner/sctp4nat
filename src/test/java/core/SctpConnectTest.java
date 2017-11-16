@@ -53,11 +53,11 @@ public class SctpConnectTest {
 	}
 	
 	@Test
-	public void connectInitTest() throws InterruptedException {
+	public void connectInitTest() throws Exception {
 		
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		Promise<SctpChannelFacade, Exception, UdpClientLink> p = SctpChannel.builder().local(clientAddr).remote(serverAddr).build().connect();
+		Promise<SctpChannelFacade, Exception, Object> p = SctpChannel.builder().local(clientAddr).remote(serverAddr).build().connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override
@@ -80,11 +80,11 @@ public class SctpConnectTest {
 	}
 	
 	@Test
-	public void connectInitTest2() throws InterruptedException, SocketException, SctpInitException {
+	public void connectInitTest2() throws Exception {
 		SctpUtils.init(clientAddr.getAddress(), SctpPorts.getInstance().generateDynPort(), null);
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		Promise<SctpChannelFacade, Exception, UdpClientLink> p = SctpChannel.builder().local(clientAddr).remote(serverAddr).build().connect();
+		Promise<SctpChannelFacade, Exception, Object> p = SctpChannel.builder().local(clientAddr).remote(serverAddr).build().connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override

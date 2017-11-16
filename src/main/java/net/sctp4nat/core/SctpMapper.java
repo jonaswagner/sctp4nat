@@ -3,6 +3,7 @@ package net.sctp4nat.core;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jdeferred.Promise;
@@ -113,9 +114,15 @@ public class SctpMapper {
 			return null;
 		}
 
-		SctpSocketAdapter facade = socketMap.values().stream().filter(so -> so.containsSctpSocket(sctpSocket)).findFirst()
+		SctpSocketAdapter facade = null;
+		try {
+		 facade = socketMap.values().stream().filter(so -> so.containsSctpSocket(sctpSocket)).findFirst()
 				.get();
-
+		} catch (NoSuchElementException e) {
+			LOG.error("Could not retrieve SctpSocket from SctpMapper!");
+			return null;
+		}
+		
 		if (facade == null) {
 			LOG.error("Could not retrieve SctpSocket from SctpMapper!");
 			return null;

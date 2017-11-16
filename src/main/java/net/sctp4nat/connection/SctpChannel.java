@@ -32,15 +32,15 @@ public class SctpChannel {
 	private SctpDataCallback cb;
 	private int localSctpPort;
 
-	public Promise<SctpChannelFacade, Exception, NetworkLink> connect(final NetworkLink link) {
+	public void connect(final NetworkLink link) {
 		Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
 
 		//TODO: get rid of runnable here
-		Runnable connectSeq = new Runnable() {
+		/*Runnable connectSeq = new Runnable() {
 
 
 			@Override
-			public void run() {
+			public void run() {*/
 					
 				if (remote == null) {
 					LOG.error("Remote InetSocketAddress was null. We can't connect to null!");
@@ -73,6 +73,7 @@ public class SctpChannel {
 							remotePort(remote.getPort()).
 							sctpDataCallBack(cb).
 							mapper(SctpUtils.getMapper()).
+							localSctpPort(localSctpPort).
 							build();
 				} catch (SctpInitException e1) {
 					LOG.error("Sctp is currently not initialized! Try init it with SctpUtils.init(...)");
@@ -122,18 +123,17 @@ public class SctpChannel {
 						});
 					}
 				});
-			}
+			
 
-			private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, NetworkLink> d, SctpSocketAdapter so,
-					Exception e) {
-				d.reject(e);
-				SctpPorts.getInstance().removePort(so);
-				so.close();
-			}
-		};
-
-		SctpUtils.getThreadPoolExecutor().execute(connectSeq);
-		return d.promise();
+		//SctpUtils.getThreadPoolExecutor().execute(connectSeq);
+		//return d.promise();
+	}
+	
+	private void releaseAssignedParams(Deferred<SctpChannelFacade, Exception, NetworkLink> d, SctpSocketAdapter so,
+			Exception e) {
+		d.reject(e);
+		SctpPorts.getInstance().removePort(so);
+		so.close();
 	}
 
 }

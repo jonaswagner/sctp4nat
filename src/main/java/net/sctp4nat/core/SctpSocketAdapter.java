@@ -145,8 +145,8 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 				try {
 					addNotificationListener(d, countDown);
 					SctpSocketAdapter.this.setNotificationListener(l);
-					so.connectNative(remote.getPort());
 					mapper.register(remote, SctpSocketAdapter.this);
+					so.connectNative(remote.getPort());
 				} catch (IOException e) {
 					LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);
 					mapper.unregister(remote);
@@ -300,7 +300,7 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	public void listen() {
 		try {
 			this.so.listenNative();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		}
 	}

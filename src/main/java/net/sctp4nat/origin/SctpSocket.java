@@ -40,7 +40,7 @@ public class SctpSocket {
 	 */
 	private final static Logger logger = LoggerFactory.getLogger(SctpSocket.class);
 
-	private boolean isAccepted = true;
+	private boolean isAccepted = false;
 
 	/**
 	 * Reads 32 bit unsigned int from the buffer at specified offset
@@ -575,6 +575,12 @@ public class SctpSocket {
 		if (data == null) {
 			throw new NullPointerException("data");
 		}
+		
+		if (!isAccepted) {
+			acceptNative();
+			isAccepted = true;
+		}
+		
 		if (offset < 0 || len <= 0 || offset + len > data.length) {
 			throw new IllegalArgumentException("o: " + offset + " l: " + len + " data l: " + data.length);
 		}

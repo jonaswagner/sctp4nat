@@ -25,7 +25,7 @@ import javassist.NotFoundException;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.core.SctpSocketAdapter;
+import net.sctp4nat.core.SctpChannel;
 
 /**
  * SCTP socket implemented using "usrsctp" lib.
@@ -455,7 +455,7 @@ public class SctpSocket implements SctpAcceptable {
 	 * @param so
 	 */
 	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpSocketAdapter so) throws IOException {
+			SctpChannel so) throws IOException {
 
 		synchronized (this) {
 			if (!isAccepted) {
@@ -505,7 +505,7 @@ public class SctpSocket implements SctpAcceptable {
 	 * @throws IOException 
 	 */
 	void onSctpInboundPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpSocketAdapter so) throws IOException {
+			SctpChannel so) throws IOException {
 		if ((flags & Sctp.MSG_NOTIFICATION) != 0) {
 			onNotification(SctpNotification.parse(data));
 		} else {

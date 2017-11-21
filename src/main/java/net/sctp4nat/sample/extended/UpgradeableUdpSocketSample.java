@@ -26,8 +26,8 @@ import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
-import net.sctp4nat.core.SctpSocketAdapter;
-import net.sctp4nat.core.SctpSocketBuilder;
+import net.sctp4nat.core.SctpChannel;
+import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.core.UdpServerLink;
 
@@ -38,7 +38,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	private static final Logger LOG = LoggerFactory.getLogger(UpgradeableUdpSocketSample.class);
 
 	private final Deferred<SctpChannelFacade, Exception, NetworkLink> d = new DeferredObject<>();
-	private SctpSocketAdapter so;
+	private SctpChannel so;
 	private InetSocketAddress remote;
 	
 	@Getter
@@ -171,7 +171,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 			public void run() {
 
 				try {
-					so = new SctpSocketBuilder()
+					so = new SctpChannelBuilder()
 							.localSctpPort(local.getPort())
 							.remoteAddress(remote.getAddress())
 							.remotePort(remote.getPort())
@@ -202,11 +202,11 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	}
 	
 	private void setUpSctp() {
-		Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
+		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
 
-		p.done(new DoneCallback<SctpSocketAdapter>() {
+		p.done(new DoneCallback<SctpChannelFacade>() {
 			@Override
-			public void onDone(SctpSocketAdapter result) {
+			public void onDone(SctpChannelFacade result) {
 				isUgrading = false;
 				LOG.debug("Sctp connection success!");
 				LOG.debug("Upgrade procedure successfully finished. This udp socket is now connected via sctp!");

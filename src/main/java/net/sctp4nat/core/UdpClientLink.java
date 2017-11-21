@@ -24,12 +24,6 @@ public class UdpClientLink implements NetworkLink {
 	private final static Logger LOG = LoggerFactory.getLogger(UdpClientLink.class);
 
 	/**
-	 * <tt>SctpFacade</tt> instance that is used in this connection.
-	 */
-	@Getter
-	private final SctpSocketAdapter so;
-
-	/**
 	 * Udp socket used for transport.
 	 */
 	private final DatagramSocket udpSocket;
@@ -37,7 +31,6 @@ public class UdpClientLink implements NetworkLink {
 	/**
 	 * Destination <tt>InetSocketAddress</tt>.
 	 */
-	@Getter
 	private final InetSocketAddress remote;
 
 	/**
@@ -48,10 +41,9 @@ public class UdpClientLink implements NetworkLink {
 	/**
 	 * Creates new instance of <tt>UdpClientLink</tt>.
 	 */
-	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so)
+	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpChannel so)
 			throws IOException {
-		this.so = so;
-		this.so.setLink(this);
+		so.setLink(this);
 		this.remote = remote;
 		this.udpSocket = new DatagramSocket(local.getPort(), local.getAddress());
 
@@ -63,10 +55,9 @@ public class UdpClientLink implements NetworkLink {
 	 * Do not use this constructor without a valid {@link DatagramSocket}! Creates
 	 * new instance of <tt>UdpClientLink</tt>.
 	 */
-	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpSocketAdapter so,
+	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpChannel so,
 			final DatagramSocket udpSocket) {
-		this.so = so;
-		this.so.setLink(this);
+		so.setLink(this);
 		this.remote = remote;
 		this.udpSocket = udpSocket;
 
@@ -77,10 +68,10 @@ public class UdpClientLink implements NetworkLink {
 	/**
 	 * Forwards the UDP packets to the native counterpart.
 	 * @param remote
-	 * 			{@link SctpSocketAdapter}
+	 * 			{@link SctpChannel}
 	 * @param so
 	 */
-	private void receive(final InetSocketAddress remote, final SctpSocketAdapter so) {
+	private void receive(final InetSocketAddress remote, final SctpChannel so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 			public void run() {
 				try {

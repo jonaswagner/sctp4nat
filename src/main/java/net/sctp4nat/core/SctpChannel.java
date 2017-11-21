@@ -34,9 +34,9 @@ import net.sctp4nat.origin.SctpSocket.NotificationListener;
  * @author Jonas Wagner
  *
  */
-public class SctpSocketAdapter implements SctpChannelFacade {
+public class SctpChannel implements SctpChannelFacade {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SctpSocketAdapter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpChannel.class);
 	private static final int NUMBER_OF_CONNECT_TASKS = 1;
 	private static final long CONNECT_TIMEOUT = 5; // TODO jwa remove or explain this
 
@@ -63,7 +63,7 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	private NotificationListener l;
 
 	/**
-	 * Creates an Instance of {@link SctpSocketAdapter}.
+	 * Creates an Instance of {@link SctpChannel}.
 	 * 
 	 * @param localSctpPort
 	 *            the port, which is used by the native counterpart
@@ -76,13 +76,13 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	 *            the {@link SctpMapper} used by the session
 	 * @throws SctpInitException
 	 */
-	public SctpSocketAdapter(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb,
+	public SctpChannel(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb,
 			SctpMapper mapper) throws SctpInitException {
 		this(localSctpPort, null, link, cb, mapper);
 	}
 
 	/**
-	 * Creates an Instance of {@link SctpSocketAdapter}.
+	 * Creates an Instance of {@link SctpChannel}.
 	 * 
 	 * @param localSctpPort
 	 *            the port, which is used by the native counterpart
@@ -97,7 +97,7 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	 *            the {@link SctpMapper} used by the session
 	 * @throws SctpInitException
 	 */
-	public SctpSocketAdapter(final int localSctpPort, InetSocketAddress remote, NetworkLink link, SctpDataCallback cb,
+	public SctpChannel(final int localSctpPort, InetSocketAddress remote, NetworkLink link, SctpDataCallback cb,
 			SctpMapper mapper) throws SctpInitException {
 
 		if (!Sctp.isInitialized()) {
@@ -118,7 +118,7 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	}
 
 	/**
-	 * This method connects this {@link SctpSocketAdapter} to the remote
+	 * This method connects this {@link SctpChannel} to the remote
 	 * counterpart. It uses {@link SctpSocket} to prepare the init messages and its
 	 * {@link NetworkLink} to send it. Afterwards the SCTP four way handshake will
 	 * be done. If this method is not answered within time it will return a
@@ -145,8 +145,8 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 
 				try {
 					addNotificationListener(d, countDown);
-					SctpSocketAdapter.this.setNotificationListener(l);
-					mapper.register(remote, SctpSocketAdapter.this);
+					SctpChannel.this.setNotificationListener(l);
+					mapper.register(remote, SctpChannel.this);
 					so.connectNative(remote.getPort());
 				} catch (IOException e) {
 					LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);
@@ -170,23 +170,23 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 						LOG.debug(notification.toString());
 						if (notification.toString().indexOf("COMM_UP") >= 0) {
 							countDown.countDown();
-							d.resolve(SctpSocketAdapter.this);
+							d.resolve(SctpChannel.this);
 						} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
 							// TODO jwa make a clean shutdown possible closing the socket prevents any
 							// SHUTDOWN ACK to be sent...
 							LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
-							SctpSocketAdapter.this.close();
+							SctpChannel.this.close();
 							d.reject(new Exception(
 									"we are forced to shutdown because of shutdown request from server!"));
 						} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0) {
 							LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
-							SctpSocketAdapter.this.close();
+							SctpChannel.this.close();
 							d.reject(new Exception(
 									"we are forced to close the connection because the remote is not answering! (remote: "
 											+ remote.getAddress().getHostAddress() + ":" + remote.getPort() + ")"));
 						} else if (notification.toString().indexOf("COMM_LOST") >= 0) {
 							LOG.error("Communication aborted! Now shutting down the udp connection...");
-							SctpSocketAdapter.this.close();
+							SctpChannel.this.close();
 							d.reject(new Exception(
 									"we are forced to close the connection because we lost the connection to remote: "
 											+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
@@ -277,7 +277,7 @@ public class SctpSocketAdapter implements SctpChannelFacade {
 	public Promise<Object, Exception, Object> close() {
 		Deferred<Object, Exception, Object> d = new DeferredObject<>();
 
-		final SctpSocketAdapter currentInstance = this;
+		final SctpChannel currentInstance = this;
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 
 			@Override

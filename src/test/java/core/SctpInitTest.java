@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.connection.SctpChannel;
+import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
@@ -100,7 +100,7 @@ public class SctpInitTest {
 			}
 		};
 		
-		SctpChannel channel = SctpChannel.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
+		SctpConnection channel = SctpConnection.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
 		Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			

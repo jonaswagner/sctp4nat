@@ -25,8 +25,8 @@ import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.core.SctpSocketAdapter;
-import net.sctp4nat.core.SctpSocketBuilder;
+import net.sctp4nat.core.SctpChannel;
+import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.core.UdpServerLink;
 import net.sctp4nat.origin.Sctp;
@@ -143,9 +143,9 @@ public class SctpTest {
 					}
 				};
 
-				SctpSocketAdapter so = null;
+				SctpChannel so = null;
 				try {
-					so = new SctpSocketBuilder()
+					so = new SctpChannelBuilder()
 							.localSctpPort(localSctpPort)
 							.remoteAddress(remote.getAddress())
 							.remotePort(remote.getPort())

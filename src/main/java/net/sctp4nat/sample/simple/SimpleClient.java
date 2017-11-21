@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 
-import net.sctp4nat.connection.SctpChannel;
+import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
@@ -36,7 +36,7 @@ public class SimpleClient {
 			}
 		};
 
-		SctpChannel channel = SctpChannel.builder().cb(cb).local(local).remote(remote).build();
+		SctpConnection channel = SctpConnection.builder().cb(cb).local(local).remote(remote).build();
 		Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			

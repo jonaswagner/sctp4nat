@@ -15,8 +15,8 @@ import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.core.SctpSocketAdapter;
-import net.sctp4nat.core.SctpSocketBuilder;
+import net.sctp4nat.core.SctpChannel;
+import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.origin.Sctp;
 
@@ -43,13 +43,13 @@ public class SampleClient {
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 					SctpChannelFacade so) {
 				System.out.println("I WAS HERE");
-				SctpSocketAdapter realSo = (SctpSocketAdapter) so;
+				SctpChannel realSo = (SctpChannel) so;
 				realSo.shutdownInit();
 				realSo.close();
 			}
 		};
 
-		SctpSocketAdapter so = new SctpSocketBuilder().
+		SctpChannel so = new SctpChannelBuilder().
 				localSctpPort(localSctpPort).
 				remoteAddress(remote.getAddress()).
 				remotePort(remote.getPort()).
@@ -60,12 +60,12 @@ public class SampleClient {
 		UdpClientLink link = new UdpClientLink(local, remote, so);
 		so.setLink(link);
 		
-		Promise<SctpSocketAdapter, Exception, Object> p = so.connect(remote);
+		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
 		
-		p.done(new DoneCallback<SctpSocketAdapter>() {
+		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override
-			public void onDone(SctpSocketAdapter result) {
+			public void onDone(SctpChannelFacade result) {
 				SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 					
 					@Override

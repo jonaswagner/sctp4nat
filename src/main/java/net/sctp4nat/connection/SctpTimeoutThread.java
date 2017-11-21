@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpSocketAdapter;
 
 /**
  * This Thread will notify the client if something goes wrong during the connection setup.

@@ -48,7 +48,7 @@ typedef struct _SctpSocket
 void
 callOnSctpInboundPacket
     (void *socketPtr, void *data, size_t length, uint16_t sid, uint16_t ssn,
-        uint16_t tsn, uint32_t ppid, uint16_t context, int flags);
+        uint32_t tsn, uint32_t ppid, uint16_t context, int flags);
 
 int
 callOnSctpOutboundPacket
@@ -511,7 +511,7 @@ JNI_OnUnload(JavaVM *vm, void *reserved)
 void
 callOnSctpInboundPacket
     (void *socketPtr, void *data, size_t length, uint16_t sid, uint16_t ssn,
-        uint16_t tsn, uint32_t ppid, uint16_t context, int flags)
+        uint32_t tsn, uint32_t ppid, uint16_t context, int flags)
 {
     JavaVM *vm = Sctp_vm;
     JNIEnv *env;

@@ -8,19 +8,16 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.origin.SctpAcceptable;
 import net.sctp4nat.origin.SctpNotification;
-import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
 
 /**
- * This class helps instantiating a clean {@link SctpSocketAdapter}. 
+ * This class helps instantiating a clean {@link SctpChannel}. 
  * @author root
  *
  */
-public class SctpSocketBuilder {
+public class SctpChannelBuilder {
 
-	//TODO jwa implement all possible variables and parameters for a given SCTP connection
-
-	private static final Logger LOG = LoggerFactory.getLogger(SctpSocketBuilder.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelBuilder.class);
 
 	private int localSctpPort = -1;
 	private int remotePort = -1;
@@ -29,7 +26,7 @@ public class SctpSocketBuilder {
 	private NetworkLink link = null;
 	private SctpMapper mapper = null;
 	
-	public SctpSocketAdapter build() throws SctpInitException {
+	public SctpChannel build() throws SctpInitException {
 
 		if (localSctpPort == -1) {
 			localSctpPort = SctpPorts.getInstance().generateDynPort();
@@ -49,15 +46,15 @@ public class SctpSocketBuilder {
 			return null;
 		}
 
-		SctpSocketAdapter candidateSo = null;
+		SctpChannel candidateSo = null;
 		if (remoteAddress == null || remotePort == -1) {
-			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(localSctpPort, link, cb, mapper);
+			candidateSo = (SctpChannel) new SctpChannel(localSctpPort, link, cb, mapper);
 		} else {
 			InetSocketAddress remote = new InetSocketAddress(remoteAddress, remotePort);
-			candidateSo = (SctpSocketAdapter) new SctpSocketAdapter(localSctpPort, remote, link, cb, mapper);
+			candidateSo = (SctpChannel) new SctpChannel(localSctpPort, remote, link, cb, mapper);
 		}
 
-		final SctpSocketAdapter so = candidateSo;
+		final SctpChannel so = candidateSo;
 		so.setNotificationListener(new NotificationListener() {
 			
 			@Override
@@ -78,7 +75,7 @@ public class SctpSocketBuilder {
 		return so;
 	}
 
-	public SctpSocketBuilder localSctpPort(int localSctpPort) {
+	public SctpChannelBuilder localSctpPort(int localSctpPort) {
 		if (isInRange(localSctpPort)) {
 			this.localSctpPort = localSctpPort;
 		} else {
@@ -93,7 +90,7 @@ public class SctpSocketBuilder {
 	}
 
 
-	public SctpSocketBuilder remotePort(int remotePort) {
+	public SctpChannelBuilder remotePort(int remotePort) {
 		if (isInRange(remotePort)) {
 			this.remotePort = remotePort;
 		} else {
@@ -102,7 +99,7 @@ public class SctpSocketBuilder {
 		return this;
 	}
 
-	public SctpSocketBuilder remoteAddress(InetAddress remoteAddress) {
+	public SctpChannelBuilder remoteAddress(InetAddress remoteAddress) {
 		if (remoteAddress != null) {
 			this.remoteAddress = remoteAddress;
 		} else {
@@ -111,7 +108,7 @@ public class SctpSocketBuilder {
 		return this;
 	}
 
-	public SctpSocketBuilder sctpDataCallBack(SctpDataCallback cb) {
+	public SctpChannelBuilder sctpDataCallBack(SctpDataCallback cb) {
 		if (cb != null) {
 			this.cb = cb;
 		} else {
@@ -120,7 +117,7 @@ public class SctpSocketBuilder {
 		return this;
 	}
 
-	public SctpSocketBuilder networkLink(NetworkLink link) {
+	public SctpChannelBuilder networkLink(NetworkLink link) {
 		if (link != null) {
 			this.link = link;
 		} else {
@@ -129,7 +126,7 @@ public class SctpSocketBuilder {
 		return this;
 	}
 	
-	public SctpSocketBuilder mapper(SctpMapper mapper) {
+	public SctpChannelBuilder mapper(SctpMapper mapper) {
 		if (mapper != null) {
 			this.mapper = mapper;
 		} else {

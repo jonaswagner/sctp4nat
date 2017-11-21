@@ -16,11 +16,11 @@ public class SctpMapper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpMapper.class);
 
-	private static final ConcurrentHashMap<InetSocketAddress, SctpSocketAdapter> socketMap = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<InetSocketAddress, SctpChannel> socketMap = new ConcurrentHashMap<>();
 
 	private static boolean isShutdown = false;
 
-	public synchronized void register(final InetSocketAddress remote, final SctpSocketAdapter so) {
+	public synchronized void register(final InetSocketAddress remote, final SctpChannel so) {
 		if (isShutdown) {
 			return;
 		}
@@ -34,10 +34,10 @@ public class SctpMapper {
 
 	/**
 	 * This method removes a socket from the {@link Mapper} and shuts down the
-	 * usrsctp counterpart. Make sure this {@link SctpSocketAdapter} instance is not
+	 * usrsctp counterpart. Make sure this {@link SctpChannel} instance is not
 	 * used anywhere else!
 	 */
-	public synchronized void unregister(SctpSocketAdapter so) {
+	public synchronized void unregister(SctpChannel so) {
 		if (isShutdown) {
 			return;
 		}
@@ -55,7 +55,7 @@ public class SctpMapper {
 
 	/**
 	 * This method removes a socket from the {@link Mapper} and shuts down the
-	 * usrsctp counterpart. Make sure this {@link SctpSocketAdapter} instance is not used
+	 * usrsctp counterpart. Make sure this {@link SctpChannel} instance is not used
 	 * anywhere else!
 	 */
 	public synchronized void unregister(InetSocketAddress remote) {
@@ -75,17 +75,17 @@ public class SctpMapper {
 	}
 
 	/**
-	 * This method locates a {@link SctpSocketAdapter} object given the remote {@link InetAddress} and port.
+	 * This method locates a {@link SctpChannel} object given the remote {@link InetAddress} and port.
 	 * @param remoteAddress
 	 * @param remotePort
-	 * @return {@link SctpSocketAdapter}
+	 * @return {@link SctpChannel}
 	 */
-	public synchronized static SctpSocketAdapter locate(final String remoteAddress, final int remotePort) {
+	public synchronized static SctpChannel locate(final String remoteAddress, final int remotePort) {
 		if (isShutdown) {
 			return null;
 		}
 
-		for (Map.Entry<InetSocketAddress, SctpSocketAdapter> element : socketMap.entrySet()) {
+		for (Map.Entry<InetSocketAddress, SctpChannel> element : socketMap.entrySet()) {
 			int port = element.getKey().getPort();
 			String address = element.getKey().getAddress().getHostAddress();
 
@@ -99,13 +99,13 @@ public class SctpMapper {
 	}
 
 	/**
-	 * This method locates a {@link SctpSocketAdapter} object given a {@link SctpSocket}.
+	 * This method locates a {@link SctpChannel} object given a {@link SctpSocket}.
 	 * 
 	 * @param remoteAddress
 	 * @param remotePort
-	 * @return {@link SctpSocketAdapter}
+	 * @return {@link SctpChannel}
 	 */
-	public synchronized static SctpSocketAdapter locate(final SctpSocket sctpSocket) {
+	public synchronized static SctpChannel locate(final SctpSocket sctpSocket) {
 		if (isShutdown) {
 			return null;
 		}
@@ -114,7 +114,7 @@ public class SctpMapper {
 			return null;
 		}
 
-		SctpSocketAdapter facade = null;
+		SctpChannel facade = null;
 		try {
 		 facade = socketMap.values().stream().filter(so -> so.containsSctpSocket(sctpSocket)).findFirst()
 				.get();
@@ -137,8 +137,8 @@ public class SctpMapper {
 	public void shutdown() {
 		isShutdown = true;
 
-		for (Map.Entry<InetSocketAddress, SctpSocketAdapter> element : socketMap.entrySet()) {
-			SctpSocketAdapter so = element.getValue();
+		for (Map.Entry<InetSocketAddress, SctpChannel> element : socketMap.entrySet()) {
+			SctpChannel so = element.getValue();
 			so.shutdownInit();		
 			Promise<Object, Exception, Object> p = so.close();
 			try {

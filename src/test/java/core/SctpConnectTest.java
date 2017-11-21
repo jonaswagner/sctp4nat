@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.connection.SctpChannel;
+import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpInitException;
@@ -57,7 +57,7 @@ public class SctpConnectTest {
 		
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		Promise<SctpChannelFacade, Exception, Object> p = SctpChannel.builder().local(clientAddr).remote(serverAddr).build().connect(null);
+		Promise<SctpChannelFacade, Exception, Object> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override
@@ -84,7 +84,7 @@ public class SctpConnectTest {
 		SctpUtils.init(clientAddr.getAddress(), SctpPorts.getInstance().generateDynPort(), null);
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		Promise<SctpChannelFacade, Exception, Object> p = SctpChannel.builder().local(clientAddr).remote(serverAddr).build().connect(null);
+		Promise<SctpChannelFacade, Exception, Object> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override

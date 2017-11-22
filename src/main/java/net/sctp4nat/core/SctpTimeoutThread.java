@@ -1,4 +1,4 @@
-package net.sctp4nat.connection;
+package net.sctp4nat.core;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -7,8 +7,6 @@ import java.util.concurrent.TimeoutException;
 import org.jdeferred.Deferred;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.sctp4nat.core.SctpChannelFacade;
 
 /**
  * This Thread will notify the client if something goes wrong during the connection setup.

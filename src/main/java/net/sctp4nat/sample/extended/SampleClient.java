@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpUtils;
-import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
-import net.sctp4nat.core.UdpClientLink;
+import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.origin.Sctp;
 
 public class SampleClient {

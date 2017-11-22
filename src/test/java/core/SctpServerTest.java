@@ -14,10 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.sctp4nat.connection.SctpUtils;
+import net.sctp4nat.connection.UdpServerLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.core.UdpServerLink;
 import net.sctp4nat.origin.Sctp;
 
 public class SctpServerTest {

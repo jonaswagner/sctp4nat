@@ -10,13 +10,12 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
 import net.sctp4nat.core.NetworkLink;
-import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
-import net.sctp4nat.core.UdpClientLink;
+import net.sctp4nat.core.SctpChannelFacade;
 
 @Builder
 public class SctpConnection {

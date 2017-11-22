@@ -1,4 +1,4 @@
-package net.sctp4nat.core;
+package net.sctp4nat.connection;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
 import lombok.Getter;
-import net.sctp4nat.connection.SctpUtils;
+import net.sctp4nat.core.NetworkLink;
+import net.sctp4nat.core.SctpChannel;
+import net.sctp4nat.core.SctpChannelFacade;
 
 /**
  * @author Jonas Wagner

@@ -18,10 +18,10 @@ import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.connection.SctpDefaultConfig;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.core.SctpUtils;
+import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.util.SctpUtils;
 
 /**
  * File payload test

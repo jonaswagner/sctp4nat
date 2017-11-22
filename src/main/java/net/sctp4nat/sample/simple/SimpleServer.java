@@ -8,7 +8,7 @@ import net.sctp4nat.connection.SctpDefaultConfig;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.core.SctpUtils;
+import net.sctp4nat.util.SctpUtils;
 
 public class SimpleServer {
 	

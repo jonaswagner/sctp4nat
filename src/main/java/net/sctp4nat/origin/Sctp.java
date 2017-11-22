@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
-import net.sctp4nat.core.Pair;
 import net.sctp4nat.core.SctpMapper;
+import net.sctp4nat.util.Pair;
 
 /**
  * Class encapsulates native SCTP counterpart.

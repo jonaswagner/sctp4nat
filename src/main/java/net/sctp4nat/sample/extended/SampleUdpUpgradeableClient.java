@@ -16,7 +16,7 @@ import net.sctp4nat.connection.SctpDefaultConfig;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.core.SctpInitException;
+import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
 
 public class SampleUdpUpgradeableClient {

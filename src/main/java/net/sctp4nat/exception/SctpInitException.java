@@ -1,4 +1,4 @@
-package net.sctp4nat.core;
+package net.sctp4nat.exception;
 
 /**
  * @author jonaswagner

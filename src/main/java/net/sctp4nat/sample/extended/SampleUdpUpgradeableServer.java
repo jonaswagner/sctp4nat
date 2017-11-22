@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.core.SctpInitException;
-import net.sctp4nat.core.SctpUtils;
+import net.sctp4nat.exception.SctpInitException;
+import net.sctp4nat.util.SctpUtils;
 
 public class SampleUdpUpgradeableServer {
 

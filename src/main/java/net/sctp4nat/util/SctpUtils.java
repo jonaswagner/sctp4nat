@@ -1,4 +1,4 @@
-package net.sctp4nat.core;
+package net.sctp4nat.util;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -16,6 +16,10 @@ import lombok.Getter;
 import lombok.Setter;
 import net.sctp4nat.connection.SctpDefaultConfig;
 import net.sctp4nat.connection.UdpServerLink;
+import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.core.SctpMapper;
+import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
 
 public class SctpUtils {

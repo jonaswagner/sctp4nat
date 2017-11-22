@@ -1,4 +1,4 @@
-package net.sctp4nat.core;
+package net.sctp4nat.util;
 
 /**
  * This class is taken from net.tomp2p.utils. No changes were made.

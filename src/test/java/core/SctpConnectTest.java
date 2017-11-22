@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +23,7 @@ import org.slf4j.LoggerFactory;
 import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.origin.Sctp;
 
 public class SctpConnectTest {
@@ -53,8 +50,8 @@ public class SctpConnectTest {
 	}
 	
 	@Test
-	public void connectInitTest() throws Exception {
-		
+	public void connectInitTest2() throws Exception {
+		Sctp.init();
 		CountDownLatch latch = new CountDownLatch(1);
 		
 		Promise<SctpChannelFacade, Exception, Object> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
@@ -80,7 +77,7 @@ public class SctpConnectTest {
 	}
 	
 	@Test
-	public void connectInitTest2() throws Exception {
+	public void connectInitTest() throws Exception {
 		SctpUtils.init(clientAddr.getAddress(), SctpPorts.getInstance().generateDynPort(), null);
 		CountDownLatch latch = new CountDownLatch(1);
 		

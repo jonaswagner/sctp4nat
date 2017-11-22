@@ -11,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.junit.After;
 import org.junit.Test;
@@ -24,7 +22,6 @@ import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
-import net.sctp4nat.core.UdpClientLink;
 import net.sctp4nat.origin.Sctp;
 
 public class SctpInitTest {
@@ -101,23 +98,15 @@ public class SctpInitTest {
 		};
 		
 		SctpConnection channel = SctpConnection.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
-		Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
-		p.done(new DoneCallback<SctpChannelFacade>() {
-			
-			@Override
-			public void onDone(SctpChannelFacade result) {
-				result.send("Dummy".getBytes(), false, 0, 0);
-			}
-		});
-		
-		p.fail(new FailCallback<Exception>() {
-			
-			@Override
-			public void onFail(Exception result) {
-				LOG.error(result.getMessage());
+		Promise<SctpChannelFacade, Exception, Object> p = null;
+		try{
+			p = channel.connect(null);
+		} catch (Exception e) {
+			if(e instanceof SctpInitException && p == null) {
+				LOG.error(e.getMessage());
 				errorCountDown.countDown();
 			}
-		});
+		}
 		
 		errorCountDown.await(10, TimeUnit.SECONDS);
 		if (errorCountDown.getCount() > 0) {

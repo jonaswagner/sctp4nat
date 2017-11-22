@@ -12,6 +12,7 @@ import lombok.Builder;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
@@ -52,9 +53,15 @@ public class SctpConnection {
 			localSctpPort = remote.getPort();
 		}
 
+			
 		SctpChannel socket = null;
+		try {
 		socket = new SctpChannelBuilder().remoteAddress(remote.getAddress()).remotePort(remote.getPort())
 				.sctpDataCallBack(cb).mapper(SctpUtils.getMapper()).localSctpPort(localSctpPort).build();
+		} catch (SctpInitException e) {
+			LOG.error("Could not create SctpChannel, because Sctp is not initialized! Try SctpUtils.init()");
+			throw new SctpInitException(e.getMessage());
+		}
 
 		if (socket == null) {
 			throw new NullPointerException("Could not create SctpSocketAdapter!");

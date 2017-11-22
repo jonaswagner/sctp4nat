@@ -1,7 +1,7 @@
 package net.sctp4nat.core;
 
 /**
- * @author root
+ * @author jonaswagner
  *
  * This Exception signals that the user tried to call Sctp.init() twice or more.
  *

@@ -14,7 +14,6 @@ public class SimpleServer {
 	
 	public static void main(String[] args) throws Exception {
 		InetAddress localHost = Inet6Address.getByName("::1");
-		SctpDefaultConfig config = new SctpDefaultConfig();
 		
 		SctpDataCallback cb = new SctpDataCallback() {
 			
@@ -23,12 +22,7 @@ public class SimpleServer {
 					SctpChannelFacade so) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
-				try {
-					Thread.sleep(config.getConnectPeriodMillis());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				so.send(data, false, sid, (int) ppid);
+				so.send(data, new SctpDefaultConfig());
 			}
 		};
 		

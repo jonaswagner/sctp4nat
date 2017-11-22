@@ -11,6 +11,7 @@ import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4nat.connection.SctpDefaultConfig;
 import net.sctp4nat.connection.SctpTimeoutThread;
 import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.origin.JNIUtils;
@@ -253,6 +254,16 @@ public class SctpChannel implements SctpChannelFacade {
 		});
 
 		return d.promise();
+	}
+	
+	@Override
+	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultConfig config) {
+		return send(data, offset, len, config.isOrdered(), config.getSid(), config.getPpid());
+	}
+
+	@Override
+	public Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultConfig config) {
+		return send(data, config.isOrdered(), config.getSid(), config.getPpid());
 	}
 
 	/**

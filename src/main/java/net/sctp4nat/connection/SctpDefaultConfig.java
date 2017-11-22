@@ -38,13 +38,6 @@ public class SctpDefaultConfig {
 	};
 
 	/**
-	 * This variable specifies the waiting period for the JNI execution.
-	 */
-	@Getter
-	@Setter
-	private int connectPeriodMillis = 500;
-
-	/**
 	 * This is the stream id, which is used defaultly.
 	 */
 	@Getter

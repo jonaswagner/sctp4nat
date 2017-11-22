@@ -21,6 +21,7 @@ import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpInitException;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.core.SctpUtils;
 import net.sctp4nat.origin.SctpSocket;
 
 /**

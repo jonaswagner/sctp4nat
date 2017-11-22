@@ -13,6 +13,7 @@ import lombok.Getter;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.core.SctpUtils;
 
 /**
  * @author Jonas Wagner

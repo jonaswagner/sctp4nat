@@ -21,9 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpConnection;
-import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.core.SctpUtils;
 import net.sctp4nat.origin.Sctp;
 
 public class SctpConnectTest {

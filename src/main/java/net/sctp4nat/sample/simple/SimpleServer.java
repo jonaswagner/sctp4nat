@@ -5,10 +5,10 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
 import net.sctp4nat.connection.SctpDefaultConfig;
-import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.core.SctpUtils;
 
 public class SimpleServer {
 	

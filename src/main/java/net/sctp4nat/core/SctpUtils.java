@@ -1,4 +1,4 @@
-package net.sctp4nat.connection;
+package net.sctp4nat.core;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,10 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.core.SctpInitException;
-import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.UdpServerLink;
 import net.sctp4nat.origin.Sctp;
 
 public class SctpUtils {

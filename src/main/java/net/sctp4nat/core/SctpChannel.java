@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpDefaultConfig;
-import net.sctp4nat.connection.SctpUtils;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpAcceptable;

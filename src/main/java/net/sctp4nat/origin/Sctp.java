@@ -52,9 +52,6 @@ public class Sctp {
 	private Sctp() {
 	}
 
-	/**
-	 * FIXME Remove once usrsctp_finish is fixed
-	 */
 	@Getter
 	private static boolean initialized;
 
@@ -160,39 +157,37 @@ public class Sctp {
 	 */
 	public static synchronized void finish() throws IOException {
 		// Skip if we're not the last one
-		// if(--sctpEngineCount > 0)
-		// return;
+		if (--sctpEngineCount > 0)
+			return;
 
-		// try
-		// {
-		// FIXME fix this loop?
-		// it comes from SCTP samples written in C
+		try {
+			// FIXME fix this loop?
+			// it comes from SCTP samples written in C
 
-		// Retry limited amount of times
-		/*
-		 * FIXME usrsctp issue: SCTP stack is now never deinitialized in order to
-		 * prevent deadlock in usrsctp_finish.
-		 * https://code.google.com/p/webrtc/issues/detail?id=2749
-		 * 
-		 * final int CLOSE_RETRY_COUNT = 20;
-		 * 
-		 * for(int i=0; i < CLOSE_RETRY_COUNT; i++) { if(usrsctp_finish()) return;
-		 * 
-		 * Thread.sleep(50); }
-		 */
+			// Retry limited amount of times
+			/*
+			 * FIXME usrsctp issue: SCTP stack is now never deinitialized in order to
+			 * prevent deadlock in usrsctp_finish.
+			 * https://code.google.com/p/webrtc/issues/detail?id=2749
+			 */
+			final int CLOSE_RETRY_COUNT = 20;
 
-		// FIXME after throwing we might end up with other SCTP users broken
-		// (or stack not disposed) at this point because engine count will
-		// be out of sync for the purpose of calling init() and finish()
-		// methods.
-		// throw new IOException("Failed to shutdown usrsctp stack" +
-		// " after 20 retries");
-		// }
-		// catch(InterruptedException e)
-		// {
-		// logger.error("Finish interrupted", e);
-		// Thread.currentThread().interrupt();
-		// }
+			for (int i = 0; i < CLOSE_RETRY_COUNT; i++) {
+				if (usrsctp_finish())
+					return;
+
+				Thread.sleep(50);
+			}
+
+			// FIXME after throwing we might end up with other SCTP users broken
+			// (or stack not disposed) at this point because engine count will
+			// be out of sync for the purpose of calling init() and finish()
+			// methods.
+			throw new IOException("Failed to shutdown usrsctp stack" + " after 20 retries");
+		} catch (InterruptedException e) {
+			logger.error("Finish interrupted", e);
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	/**
@@ -256,7 +251,7 @@ public class Sctp {
 	 *            payload protocol identifier
 	 * @param context
 	 * @param flags
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void onSctpInboundPacket(long socketAddr, byte[] data, int sid, int ssn, int tsn, long ppid,
 			int context, int flags) throws IOException {

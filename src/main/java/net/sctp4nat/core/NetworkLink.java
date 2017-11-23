@@ -38,11 +38,15 @@ public interface NetworkLink
      * network packet.
      * @param s source <tt>SctpSocket</tt> instance.
      * @param packet network packet buffer.
+     * @param tos 
+     * 			Type of Service flag
+     * @param set_df 
+     * 			IP don't fragment option
      *
      * @throws IOException in case of transport error.
      * @throws NotFoundException 
      */
-    void onConnOut(final SctpChannelFacade so, final byte[] packet)
+    void onConnOut(final SctpChannelFacade so, final byte[] packet, final int tos)
         throws IOException, NotFoundException;
 
     /**

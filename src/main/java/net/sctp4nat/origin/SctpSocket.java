@@ -531,7 +531,7 @@ public class SctpSocket implements SctpAcceptable {
 
 		if (link != null) {
 			try {
-				link.onConnOut(SctpMapper.locate(this), packet);
+				link.onConnOut(SctpMapper.locate(this), packet, tos);
 				ret = 0;
 			} catch (IOException | NotFoundException e) {
 				logger.error("Error while sending packet through the link: " + link, e);

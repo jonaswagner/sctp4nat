@@ -44,11 +44,6 @@ public class SctpConnectTest {
 		}
 	}
 	
-	@After
-	public void tearDown() throws IOException {
-		Sctp.getInstance().finish();
-	}
-	
 	@Test
 	public void connectInitTest2() throws Exception {
 		Sctp.getInstance().init();
@@ -74,6 +69,20 @@ public class SctpConnectTest {
 		
 		latch.await(10, TimeUnit.SECONDS);
 		assertTrue(latch.getCount() == 0);
+		
+		CountDownLatch close = new CountDownLatch(1);
+		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Object>() {
+
+			@Override
+			public void onDone(Object result) {
+				close.countDown();
+			}
+		});
+		
+		if (!close.await(10, TimeUnit.SECONDS)) {
+			fail("Timeout in close");
+		}
 	}
 	
 	@Test
@@ -102,6 +111,20 @@ public class SctpConnectTest {
 		
 		latch.await(10, TimeUnit.SECONDS);
 		assertTrue(latch.getCount() == 0);
+		
+		CountDownLatch close = new CountDownLatch(1);
+		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Object>() {
+
+			@Override
+			public void onDone(Object result) {
+				close.countDown();
+			}
+		});
+		
+		if (!close.await(10, TimeUnit.SECONDS)) {
+			fail("Timeout in close");
+		}
 	}
 	
 }

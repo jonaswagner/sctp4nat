@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 import org.junit.After;
 import org.junit.Test;
@@ -33,9 +34,45 @@ public class SctpInitTest {
 	private SctpDataCallback cb;
 	
 	@Test
-	public void testAll() throws Exception {
+	public void testLauncher() throws Exception {
 		testLaunchWithoutInit();
 		testLaunch();
+	}
+	
+	public void testLaunchWithoutInit() throws Exception {
+		CountDownLatch errorCountDown = new CountDownLatch(1);
+		
+		try {
+			serverAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9899);
+			clientAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 2000);
+		} catch (UnknownHostException e1) {
+			fail(e1.getMessage());
+		}
+		
+		cb = new SctpDataCallback() {
+			
+			@Override
+			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
+					SctpChannelFacade so) {
+				LOG.debug("Ignored message: " + new String(data, StandardCharsets.UTF_8));
+			}
+		};
+		
+		SctpConnection channel = SctpConnection.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
+		Promise<SctpChannelFacade, Exception, Object> p = null;
+		try{
+			p = channel.connect(null);
+		} catch (Exception e) {
+			if(e instanceof SctpInitException && p == null) {
+				LOG.error(e.getMessage());
+				errorCountDown.countDown();
+			}
+		}
+		
+		errorCountDown.await(10, TimeUnit.SECONDS);
+		if (errorCountDown.getCount() > 0) {
+			fail("Not all errors reached");
+		}
 	}
 	
 	public void testLaunch() {
@@ -78,44 +115,21 @@ public class SctpInitTest {
 		}
 	}
 	
-	private void testLaunchWithoutInit() throws Exception {
-		CountDownLatch errorCountDown = new CountDownLatch(1);
-		
-		try {
-			serverAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9899);
-			clientAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 2000);
-		} catch (UnknownHostException e1) {
-			fail(e1.getMessage());
-		}
-		
-		cb = new SctpDataCallback() {
-			
-			@Override
-			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
-				LOG.debug("Ignored message: " + new String(data, StandardCharsets.UTF_8));
-			}
-		};
-		
-		SctpConnection channel = SctpConnection.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
-		Promise<SctpChannelFacade, Exception, Object> p = null;
-		try{
-			p = channel.connect(null);
-		} catch (Exception e) {
-			if(e instanceof SctpInitException && p == null) {
-				LOG.error(e.getMessage());
-				errorCountDown.countDown();
-			}
-		}
-		
-		errorCountDown.await(10, TimeUnit.SECONDS);
-		if (errorCountDown.getCount() > 0) {
-			fail("Not all errors reached");
-		}
-	}
-	
 	@After
 	public void tearDown() throws InterruptedException, IOException {
+		CountDownLatch close = new CountDownLatch(1);
+		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Object>() {
+			
+			@Override
+			public void onDone(Object result) {
+				close.countDown();
+			}
+		});
+		
+		if (!close.await(10, TimeUnit.SECONDS)) {
+			fail("Timeout called because close() could not finish");
+		}
 		Sctp.getInstance().finish();
 	}
 	

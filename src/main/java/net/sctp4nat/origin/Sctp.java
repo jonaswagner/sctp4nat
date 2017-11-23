@@ -157,10 +157,16 @@ public class Sctp {
 	 *             if usrsctp stack has failed to shutdown.
 	 */
 	public synchronized void finish() throws IOException {
+		//skip and reset if there is no socket assigned on usrsctp
+		if (sctpEngineCount <= 0) { 
+			Sctp.initialized = false;
+			return;
+		}
+		
 		// Skip if we're not the last one
 		if (--sctpEngineCount > 0)
 			return;
-
+		
 		try {
 			// FIXME fix this loop?
 			// it comes from SCTP samples written in C
@@ -174,8 +180,10 @@ public class Sctp {
 			final int CLOSE_RETRY_COUNT = 20;
 
 			for (int i = 0; i < CLOSE_RETRY_COUNT; i++) {
-				if (usrsctp_finish())
+				if (usrsctp_finish()) {
+					Sctp.initialized = false;
 					return;
+				}
 
 				Thread.sleep(50);
 			}

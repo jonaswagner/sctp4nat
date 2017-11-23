@@ -191,6 +191,8 @@ public class SctpChannel implements SctpChannelFacade {
 							d.reject(new Exception(
 									"we are forced to close the connection because we lost the connection to remote: "
 											+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
+						} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0){
+							SctpChannel.this.close();
 						}
 					}
 

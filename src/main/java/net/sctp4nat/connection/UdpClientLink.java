@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,7 @@ public class UdpClientLink implements NetworkLink {
 	private void receive(final InetSocketAddress remote, final SctpChannel so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 			public void run() {
+				
 				try {
 					byte[] buff = new byte[2048];
 					DatagramPacket p = new DatagramPacket(buff, 2048);

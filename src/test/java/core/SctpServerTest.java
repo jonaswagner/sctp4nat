@@ -102,5 +102,6 @@ public class SctpServerTest {
 		if (extendedSetUpTest.getCount() > 0) {
 			fail();
 		}
+		link.close();
     }
 }

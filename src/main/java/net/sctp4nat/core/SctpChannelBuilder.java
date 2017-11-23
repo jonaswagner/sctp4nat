@@ -69,7 +69,9 @@ public class SctpChannelBuilder {
 				}  else if (notification.toString().indexOf("COMM_LOST") >= 0){
 					LOG.error("Communication aborted! Now shutting down the udp connection...");
 					so.close();
-				} 
+				} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0){
+					so.close();
+				}
 			}
 		});
 		

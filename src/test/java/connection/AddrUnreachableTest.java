@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpConnection;
-import net.sctp4nat.connection.SctpDefaultConfig;
-import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
@@ -31,7 +29,6 @@ import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpAcceptable;
 import net.sctp4nat.origin.SctpNotification;
-import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
 import net.sctp4nat.util.SctpUtils;
 
@@ -42,7 +39,7 @@ public class AddrUnreachableTest {
 	Thread server;
 	Thread client;
 	
-	@Test
+//	@Test
 	public void lostConnectionTest() {
 
 		CountDownLatch serverSetup = new CountDownLatch(1);
@@ -64,7 +61,6 @@ public class AddrUnreachableTest {
 			@Override
 			public void run() {
 
-				SctpDefaultConfig config = new SctpDefaultConfig();
 				SctpDataCallback cb = new SctpDataCallback() {
 
 					@Override
@@ -211,9 +207,22 @@ public class AddrUnreachableTest {
 	}
 	
 	@After
-	public void tearDown() throws IOException {
+	public void tearDown() throws IOException, InterruptedException {
+		CountDownLatch close = new CountDownLatch(1);
+		
 		server.interrupt();
 		client.interrupt();
-		Sctp.getInstance().finish();
+		Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
+		closePromise.done(new DoneCallback<Object>() {
+
+			@Override
+			public void onDone(Object result) {
+				close.countDown();
+			}
+		});
+		
+		if (!close.await(10,  TimeUnit.SECONDS)) {
+			fail("Timeout called! teardown could not be executed successfully!");
+		}
 	}
 }

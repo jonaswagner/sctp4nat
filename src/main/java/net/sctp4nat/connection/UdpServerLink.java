@@ -99,6 +99,7 @@ public class UdpServerLink implements NetworkLink {
 						if (so == null) {
 							so = setupSocket(localAddress, localPort, p.getAddress(), p.getPort(), cb, mapper);
 							mapper.register(remote, so);
+							LOG.info("onConnIn() Called");
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
 						} else {
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());

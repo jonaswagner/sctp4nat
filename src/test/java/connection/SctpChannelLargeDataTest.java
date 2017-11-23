@@ -40,10 +40,12 @@ import net.sctp4nat.util.SctpUtils;
  */
 public class SctpChannelLargeDataTest {
 
+	SctpChannelFacade serverSo;
+	SctpChannelFacade clientSo;
 	Thread server;
 	Thread client;
-	
-	@Test
+
+//	@Test
 	public void sctpChannelTest() throws InterruptedException {
 
 		CountDownLatch serverCd = new CountDownLatch(1);
@@ -66,6 +68,7 @@ public class SctpChannelLargeDataTest {
 						System.err.println("len: " + data.length + "/ " + sid + " / " + ssn + " :tsn " + tsn + " F:"
 								+ flags + " cxt:" + context);
 						if (flags == 128) {
+							SctpChannelLargeDataTest.this.serverSo = so;
 							shutdownCd.countDown();
 						}
 					}
@@ -131,10 +134,12 @@ public class SctpChannelLargeDataTest {
 							fail(e.getMessage());
 						}
 
-//						result.send(new byte[975 * 1024], true, 2, 0);
+						result.send(new byte[975 * 1024], true, 2, 0);
 						result.send(new byte[981 * 1024], true, 5, 0);
 						// result.send(new byte[982 * 1024], true, 1, 0); this does not work!, there are
 						// only 10 streams available per association
+
+						SctpChannelLargeDataTest.this.clientSo = result;
 					}
 				});
 
@@ -152,15 +157,36 @@ public class SctpChannelLargeDataTest {
 		if (!shutdownCd.await(10, TimeUnit.SECONDS)) {
 			fail("Timeout, --> Files were not transmitted");
 		}
-		
-		
+
+		Thread.sleep(1000); //wait for SCTP_SENDER_DRY_EVENT
 
 	}
-	
+
 	@After
-	public void tearDown() throws IOException {
-		server.interrupt();
-		client.interrupt();
+	public void tearDown() throws InterruptedException, IOException {
+		CountDownLatch close = new CountDownLatch(1);
+		
+		Promise<Object, Exception, Object> closePromise1 = serverSo.close();
+		closePromise1.done(new DoneCallback<Object>() {
+
+			@Override
+			public void onDone(Object result) {
+				Promise<Object, Exception, Object> closePromise2 = clientSo.close();
+				closePromise2.done(new DoneCallback<Object>() {
+
+					@Override
+					public void onDone(Object result) {
+						server.interrupt();
+						client.interrupt();
+							close.countDown();
+						}
+				});
+			}
+		});
+		if (!close.await(5, TimeUnit.SECONDS)) {
+			fail("Shutdown Timeout called!");
+		}
 		Sctp.getInstance().finish();
 	}
+	
 }

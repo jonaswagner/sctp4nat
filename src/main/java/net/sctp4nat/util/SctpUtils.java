@@ -89,7 +89,10 @@ public class SctpUtils {
 				if (customLink != null) {
 					customLink.close();
 				}
-				link.close();
+				
+				if (link != null) {
+					link.close();
+				}
 
 				if (customMapper != null) {
 					customMapper.shutdown();

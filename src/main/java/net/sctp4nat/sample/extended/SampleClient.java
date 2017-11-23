@@ -26,7 +26,7 @@ public class SampleClient {
 	
 	public static void main(String[] args) throws IOException, SctpInitException {
 
-		Sctp.init();
+		Sctp.getInstance().init();
 		
 		/*
 		 * Usage: client remote_addr remote_port [local_port] [local_encaps_port] [remote_encaps_port]

@@ -55,7 +55,7 @@ public class SctpTest {
 
 		server = new Thread(new Runnable() {
 			public void run() {
-				Sctp.init();
+				Sctp.getInstance().init();
 
 				InetSocketAddress local = new InetSocketAddress(localhost, 9899);
 
@@ -110,7 +110,7 @@ public class SctpTest {
 
 			public void run() {
 
-				Sctp.init();
+				Sctp.getInstance().init();
 
 				try {
 					serverCd.await();
@@ -214,6 +214,12 @@ public class SctpTest {
 		shutdownCd.await(10, TimeUnit.SECONDS);
 		if (shutdownCd.getCount() > 0) {
 			fail("shutdown could not complete");
+		}
+		
+		try {
+			Sctp.getInstance().finish();
+		} catch (IOException e) {
+			fail(e.getMessage());
 		}
 	}
 	

@@ -18,7 +18,7 @@ import net.sctp4nat.origin.Sctp;
 public class SimpleClient {
 
 	public static void main(String[] args) throws Exception {
-		Sctp.init();
+		Sctp.getInstance().init();
 
 		InetAddress localHost = Inet6Address.getByName("::1");
 		InetSocketAddress local = new InetSocketAddress(localHost, SctpPorts.getInstance().generateDynPort());

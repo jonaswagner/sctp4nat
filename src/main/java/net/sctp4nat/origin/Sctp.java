@@ -47,6 +47,7 @@ public class Sctp {
 	/**
 	 * This class is a thread-safe Singleton
 	 */
+	@Getter
 	private static final Sctp instance = new Sctp();
 
 	private Sctp() {
@@ -155,7 +156,7 @@ public class Sctp {
 	 * @throws IOException
 	 *             if usrsctp stack has failed to shutdown.
 	 */
-	public static synchronized void finish() throws IOException {
+	public synchronized void finish() throws IOException {
 		// Skip if we're not the last one
 		if (--sctpEngineCount > 0)
 			return;
@@ -193,14 +194,16 @@ public class Sctp {
 	/**
 	 * Initializes native SCTP counterpart.
 	 */
-	public static synchronized void init() {
+	public synchronized void init() {
 		// Skip if we're not the first one
 		// if(sctpEngineCount++ > 0)
 		// return;
-		if (!initialized) {
-			logger.debug("Init'ing brian's & jonas' patched usrsctp");
-			usrsctp_init(0);
-			initialized = true;
+		synchronized (this) {
+			if (!initialized) {
+				logger.debug("Init'ing brian's & jonas' patched usrsctp");
+				usrsctp_init(0);
+				initialized = true;
+			}
 		}
 	}
 

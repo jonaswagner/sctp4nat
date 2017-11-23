@@ -2,6 +2,7 @@ package connection;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
+import org.junit.After;
 import org.junit.Test;
 
 import net.sctp4nat.connection.SctpConnection;
@@ -38,6 +40,9 @@ import net.sctp4nat.util.SctpUtils;
  */
 public class SctpChannelLargeDataTest {
 
+	Thread server;
+	Thread client;
+	
 	@Test
 	public void sctpChannelTest() throws InterruptedException {
 
@@ -48,7 +53,7 @@ public class SctpChannelLargeDataTest {
 		/**
 		 * This is the server Thread
 		 */
-		Thread server = new Thread(new Runnable() {
+		server = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -89,11 +94,11 @@ public class SctpChannelLargeDataTest {
 		/**
 		 * This is the client Thread
 		 */
-		Thread client = new Thread(new Runnable() {
+		client = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				Sctp.init();
+				Sctp.getInstance().init();
 
 				InetAddress localHost = null;
 				try {
@@ -126,7 +131,7 @@ public class SctpChannelLargeDataTest {
 							fail(e.getMessage());
 						}
 
-						result.send(new byte[975 * 1024], true, 2, 0);
+//						result.send(new byte[975 * 1024], true, 2, 0);
 						result.send(new byte[981 * 1024], true, 5, 0);
 						// result.send(new byte[982 * 1024], true, 1, 0); this does not work!, there are
 						// only 10 streams available per association
@@ -147,6 +152,15 @@ public class SctpChannelLargeDataTest {
 		if (!shutdownCd.await(10, TimeUnit.SECONDS)) {
 			fail("Timeout, --> Files were not transmitted");
 		}
+		
+		
 
+	}
+	
+	@After
+	public void tearDown() throws IOException {
+		server.interrupt();
+		client.interrupt();
+		Sctp.getInstance().finish();
 	}
 }

@@ -37,6 +37,7 @@ public class SctpMapper {
 	 * usrsctp counterpart. Make sure this {@link SctpChannel} instance is not
 	 * used anywhere else!
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	public synchronized void unregister(SctpChannel so) {
 		if (isShutdown) {
 			return;

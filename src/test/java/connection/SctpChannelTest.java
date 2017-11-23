@@ -3,6 +3,7 @@ package connection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
+import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,9 @@ public class SctpChannelTest {
 	private static final String TEST_STR = "Hello World!";
 	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelTest.class);
 
+	Thread server;
+	Thread client;
+	
 	@Test
 	public void sctpChannelTest() throws InterruptedException {
 
@@ -45,7 +50,7 @@ public class SctpChannelTest {
 		/**
 		 * This is the server Thread
 		 */
-		Thread server = new Thread(new Runnable() {
+		server = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -106,11 +111,11 @@ public class SctpChannelTest {
 		/**
 		 * This is the client Thread
 		 */
-		Thread client = new Thread(new Runnable() {
+		client = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				Sctp.init();
+				Sctp.getInstance().init();
 
 				InetAddress localHost = null;
 				try {
@@ -173,5 +178,12 @@ public class SctpChannelTest {
 		if (shutdownCd.getCount() > 0) {
 			fail("shutdown could not complete");
 		}
+	}
+	
+	@After
+	public void tearDown() throws IOException {
+		server.interrupt();
+		client.interrupt();
+		Sctp.getInstance().finish();
 	}
 }

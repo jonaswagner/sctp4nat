@@ -116,7 +116,7 @@ public class SctpInitTest {
 	
 	@After
 	public void tearDown() throws InterruptedException, IOException {
-		Sctp.finish();
+		Sctp.getInstance().finish();
 	}
 	
 }

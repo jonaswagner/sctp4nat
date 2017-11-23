@@ -16,7 +16,7 @@ public class SampleServer {
 
 	public static void main(String[] args) throws UnknownHostException, SocketException {
 
-		Sctp.init();
+		Sctp.getInstance().init();
 		
 		/*
 		 * Usage: echo_server [local_encaps_port] [remote_encaps_port]

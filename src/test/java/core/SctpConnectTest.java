@@ -46,12 +46,12 @@ public class SctpConnectTest {
 	
 	@After
 	public void tearDown() throws IOException {
-		Sctp.finish();
+		Sctp.getInstance().finish();
 	}
 	
 	@Test
 	public void connectInitTest2() throws Exception {
-		Sctp.init();
+		Sctp.getInstance().init();
 		CountDownLatch latch = new CountDownLatch(1);
 		
 		Promise<SctpChannelFacade, Exception, Object> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
@@ -103,4 +103,5 @@ public class SctpConnectTest {
 		latch.await(10, TimeUnit.SECONDS);
 		assertTrue(latch.getCount() == 0);
 	}
+	
 }

@@ -48,7 +48,7 @@ public class SctpUtils {
 		if (Sctp.isInitialized()) {
 			throw new SctpInitException("Sctp is already initialized. You should not initialize it twice!");
 		} else {
-			Sctp.init();
+			Sctp.getInstance().init();
 		}
 
 		if (cb == null) {
@@ -99,7 +99,7 @@ public class SctpUtils {
 				SctpPorts.shutdown();
 
 				try {
-					Sctp.finish();
+					Sctp.getInstance().finish();
 				} catch (IOException e) {
 					d.reject(e);
 				}

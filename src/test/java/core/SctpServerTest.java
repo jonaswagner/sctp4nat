@@ -67,7 +67,7 @@ public class SctpServerTest {
     public void extendedSetUpTest() throws Exception {
         CountDownLatch extendedSetUpTest = new CountDownLatch(1);
     	
-    	Sctp.init();
+    	Sctp.getInstance().init();
     	
     	SctpDataCallback cb = new SctpDataCallback() {
 			

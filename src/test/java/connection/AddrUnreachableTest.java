@@ -116,7 +116,7 @@ public class AddrUnreachableTest {
 
 			@Override
 			public void run() {
-				Sctp.init();
+				Sctp.getInstance().init();
 
 				InetSocketAddress local = new InetSocketAddress(localhost, SctpPorts.getInstance().generateDynPort());
 				InetSocketAddress remote = new InetSocketAddress(localhost, SctpPorts.SCTP_TUNNELING_PORT);
@@ -214,6 +214,6 @@ public class AddrUnreachableTest {
 	public void tearDown() throws IOException {
 		server.interrupt();
 		client.interrupt();
-		Sctp.finish();
+		Sctp.getInstance().finish();
 	}
 }

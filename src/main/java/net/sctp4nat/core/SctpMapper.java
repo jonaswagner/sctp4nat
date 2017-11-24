@@ -5,7 +5,12 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +39,8 @@ public class SctpMapper {
 
 	/**
 	 * This method removes a socket from the {@link Mapper} and shuts down the
-	 * usrsctp counterpart. Make sure this {@link SctpChannel} instance is not
-	 * used anywhere else!
+	 * usrsctp counterpart. Make sure this {@link SctpChannel} instance is not used
+	 * anywhere else!
 	 */
 	@SuppressWarnings("unlikely-arg-type")
 	public synchronized void unregister(SctpChannel so) {
@@ -76,7 +81,9 @@ public class SctpMapper {
 	}
 
 	/**
-	 * This method locates a {@link SctpChannel} object given the remote {@link InetAddress} and port.
+	 * This method locates a {@link SctpChannel} object given the remote
+	 * {@link InetAddress} and port.
+	 * 
 	 * @param remoteAddress
 	 * @param remotePort
 	 * @return {@link SctpChannel}
@@ -117,13 +124,12 @@ public class SctpMapper {
 
 		SctpChannel facade = null;
 		try {
-		 facade = socketMap.values().stream().filter(so -> so.containsSctpSocket(sctpSocket)).findFirst()
-				.get();
+			facade = socketMap.values().stream().filter(so -> so.containsSctpSocket(sctpSocket)).findFirst().get();
 		} catch (NoSuchElementException e) {
 			LOG.error("Could not retrieve SctpSocket from SctpMapper!");
 			return null;
 		}
-		
+
 		if (facade == null) {
 			LOG.error("Could not retrieve SctpSocket from SctpMapper!");
 			return null;
@@ -134,26 +140,42 @@ public class SctpMapper {
 
 	/**
 	 * This method shuts down all remaining connections and closes them.
+	 * @throws InterruptedException 
+	 * @throws TimeoutException 
 	 */
-	public void shutdown() {
+	public void shutdown() throws InterruptedException, TimeoutException {
 		isShutdown = true;
-
+		CountDownLatch close = new CountDownLatch(socketMap.size());
+		
 		for (Map.Entry<InetSocketAddress, SctpChannel> element : socketMap.entrySet()) {
 			SctpChannel so = element.getValue();
-			so.shutdownInit();		
 			Promise<Object, Exception, Object> p = so.close();
-			try {
-				p.waitSafely(2000l);
-			} catch (InterruptedException e) {
-				LOG.error(
-						"Could not shutdown connection to " + so.getRemote().getAddress().getHostAddress()
-								+ ":" + so.getRemote().getPort(), e);
-			}
+			p.done(new DoneCallback<Object>() {
+
+				@Override
+				public void onDone(Object result) {
+					close.countDown();
+				}
+			});
+			p.fail(new FailCallback<Exception>() {
+
+				@Override
+				public void onFail(Exception result) {
+					LOG.error("Could not shutdown connection to " + so.getRemote().getAddress().getHostAddress() + ":"
+							+ so.getRemote().getPort());
+				}
+			});
+
 		}
-		LOG.debug("all sctp connections closed");
+		
+		if(!close.await(10, TimeUnit.SECONDS)) {
+			LOG.error("Timeout called, because not all connections were closed correctly in time");
+			throw new TimeoutException();
+		} else {
+			LOG.debug("all sctp connections closed");
 
-		socketMap.clear();
-		LOG.debug("socketMap cleared");
-
+			socketMap.clear();
+			LOG.debug("socketMap cleared");
+		}
 	}
 }

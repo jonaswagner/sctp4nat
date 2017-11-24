@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 import org.jdeferred.Deferred;
 import org.jdeferred.Promise;
@@ -28,8 +29,10 @@ public class SctpUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpUtils.class);
 
+	
 	@Getter
-	private static final SctpMapper mapper = new SctpMapper();
+	@Setter
+	private static SctpMapper mapper = new SctpMapper();
 	@Getter
 	private static final ExecutorService threadPoolExecutor = Executors
 			.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * THREADPOOL_MULTIPLIER);
@@ -95,9 +98,20 @@ public class SctpUtils {
 				}
 
 				if (customMapper != null) {
-					customMapper.shutdown();
-				} 
-				mapper.shutdown();
+					try {
+						customMapper.shutdown();
+					} catch (InterruptedException | TimeoutException e) {
+						LOG.error(e.getMessage(), e);
+						d.reject(e);
+					}
+				}
+				
+				try {
+					mapper.shutdown();
+				} catch (InterruptedException | TimeoutException e1) {
+					LOG.error(e1.getMessage(), e1);
+					d.reject(e1);
+				}
 
 				SctpPorts.shutdown();
 

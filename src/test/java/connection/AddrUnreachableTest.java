@@ -39,7 +39,7 @@ public class AddrUnreachableTest {
 	Thread server;
 	Thread client;
 	
-//	@Test
+	@Test
 	public void lostConnectionTest() {
 
 		CountDownLatch serverSetup = new CountDownLatch(1);

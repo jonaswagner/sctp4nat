@@ -38,7 +38,7 @@ public class SctpChannelTest {
 	Thread server;
 	Thread client;
 	
-//	@Test
+	@Test
 	public void sctpChannelTest() throws InterruptedException {
 
 		CountDownLatch serverCd = new CountDownLatch(1);

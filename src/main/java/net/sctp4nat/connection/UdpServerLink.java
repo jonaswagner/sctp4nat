@@ -90,7 +90,7 @@ public class UdpServerLink implements NetworkLink {
 				while (!isShutdown) {
 					byte[] buff = new byte[2048];
 					DatagramPacket p = new DatagramPacket(buff, 2048);
-
+					
 					try {
 						udpSocket.receive(p);
 
@@ -99,7 +99,7 @@ public class UdpServerLink implements NetworkLink {
 						if (so == null) {
 							so = setupSocket(localAddress, localPort, p.getAddress(), p.getPort(), cb, mapper);
 							mapper.register(remote, so);
-							LOG.info("onConnIn() Called");
+							LOG.info("onConnIn() Called with IP and port /" + p.getAddress().getHostAddress() + ":" + p.getPort());
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
 						} else {
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());

@@ -30,6 +30,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <usrsctp.h>
+#include <stdarg.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+#include <sys/types.h>
+#ifndef _WIN32
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#else
+#include <io.h>
+#endif
+#include <usrsctp.h>
 
 /* The name of the class which defines the callback methods. */
 #define SCTP_CLASSNAME "net/sctp4nat/origin/Sctp"
@@ -201,7 +215,15 @@ JNIEXPORT jboolean JNICALL
 Java_net_sctp4nat_origin_Sctp_usrsctp_1finish
     (JNIEnv *env, jclass clazz)
 {
-    return usrsctp_finish() ? JNI_TRUE : JNI_FALSE;
+	while (usrsctp_finish() != 0) {
+	#ifdef _WIN32
+		Sleep(1000);
+	#else
+		sleep(1);
+	#endif
+	}
+    /*return usrsctp_finish() ? JNI_TRUE : JNI_FALSE;*/
+    return JNI_TRUE;
 }
 
 /*

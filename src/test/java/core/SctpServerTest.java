@@ -62,6 +62,21 @@ public class SctpServerTest {
 		if (simpleSetUpTest.getCount() > 0) {
 			fail();
 		}
+		
+		CountDownLatch close = new CountDownLatch(1);
+		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Object>() {
+			
+			@Override
+			public void onDone(Object result) {
+				close.countDown();
+			}
+		});
+		
+		if (!close.await(10, TimeUnit.SECONDS)) {
+			fail("Timeout called because close() could not finish");
+		}
+		Sctp.getInstance().finish();
     }
     
     public void extendedSetUpTest() throws Exception {

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import lombok.Builder;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
@@ -84,14 +85,14 @@ public class SctpConnection {
 
 		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
 
-		p.fail(new FailCallback<Exception>() {
-
-			@Override
-			public void onFail(Exception e) {
-				LOG.error("Could not connect to remote host", e);
-				releaseAssignedParams(so, e);
-			}
-		});
+//		p.fail(new FailCallback<Exception>() {
+//
+//			@Override
+//			public void onFail(Exception e) {
+//				LOG.error("Could not connect to remote host", e);
+//				releaseAssignedParams(so, e);
+//			}
+//		});
 
 		return p;
 

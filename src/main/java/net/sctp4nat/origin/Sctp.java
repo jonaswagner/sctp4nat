@@ -157,11 +157,16 @@ public class Sctp {
 	 *             if usrsctp stack has failed to shutdown.
 	 */
 	public synchronized void finish() throws IOException {
-		//skip and reset if there is no socket assigned on usrsctp
-		if (sctpEngineCount <= 0) { 
-			Sctp.initialized = false;
-			return;
-		}
+//		//skip and reset if there is no socket assigned on usrsctp
+//		if (sctpEngineCount <= 0) { 
+//			if (usrsctp_finish()) {
+//				Sctp.initialized = false;
+//				logger.debug("usrsctp_finish() successfully executed");
+//			} else {
+//				
+//			}
+//			return;
+//		}
 		
 		// Skip if we're not the last one
 		if (--sctpEngineCount > 0)
@@ -177,11 +182,12 @@ public class Sctp {
 			 * prevent deadlock in usrsctp_finish.
 			 * https://code.google.com/p/webrtc/issues/detail?id=2749
 			 */
-			final int CLOSE_RETRY_COUNT = 20;
+			final int CLOSE_RETRY_COUNT = 200;
 
 			for (int i = 0; i < CLOSE_RETRY_COUNT; i++) {
 				if (usrsctp_finish()) {
 					Sctp.initialized = false;
+					logger.debug("usrsctp_finish() successfully executed");
 					return;
 				}
 
@@ -192,7 +198,7 @@ public class Sctp {
 			// (or stack not disposed) at this point because engine count will
 			// be out of sync for the purpose of calling init() and finish()
 			// methods.
-			throw new IOException("Failed to shutdown usrsctp stack" + " after 20 retries");
+			throw new IOException("Failed to shutdown usrsctp stack" + " after 200 retries");
 		} catch (InterruptedException e) {
 			logger.error("Finish interrupted", e);
 			Thread.currentThread().interrupt();

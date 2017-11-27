@@ -28,7 +28,7 @@ SctpUtils.init(localHost, SctpPorts.SCTP_TUNNELING_PORT, cb);
 ```
 
 ### Client
-First, specify the local and remote IP address and port. Optionally, specify the "SctpDataCallback". Second, create a "SctpConnection" object. Third, connect this connection object to the remote SCTP endpoint. Once the endpoints are connected, Promise p will call p.done(...) with a "SctpChannelFacade" object. This SctpChannelFacade is the interface for the association between client and server.
+Furst, initialze the usrsctp library (Sctp.getInstance().init() is an alternative way to do it). Second, specify the local and remote IP address and port. Optionally, specify the "SctpDataCallback". Third, create a "SctpConnection" object. Fourth, connect this connection object to the remote SCTP endpoint. Once the endpoints are connected, Promise p will call p.done(...) with a "SctpChannelFacade" object. This SctpChannelFacade is the interface for the association between client and server.
 ```
 Sctp.getInstance().init();
 

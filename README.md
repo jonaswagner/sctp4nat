@@ -3,7 +3,7 @@ This is a simple Java library, which provides the user to connect two endpoints 
 
 This library is not finished yet. But if you still want to try it out, you should know some stuff beforehand:
 - This library uses usrsctp via JNI interface. 
-- The usrysctp-part of this library is not cross-compiled yet. Thus, it only works on linux. It is tested on Ubuntu 16.04.
+- The usrsctp-part of this library is not cross-compiled yet. Thus, it only works on linux. It is tested on Ubuntu 16.04.
 
 ## Code samples
 To make the library more easy-to-use for you guys, here's a small code sample of how to create a client and a server.

@@ -13,18 +13,48 @@ First, specify the local address and port. Optionally (as shown in the code samp
 ```
 InetAddress localHost = Inet6Address.getByName("::1");
 		
-		SctpDataCallback cb = new SctpDataCallback() {
+SctpDataCallback cb = new SctpDataCallback() {
 			
-			@Override
-			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
-				System.out.println("I WAS HERE");
-				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
-				so.send(data, new SctpDefaultConfig());
-			}
-		};
+	@Override
+	public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
+			SctpChannelFacade so) {
+		System.out.println("I WAS HERE");
+		System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
+		so.send(data, new SctpDefaultConfig());
+	}
+};
 		
-		SctpUtils.init(localHost, SctpPorts.SCTP_TUNNELING_PORT, cb);
+SctpUtils.init(localHost, SctpPorts.SCTP_TUNNELING_PORT, cb);
 ```
 
 ### Client
+First, specify the local and remote IP address and port. Optionally, specify the "SctpDataCallback". Second, create a "SctpConnection" object. Third, connect this connection object to the remote SCTP endpoint. Once the endpoints are connected, Promise p will call p.done(...) with a "SctpChannelFacade" object. This SctpChannelFacade is the interface for the association between client and server.
+```
+Sctp.getInstance().init();
+
+InetAddress localHost = Inet6Address.getByName("::1");
+InetSocketAddress local = new InetSocketAddress(localHost, SctpPorts.getInstance().generateDynPort());
+InetSocketAddress remote = new InetSocketAddress(localHost, SctpPorts.SCTP_TUNNELING_PORT);
+		
+SctpDataCallback cb = new SctpDataCallback() {
+			
+	@Override
+	public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
+			SctpChannelFacade so) {
+		System.out.println("I WAS HERE");
+		System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
+		System.out.println("Now closing channel");
+		so.close();
+	}
+};
+
+SctpConnection channel = SctpConnection.builder().cb(cb).local(local).remote(remote).build();
+Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
+p.done(new DoneCallback<SctpChannelFacade>() {
+			
+	@Override
+	public void onDone(SctpChannelFacade result) {
+		result.send("Hello World!".getBytes(), false, 0, 0);
+	}
+});
+```

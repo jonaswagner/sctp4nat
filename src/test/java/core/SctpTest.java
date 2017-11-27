@@ -224,5 +224,4 @@ public class SctpTest {
 			fail(e.getMessage());
 		}
 	}
-	
 }

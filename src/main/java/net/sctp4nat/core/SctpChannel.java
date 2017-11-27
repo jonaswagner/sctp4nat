@@ -361,5 +361,13 @@ public class SctpChannel implements SctpChannelFacade {
 	public InetSocketAddress getRemote() {
 		return this.remote;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SctpChannel: Remote("+ remote.getAddress().getHostAddress() + ":" +remote.getPort() + "), SctpSocket(SctpPort:" + so.getPort() + ")");
+		return builder.toString();
+		
+	}
 
 }

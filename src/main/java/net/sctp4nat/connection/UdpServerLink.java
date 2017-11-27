@@ -90,16 +90,18 @@ public class UdpServerLink implements NetworkLink {
 				while (!isShutdown) {
 					byte[] buff = new byte[2048];
 					DatagramPacket p = new DatagramPacket(buff, 2048);
-					
+
 					try {
 						udpSocket.receive(p);
 
 						InetSocketAddress remote = new InetSocketAddress(p.getAddress(), p.getPort());
 						so = SctpMapper.locate(p.getAddress().getHostAddress(), p.getPort());
 						if (so == null) {
+							LOG.info("New INIT arrived. Now starting the setupSocket() process...");
 							so = setupSocket(localAddress, localPort, p.getAddress(), p.getPort(), cb, mapper);
 							mapper.register(remote, so);
-							LOG.info("onConnIn() Called with IP and port /" + p.getAddress().getHostAddress() + ":" + p.getPort());
+							LOG.info("onConnIn() Called with IP and port /" + p.getAddress().getHostAddress() + ":"
+									+ p.getPort());
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
 						} else {
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
@@ -142,14 +144,11 @@ public class UdpServerLink implements NetworkLink {
 	 * @throws SctpInitException
 	 */
 	private SctpChannel setupSocket(final InetAddress localAddress, final int localPort,
-			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb, final SctpMapper mapper) throws SctpInitException {
-		SctpChannel so = new SctpChannelBuilder()
-				.networkLink(UdpServerLink.this)
-				.localSctpPort(localPort)
-				.sctpDataCallBack(cb)
-				.remoteAddress(remoteAddress)
-				.remotePort(remotePort)
-				.mapper(mapper).build();
+			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb, final SctpMapper mapper)
+			throws SctpInitException {
+		SctpChannel so = new SctpChannelBuilder().networkLink(UdpServerLink.this).localSctpPort(localPort)
+				.sctpDataCallBack(cb).remoteAddress(remoteAddress).remotePort(remotePort).mapper(mapper).build();
+		LOG.info("new SctpChannel object created --> " + so.toString());
 		so.listen();
 		return so;
 	}
@@ -162,5 +161,14 @@ public class UdpServerLink implements NetworkLink {
 	public void close() {
 		this.isShutdown = true;
 		udpSocket.close();
+	}
+
+	@Override
+	public String toString() {
+		InetSocketAddress local = (InetSocketAddress) this.udpSocket.getLocalSocketAddress();
+
+		return "UdpClientLink(" + "Local(" + local.getAddress().getHostAddress() + ":" + local.getPort()
+				+ "), shutdown is " + isShutdown + ")";
+
 	}
 }

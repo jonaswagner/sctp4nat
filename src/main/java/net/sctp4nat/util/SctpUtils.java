@@ -65,6 +65,11 @@ public class SctpUtils {
 		} else {
 			link = new UdpServerLink(mapper, localAddr, localSctpPort, cb);
 		}
+		
+		if (SctpMapper.isShutdown()) {
+			LOG.warn("You are overwriting isShutdown in SctpMapper! This probably causes serious inconsistencies!");
+		}
+		SctpMapper.setShutdown(false);
 	}
 
 	private static boolean checkFreePort(final int sctpServerPort) {

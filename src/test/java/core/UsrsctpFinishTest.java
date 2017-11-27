@@ -47,7 +47,7 @@ public class UsrsctpFinishTest {
 
 		InetSocketAddress local = new InetSocketAddress(localhost, 1234);
 		InetSocketAddress remote = new InetSocketAddress(localhost, 9899);
-
+		
 		try {
 			localhost = InetAddress.getByName("127.0.0.1");
 			SctpUtils.init(localhost, 9899, null);

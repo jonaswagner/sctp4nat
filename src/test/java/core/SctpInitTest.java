@@ -33,7 +33,7 @@ public class SctpInitTest {
 	private InetSocketAddress clientAddr;
 	private SctpDataCallback cb;
 	
-//	@Test
+	@Test
 	public void testLauncher() throws Exception {
 		testLaunchWithoutInit();
 		testLaunch();

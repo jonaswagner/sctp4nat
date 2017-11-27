@@ -19,8 +19,8 @@ import net.sctp4nat.util.SctpUtils;
 /**
  * @author Jonas Wagner
  * 
- *         This class holds the {@link DatagramSocket} the outgoing
- *         SCTP connection attempts.
+ *         This class holds the {@link DatagramSocket} the outgoing SCTP
+ *         connection attempts.
  *
  */
 public class UdpClientLink implements NetworkLink {
@@ -71,14 +71,15 @@ public class UdpClientLink implements NetworkLink {
 
 	/**
 	 * Forwards the UDP packets to the native counterpart.
+	 * 
 	 * @param remote
-	 * 			{@link SctpChannel}
+	 *            {@link SctpChannel}
 	 * @param so
 	 */
 	private void receive(final InetSocketAddress remote, final SctpChannel so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
 			public void run() {
-				
+
 				try {
 					byte[] buff = new byte[2048];
 					DatagramPacket p = new DatagramPacket(buff, 2048);
@@ -96,7 +97,8 @@ public class UdpClientLink implements NetworkLink {
 	}
 
 	@Override
-	public void onConnOut(final SctpChannelFacade so, final byte[] data, final int tos) throws IOException, NotFoundException {
+	public void onConnOut(final SctpChannelFacade so, final byte[] data, final int tos)
+			throws IOException, NotFoundException {
 		DatagramPacket packet = new DatagramPacket(data, data.length, this.remote.getAddress(), this.remote.getPort());
 		udpSocket.send(packet);
 	}
@@ -105,6 +107,17 @@ public class UdpClientLink implements NetworkLink {
 	public void close() {
 		this.isShutdown = true;
 		this.udpSocket.close();
+	}
+
+	@Override
+	public String toString() {
+		InetSocketAddress local = (InetSocketAddress) this.udpSocket.getLocalSocketAddress();
+		InetSocketAddress remote = (InetSocketAddress) this.udpSocket.getRemoteSocketAddress();
+
+		return "UdpClientLink(" + "Local(" + local.getAddress().getHostAddress() + ":" + local.getPort() + ")"
+				+ ", Remote(" + remote.getAddress().getHostAddress() + ":" + remote.getPort() + "), shutdown is "
+				+ isShutdown + ")";
+
 	}
 
 }

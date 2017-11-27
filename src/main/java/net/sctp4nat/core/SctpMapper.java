@@ -15,6 +15,8 @@ import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sctp4nat.origin.SctpSocket;
 
 public class SctpMapper {
@@ -22,11 +24,14 @@ public class SctpMapper {
 	private static final Logger LOG = LoggerFactory.getLogger(SctpMapper.class);
 
 	private static final ConcurrentHashMap<InetSocketAddress, SctpChannel> socketMap = new ConcurrentHashMap<>();
-
+	
+	@Getter
+	@Setter
 	private static boolean isShutdown = false;
 
 	public synchronized void register(final InetSocketAddress remote, final SctpChannel so) {
 		if (isShutdown) {
+			LOG.warn("Could not register remote, because SctpMapper is shutting down its connections!");
 			return;
 		}
 
@@ -45,6 +50,7 @@ public class SctpMapper {
 	@SuppressWarnings("unlikely-arg-type")
 	public synchronized void unregister(SctpChannel so) {
 		if (isShutdown) {
+			LOG.warn("Could not unregister SctpChannel, because SctpMapper is shutting down its connections!");
 			return;
 		}
 
@@ -66,6 +72,7 @@ public class SctpMapper {
 	 */
 	public synchronized void unregister(InetSocketAddress remote) {
 		if (isShutdown) {
+			LOG.warn("Could not unregister remote, because SctpMapper is shutting down its connections!");
 			return;
 		}
 
@@ -90,6 +97,7 @@ public class SctpMapper {
 	 */
 	public synchronized static SctpChannel locate(final String remoteAddress, final int remotePort) {
 		if (isShutdown) {
+			LOG.warn("Could not locate SctpChannel, because SctpMapper is shutting down its connections!");
 			return null;
 		}
 
@@ -115,6 +123,7 @@ public class SctpMapper {
 	 */
 	public synchronized static SctpChannel locate(final SctpSocket sctpSocket) {
 		if (isShutdown) {
+			LOG.warn("Could not locate SctpChannel, because SctpMapper is shutting down its connections!");
 			return null;
 		}
 
@@ -177,5 +186,6 @@ public class SctpMapper {
 			socketMap.clear();
 			LOG.debug("socketMap cleared");
 		}
+		isShutdown = false;
 	}
 }

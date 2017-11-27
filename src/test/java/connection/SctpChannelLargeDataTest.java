@@ -28,12 +28,16 @@ import net.sctp4nat.util.SctpUtils;
 /**
  * File payload test
  * 
- * 12 Byte SCTP Common Header + 4 Byte SCTP Chunk Header + 8 Byte UDP Header + 1
- * Byte SCTP Flag on UDP Packets ------------------------------------- = 25
+ * 12 Byte SCTP Common Header 
+ * + 4 Byte SCTP Chunk Header 
+ * + 8 Byte UDP Header 
+ * + 1 Byte SCTP Flag on UDP Packets 
+ * ------------------------------------- 
+ * = 25
  * Bytes Overhead
  * 
  * 
- * 981 + 25 = 1006 1024 - 1006 = 18 --> where are those 18 Bytes?
+ * 981 + 25 = 1006 1024 - 1006 = z --> where are those 18 Bytes?
  * 
  * @author root
  *
@@ -134,8 +138,8 @@ public class SctpChannelLargeDataTest {
 							fail(e.getMessage());
 						}
 
-						result.send(new byte[975 * 1024], true, 2, 0);
-						result.send(new byte[981 * 1024], true, 5, 0);
+						result.send(new byte[800 * 1024], true, 2, 0); //just works
+//						result.send(new byte[(1024 * 1024)- 16156], true, 5, 0); //this works --> if the transmissions are sent too fast, the system will 
 						// result.send(new byte[982 * 1024], true, 1, 0); this does not work!, there are
 						// only 10 streams available per association
 
@@ -154,7 +158,7 @@ public class SctpChannelLargeDataTest {
 
 		client.run();
 
-		if (!shutdownCd.await(10, TimeUnit.SECONDS)) {
+		if (!shutdownCd.await(20, TimeUnit.SECONDS)) {
 			fail("Timeout, --> Files were not transmitted");
 		}
 

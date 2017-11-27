@@ -421,6 +421,7 @@ public class SctpSocket implements SctpAcceptable {
 		long ptr = lockPtr();
 
 		try {
+			logger.info("calling JNI method Sctp.onConnIn with ptr:" + ptr);
 			Sctp.onConnIn(ptr, packet, offset, len);
 		} finally {
 			unlockPtr();
@@ -531,6 +532,7 @@ public class SctpSocket implements SctpAcceptable {
 
 		if (link != null) {
 			try {
+				logger.info("calling onSctpOut with ptr:" + this.ptr);
 				link.onConnOut(SctpMapper.locate(this), packet, tos);
 				ret = 0;
 			} catch (IOException | NotFoundException e) {
@@ -629,7 +631,7 @@ public class SctpSocket implements SctpAcceptable {
 	 *            the {@link NotificationListener} to set.
 	 */
 	public void setNotificationListener(NotificationListener l) {
-		logger.debug("Changed NotificationListener for SctpSocket" + this.ptr);
+		logger.debug("Changed NotificationListener for SctpSocket ptr:" + this.ptr);
 		this.notificationListener = l;
 	}
 

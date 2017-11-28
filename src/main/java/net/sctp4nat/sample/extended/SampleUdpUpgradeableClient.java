@@ -36,7 +36,7 @@ public class SampleUdpUpgradeableClient {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context,
-					int flags, SctpChannelFacade so) {
+					int flags, SctpChannelFacade facade) {
 				LOG.debug("CLIENT GOT MESSAGE: "+ new String(data, StandardCharsets.UTF_8));
 				LOG.debug("REPLY SUCCESS");
 			}

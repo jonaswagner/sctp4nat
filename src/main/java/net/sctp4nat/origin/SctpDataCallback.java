@@ -48,8 +48,8 @@ public interface SctpDataCallback {
 	 * @param context
 	 * @param flags
 	 *            the sctp chunk flags
-	 * @param so
+	 * @param facade
 	 *            the {@link SctpChannelFacade} the packet was sent on
 	 */
-	void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpChannelFacade so);
+	void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpChannelFacade facade);
 }

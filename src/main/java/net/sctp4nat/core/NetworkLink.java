@@ -46,7 +46,7 @@ public interface NetworkLink
      * @throws IOException in case of transport error.
      * @throws NotFoundException 
      */
-    void onConnOut(final SctpChannelFacade so, final byte[] packet, final int tos)
+    void onConnOut(final SctpChannelFacade facade, final byte[] packet, final int tos)
         throws IOException, NotFoundException;
 
     /**

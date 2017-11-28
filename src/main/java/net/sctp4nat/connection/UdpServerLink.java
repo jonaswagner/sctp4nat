@@ -122,8 +122,8 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	@Override
-	public void onConnOut(SctpChannelFacade so, byte[] data, final int tos) throws IOException, NotFoundException {
-		DatagramPacket packet = new DatagramPacket(data, data.length, (SocketAddress) so.getRemote());
+	public void onConnOut(SctpChannelFacade facade, byte[] data, final int tos) throws IOException, NotFoundException {
+		DatagramPacket packet = new DatagramPacket(data, data.length, (SocketAddress) facade.getRemote());
 		udpSocket.send(packet);
 	}
 

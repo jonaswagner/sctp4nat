@@ -41,9 +41,9 @@ public class SampleClient {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
+					SctpChannelFacade facade) {
 				System.out.println("I WAS HERE");
-				SctpChannel realSo = (SctpChannel) so;
+				SctpChannel realSo = (SctpChannel) facade;
 				realSo.shutdownInit();
 				realSo.close();
 			}

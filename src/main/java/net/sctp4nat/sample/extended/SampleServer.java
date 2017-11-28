@@ -34,10 +34,10 @@ public class SampleServer {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
+					SctpChannelFacade facade) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
-				so.send(data, false, sid, (int) ppid);
+				facade.send(data, false, sid, (int) ppid);
 			}
 		};
 		

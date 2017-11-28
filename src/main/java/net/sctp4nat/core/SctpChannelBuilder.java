@@ -39,7 +39,7 @@ public class SctpChannelBuilder {
 			cb = new SctpDataCallback() {
 				@Override
 				public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-						SctpChannelFacade so) {
+						SctpChannelFacade facade) {
 					// do nothing
 				}
 			};

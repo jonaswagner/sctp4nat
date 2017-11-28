@@ -32,9 +32,9 @@ public class SampleUdpUpgradeableServer {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context,
-					int flags, SctpChannelFacade so) {
+					int flags, SctpChannelFacade facade) {
 				LOG.debug("SERVER GOT SCTP DATA: " + new String(data, StandardCharsets.UTF_8));
-				so.send(data, 0, data.length, false, sid, (int) ppid);
+				facade.send(data, 0, data.length, false, sid, (int) ppid);
 			}
 		});
 		

@@ -322,18 +322,21 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 
 	/**
-	 * This method checks if this instance contains the suggested {@link SctpSocket}.
+	 * This method checks if this instance contains the suggested
+	 * {@link SctpSocket}.
 	 * 
 	 * @param so
-	 * 			suggested {@link SctpSocket}
-	 * @return true if the suggested {@link SctpSocket} is equal to this instance {@link SctpSocket}.
+	 *            suggested {@link SctpSocket}
+	 * @return true if the suggested {@link SctpSocket} is equal to this instance
+	 *         {@link SctpSocket}.
 	 */
 	public boolean containsSctpSocket(final SctpSocket so) {
 		return this.so.equals(so);
 	}
 
 	/**
-	 * Forwards the incoming SCTP message to the native counterpart via {@link SctpSocket}.
+	 * Forwards the incoming SCTP message to the native counterpart via
+	 * {@link SctpSocket}.
 	 */
 	public void onConnIn(final byte[] data, final int offset, final int length) {
 		try {
@@ -343,16 +346,19 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 	}
 
-	/**
-	 * The method 
-	 * 
-	 * @param cb
-	 */
 	@Override
 	public void setSctpDataCallback(final SctpDataCallback cb) {
 		so.setDataCallbackNative(cb);
 	}
 
+	/**
+	 * The method setLink() defines the NetworkLink, which is used
+	 * to encapsulate the SCTP association with a UDP header. Additionally, via this
+	 * NetworkLink, also the incoming SCTP packets are decoded.
+	 * 
+	 * @param link
+	 * 			A {@link NetworkLink}
+	 */
 	public void setLink(NetworkLink link) {
 		so.setLink(link);
 		this.link = link;

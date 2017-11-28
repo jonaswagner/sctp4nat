@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import lombok.Getter;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.util.Pair;
+import net.sctp4nat.util.SctpUtils;
 
 /**
  * Class encapsulates native SCTP counterpart.
@@ -127,6 +128,7 @@ public class Sctp {
 		usrsctp_close(ptr);
 
 		sockets.remove(Long.valueOf(ptr));
+		logger.info("SctpSocket with ptr:" + ptr + " closed and destroyed");
 	}
 
 	/**
@@ -147,6 +149,9 @@ public class Sctp {
 			socket = new SctpSocket(ptr, localPort);
 			sockets.put(Long.valueOf(ptr), socket);
 		}
+		
+		logger.info("SctpSocket with ptr:" + ptr + " created and initialized");
+		
 		return socket;
 	}
 
@@ -157,21 +162,21 @@ public class Sctp {
 	 *             if usrsctp stack has failed to shutdown.
 	 */
 	public synchronized void finish() throws IOException {
-//		//skip and reset if there is no socket assigned on usrsctp
-//		if (sctpEngineCount <= 0) { 
-//			if (usrsctp_finish()) {
-//				Sctp.initialized = false;
-//				logger.debug("usrsctp_finish() successfully executed");
-//			} else {
-//				
-//			}
-//			return;
-//		}
-		
+		// //skip and reset if there is no socket assigned on usrsctp
+		// if (sctpEngineCount <= 0) {
+		// if (usrsctp_finish()) {
+		// Sctp.initialized = false;
+		// logger.debug("usrsctp_finish() successfully executed");
+		// } else {
+		//
+		// }
+		// return;
+		// }
+
 		// Skip if we're not the last one
 		if (--sctpEngineCount > 0)
 			return;
-		
+
 		try {
 			// FIXME fix this loop?
 			// it comes from SCTP samples written in C
@@ -402,12 +407,14 @@ public class Sctp {
 	 * 
 	 * @param ptr
 	 *            native socket pointer.
-	 * @param how
+	 * @param how (see {@link SctpUtils} constants)
+	 *            </br>
 	 *            SHUT_RD = 1 (Disables further receive operations. No SCTP protocol
-	 *            action is taken.) SHUT_WR = 2 (Disables further send operations,
-	 *            and initiates the SCTP shutdown sequence.) SHUT_RDWR = 3 (Disables
-	 *            further send and receive operations, and initiates the SCTP
-	 *            shutdown sequence.)
+	 *            action is taken.) </br>
+	 *            SHUT_WR = 2 (Disables further send operations, and initiates the
+	 *            SCTP shutdown sequence.) </br>
+	 *            SHUT_RDWR = 3 (Disables further send and receive operations, and
+	 *            initiates the SCTP shutdown sequence.)
 	 */
 	static native int usrsctp_shutdown(long ptr, int how);
 

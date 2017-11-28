@@ -104,7 +104,8 @@ public class SctpChannel implements SctpChannelFacade {
 		if (!Sctp.isInitialized()) {
 			throw new SctpInitException("Sctp is currently not initialized! Try init with SctpUtils.init(...)");
 		}
-
+		
+		SctpPorts.getInstance().putPort(this, localSctpPort);
 		this.so = Sctp.createSocket(localSctpPort);
 		this.so.setLink(link); // forwards all onConnOut to the corresponding link
 		this.so.setDataCallbackNative(cb);

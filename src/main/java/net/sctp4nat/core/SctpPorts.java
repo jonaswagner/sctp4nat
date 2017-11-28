@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4nat.origin.SctpSocket;
+
 public class SctpPorts {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SctpPorts.class);
@@ -53,24 +55,58 @@ public class SctpPorts {
 	public synchronized int generateDynPort() {
 		int attempt = RND.nextInt(MAX_PORT - MIN_DYN_PORT) + MIN_DYN_PORT;
 
-		while (isFreePort(attempt)) {
+		while (isUsedPort(attempt)) {
 			attempt = RND.nextInt(MAX_PORT - MIN_DYN_PORT) + MIN_DYN_PORT;
 		}
 		return attempt;
 	}
 
+	/**
+	 * Adds a port to the portMap.
+	 * 
+	 * @param so
+	 * 		the corresponding {@link SctpChannel}
+	 * @param port
+	 * 		the port, which is used for so
+	 */
 	public synchronized void putPort(final SctpChannel so, final int port) {
 		portMap.put(so, port);
+		LOG.info("SctpPorts added port " + port + " to the portMap!");
 	}
 
+	/**
+	 * removes a port from the portMap.
+	 * 
+	 * @param so
+	 * 		The corresponding {@link SctpChannel}
+	 */
 	public synchronized void removePort(final SctpChannel so) {
-		portMap.remove(so);
+		if (so == null) {
+			LOG.error("SctpPorts cannot remove a port assigned to null (so was null)!");
+			return;
+		}
+		
+		if (!portMap.contains(so)) {
+			LOG.warn("SctpPorts cannot remove " + so.toString() + ", because it does not contain such an instance in its portMap!");
+			return;
+		}
+		
+		
+		int port = portMap.remove(so);
+		LOG.info("SctpPorts removed port " + port + " from the portMap!");
 	}
 
-	public synchronized boolean isFreePort(final int port) {
+	/**
+	 * @param port
+	 * @return returns true if the port is not used yet by any other {@link SctpSocket}.
+	 */
+	public synchronized boolean isUsedPort(final int port) {
 		return portMap.contains(port);
 	}
 
+	/**
+	 * Clears all entries from the portMap
+	 */
 	public static void shutdown() {
 		portMap.clear();
 		LOG.debug("portMap cleared");

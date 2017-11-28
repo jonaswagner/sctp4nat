@@ -30,8 +30,8 @@ import net.sctp4nat.util.SctpUtils;
  * 
  * <br>
  * <br>
- * This class provides the user with all five service primitives, which are
- * connect, disconnect, send, reply and close.
+ * This class provides the user with all six service primitives, which are
+ * listen, connect, disconnect, send, reply and close.
  * 
  * @author Jonas Wagner
  *
@@ -78,8 +78,8 @@ public class SctpChannel implements SctpChannelFacade {
 	 *            the {@link SctpMapper} used by the session
 	 * @throws SctpInitException
 	 */
-	public SctpChannel(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb,
-			SctpMapper mapper) throws SctpInitException {
+	public SctpChannel(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb, SctpMapper mapper)
+			throws SctpInitException {
 		this(localSctpPort, null, link, cb, mapper);
 	}
 
@@ -105,7 +105,7 @@ public class SctpChannel implements SctpChannelFacade {
 		if (!Sctp.isInitialized()) {
 			throw new SctpInitException("Sctp is currently not initialized! Try init with SctpUtils.init(...)");
 		}
-		
+
 		SctpPorts.getInstance().putPort(this, localSctpPort);
 		this.so = Sctp.createSocket(localSctpPort);
 		this.so.setLink(link); // forwards all onConnOut to the corresponding link
@@ -121,8 +121,8 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 
 	/**
-	 * This method connects this {@link SctpChannel} to the remote
-	 * counterpart. It uses {@link SctpSocket} to prepare the init messages and its
+	 * This method connects this {@link SctpChannel} to the remote counterpart. It
+	 * uses {@link SctpSocket} to prepare the init messages and its
 	 * {@link NetworkLink} to send it. Afterwards the SCTP four way handshake will
 	 * be done. If this method is not answered within time it will return a
 	 * {@link SctpInitException}.
@@ -193,7 +193,7 @@ public class SctpChannel implements SctpChannelFacade {
 							d.reject(new Exception(
 									"we are forced to close the connection because we lost the connection to remote: "
 											+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
-						} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0){
+						} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0) {
 							SctpChannel.this.close();
 						}
 					}
@@ -259,7 +259,7 @@ public class SctpChannel implements SctpChannelFacade {
 
 		return d.promise();
 	}
-	
+
 	@Override
 	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultConfig config) {
 		return send(data, offset, len, config.isOrdered(), config.getSid(), config.getPpid());
@@ -336,18 +336,19 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 	}
 
-	/**
-	 * triggers the state change of the incoming connection to "COMM_UP"
-	 * @return
-	 */
-	public boolean accept() {
-		try {
-			return so.acceptNative();
-		} catch (IOException e) {
-			LOG.error(e.getMessage());
-			return false; // this signals a accept failure
-		}
-	}
+	// /**
+	// * triggers the state change of the incoming connection to "COMM_UP"
+	// *
+	// * @return
+	// */
+	// public boolean accept() {
+	// try {
+	// return so.acceptNative();
+	// } catch (IOException e) {
+	// LOG.error(e.getMessage());
+	// return false; // this signals a accept failure
+	// }
+	// }
 
 	@Override
 	public void setSctpDataCallback(final SctpDataCallback cb) {
@@ -363,13 +364,14 @@ public class SctpChannel implements SctpChannelFacade {
 	public InetSocketAddress getRemote() {
 		return this.remote;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SctpChannel: Remote("+ remote.getAddress().getHostAddress() + ":" +remote.getPort() + "), SctpSocket(SctpPort:" + so.getPort() + ")");
+		builder.append("SctpChannel: Remote(" + remote.getAddress().getHostAddress() + ":" + remote.getPort()
+				+ "), SctpSocket(SctpPort:" + so.getPort() + ")");
 		return builder.toString();
-		
+
 	}
 
 }

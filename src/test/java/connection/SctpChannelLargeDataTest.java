@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.exception.SctpInitException;
@@ -182,6 +183,7 @@ public class SctpChannelLargeDataTest {
 					public void onDone(Object result) {
 						server.interrupt();
 						client.interrupt();
+						SctpPorts.shutdown();
 							close.countDown();
 						}
 				});

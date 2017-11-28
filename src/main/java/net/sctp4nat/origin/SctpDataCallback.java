@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sctp4nat.core;
+package net.sctp4nat.origin;
+
+import net.sctp4nat.core.SctpChannelFacade;
 
 /**
  * Callback used to listen for incoming data on SCTP socket.

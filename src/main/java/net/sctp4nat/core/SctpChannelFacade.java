@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import org.jdeferred.Promise;
 
 import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
 
 /**

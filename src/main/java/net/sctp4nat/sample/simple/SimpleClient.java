@@ -11,9 +11,9 @@ import org.jdeferred.Promise;
 import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpDataCallback;
 
 public class SimpleClient {
 

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import lombok.Getter;
 import lombok.Setter;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.origin.SctpDataCallback;
 
 /**
  * 

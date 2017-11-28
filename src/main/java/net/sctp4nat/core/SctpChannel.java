@@ -16,6 +16,7 @@ import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpAcceptable;
+import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;

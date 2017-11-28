@@ -9,11 +9,23 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.origin.SctpSocket;
 
+/**
+ * 
+ * 
+ * @author Jonas Wagner
+ *
+ */
 public class SctpPorts {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SctpPorts.class);
 
+	/**
+	 * port = 2¹⁶ - 1 (because 0 is also a port) 
+	 */
 	public static final int MAX_PORT = 65535;
+	/**
+	 * The minimal dyniamic port.
+	 */
 	public static final int MIN_DYN_PORT = 49152;
 
 	

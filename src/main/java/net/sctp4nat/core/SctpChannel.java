@@ -11,7 +11,7 @@ import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
@@ -261,12 +261,12 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 
 	@Override
-	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultConfig config) {
+	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultStreamConfig config) {
 		return send(data, offset, len, config.isOrdered(), config.getSid(), config.getPpid());
 	}
 
 	@Override
-	public Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultConfig config) {
+	public Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultStreamConfig config) {
 		return send(data, config.isOrdered(), config.getSid(), config.getPpid());
 	}
 
@@ -321,14 +321,21 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 	}
 
+	/**
+	 * This method checks if this instance contains the suggested {@link SctpSocket}.
+	 * 
+	 * @param so
+	 * 			suggested {@link SctpSocket}
+	 * @return true if the suggested {@link SctpSocket} is equal to this instance {@link SctpSocket}.
+	 */
 	public boolean containsSctpSocket(final SctpSocket so) {
 		return this.so.equals(so);
 	}
 
 	/**
-	 * Forwards the incoming SCTP message to the native counterpart
+	 * Forwards the incoming SCTP message to the native counterpart via {@link SctpSocket}.
 	 */
-	public void onConnIn(byte[] data, int offset, int length) {
+	public void onConnIn(final byte[] data, final int offset, final int length) {
 		try {
 			this.so.onConnIn(data, offset, length);
 		} catch (IOException e) {
@@ -336,20 +343,11 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 	}
 
-	// /**
-	// * triggers the state change of the incoming connection to "COMM_UP"
-	// *
-	// * @return
-	// */
-	// public boolean accept() {
-	// try {
-	// return so.acceptNative();
-	// } catch (IOException e) {
-	// LOG.error(e.getMessage());
-	// return false; // this signals a accept failure
-	// }
-	// }
-
+	/**
+	 * The method 
+	 * 
+	 * @param cb
+	 */
 	@Override
 	public void setSctpDataCallback(final SctpDataCallback cb) {
 		so.setDataCallbackNative(cb);

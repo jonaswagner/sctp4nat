@@ -4,7 +4,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.origin.SctpDataCallback;
@@ -22,7 +22,7 @@ public class SimpleServer {
 					SctpChannelFacade facade) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
-				facade.send(data, new SctpDefaultConfig());
+				facade.send(data, new SctpDefaultStreamConfig());
 			}
 		};
 		

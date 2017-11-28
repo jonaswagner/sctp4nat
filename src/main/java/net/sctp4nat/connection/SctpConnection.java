@@ -24,7 +24,7 @@ public class SctpConnection {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpConnection.class);
 
-	private SctpDefaultConfig config;
+	private SctpDefaultStreamConfig config;
 	private InetSocketAddress local;
 	private InetSocketAddress remote;
 	private SctpDataCallback cb;
@@ -43,7 +43,7 @@ public class SctpConnection {
 		}
 
 		if (config == null) {
-			config = new SctpDefaultConfig();
+			config = new SctpDefaultStreamConfig();
 		}
 
 		if (cb == null) {

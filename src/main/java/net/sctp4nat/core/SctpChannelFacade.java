@@ -3,7 +3,7 @@ package net.sctp4nat.core;
 import java.net.InetSocketAddress;
 import org.jdeferred.Promise;
 
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
@@ -67,10 +67,10 @@ public interface SctpChannelFacade {
 	 * @param len
 	 *            the length of the data
 	 * @param config
-	 *            A {@link SctpDefaultConfig} instance containing stream parameters.
+	 *            A {@link SctpDefaultStreamConfig} instance containing stream parameters.
 	 * @return A {@link Promise} object
 	 */
-	Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultConfig config);
+	Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultStreamConfig config);
 
 	/**
 	 * This method sends data to the connected endpoint. The method is non-blocking
@@ -80,10 +80,10 @@ public interface SctpChannelFacade {
 	 * @param data
 	 *            the data, which is to be sent.
 	 * @param config
-	 *            A {@link SctpDefaultConfig} instance containing stream parameters.
+	 *            A {@link SctpDefaultStreamConfig} instance containing stream parameters.
 	 * @return A {@link Promise} object
 	 */
-	Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultConfig config);
+	Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultStreamConfig config);
 
 	/**
 	 * This method closes the underlying {@link SctpSocket} and releases its

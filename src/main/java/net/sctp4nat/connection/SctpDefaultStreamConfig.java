@@ -16,9 +16,9 @@ import net.sctp4nat.origin.SctpDataCallback;
  *         sending messages via sctp. If a extended configuration is needed,
  *         feel free extend this class and/or overwrite it with your needs.
  */
-public class SctpDefaultConfig {
+public class SctpDefaultStreamConfig {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SctpDefaultConfig.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpDefaultStreamConfig.class);
 
 	/**
 	 * This field represents the handler for the stream. Since all messages are

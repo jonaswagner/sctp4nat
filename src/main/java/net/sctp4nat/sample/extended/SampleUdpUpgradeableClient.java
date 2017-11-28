@@ -12,7 +12,7 @@ import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.exception.SctpInitException;
@@ -47,7 +47,7 @@ public class SampleUdpUpgradeableClient {
 		testPacket.setPort(serverSoAddr.getPort());
 		udpSocket.send(testPacket);
 
-			SctpDefaultConfig config = new SctpDefaultConfig();
+			SctpDefaultStreamConfig config = new SctpDefaultStreamConfig();
 			Promise<SctpChannelFacade, Exception, NetworkLink> promise = udpSocket.upgrade(config,
 					clientSoAddr, serverSoAddr);
 

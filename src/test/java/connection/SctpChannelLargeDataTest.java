@@ -17,7 +17,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import net.sctp4nat.connection.SctpConnection;
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpPorts;
@@ -117,7 +117,7 @@ public class SctpChannelLargeDataTest {
 				InetSocketAddress local = new InetSocketAddress(localHost, SctpPorts.getInstance().generateDynPort());
 				InetSocketAddress remote = new InetSocketAddress(localHost, SctpPorts.SCTP_TUNNELING_PORT);
 
-				SctpConnection channel = SctpConnection.builder().local(local).cb(new SctpDefaultConfig().getCb())
+				SctpConnection channel = SctpConnection.builder().local(local).cb(new SctpDefaultStreamConfig().getCb())
 						.remote(remote).build();
 				Promise<SctpChannelFacade, Exception, Object> p = null;
 				try {

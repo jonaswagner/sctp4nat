@@ -13,9 +13,10 @@ import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
 
 /**
- * This class helps instantiating a clean {@link SctpChannel}.
+ * This class helps instantiating a clean {@link SctpChannel}. It is designed
+ * according to the Builder pattern.
  * 
- * @author root
+ * @author Jonas Wagner
  *
  */
 public class SctpChannelBuilder {
@@ -29,6 +30,13 @@ public class SctpChannelBuilder {
 	private NetworkLink link = null;
 	private SctpMapper mapper = null;
 
+	/**
+	 * This method triggers the creation of the {@link SctpChannel} object.
+	 * 
+	 * @return A {@link SctpChannel} instance.
+	 * @throws SctpInitException
+	 *             Thrown, if usrsctp was not initialized.
+	 */
 	public SctpChannel build() throws SctpInitException {
 
 		if (localSctpPort == -1) {

@@ -15,26 +15,41 @@
  */
 package net.sctp4nat.origin;
 
+import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
 
 /**
  * Callback used to listen for incoming data on SCTP socket.
  *
  * @author Pawel Domas
+ * @author Jonas Wagner
+ * 
+ *         </br>
+ *         </br>
+ *         <b>Modifications</b> </br>
+ *         This interface was modified, such that the {@link SctpDataCallback}
+ *         knows the corresponding {@link SctpChannel}. This modification allows
+ *         the user to reply on the same channel instantly.
  */
-public interface SctpDataCallback
-{
-    /**
-     * Callback fired by <tt>SctpSocket</tt> to notify about incoming data.
-     * @param data buffer holding received data.
-     * @param sid SCTP stream identifier.
-     * @param ssn
-     * @param tsn
-     * @param ppid payload protocol identifier.
-     * @param context
-     * @param flags
-     * @param so 
-     */
-    void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid,
-                      int context, int flags, SctpChannelFacade so);
+public interface SctpDataCallback {
+	/**
+	 * Callback fired by <tt>SctpSocket</tt> to notify about incoming data.
+	 * 
+	 * @param data
+	 *            buffer holding received data.
+	 * @param sid
+	 *            SCTP stream identifier.
+	 * @param ssn
+	 *            the stream sequence number
+	 * @param tsn
+	 *            the transmission sequence number
+	 * @param ppid
+	 *            payload protocol identifier.
+	 * @param context
+	 * @param flags
+	 *            the sctp chunk flags
+	 * @param so
+	 *            the {@link SctpChannelFacade} the packet was sent on
+	 */
+	void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpChannelFacade so);
 }

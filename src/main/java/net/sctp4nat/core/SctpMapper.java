@@ -17,18 +17,40 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpSocket;
 
+/**
+ * This classs caches all SCTP connections. This is necessary, because usrsctp
+ * does not consume information about the remote endpoint. If a user needs to be
+ * able to reply via {@link SctpDataCallback}, it needs to know which
+ * {@link SctpSocket} is assigned to which remote {@link InetSocketAddress}.
+ * 
+ * @author root
+ *
+ */
 public class SctpMapper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpMapper.class);
 
+	/**
+	 * The {@link Map} containing all active {@link SctpChannel}s.s
+	 */
 	private static final ConcurrentHashMap<InetSocketAddress, SctpChannel> socketMap = new ConcurrentHashMap<>();
-	
+
 	@Getter
 	@Setter
 	private static boolean isShutdown = false;
 
+	/**
+	 * Caches a new {@link SctpChannel} and its corresponding remote information.
+	 * 
+	 * @param remote
+	 *            {@link InetSocketAddress}
+	 * @param so
+	 *            {@link SctpChannel}
+	 * 
+	 */
 	public synchronized void register(final InetSocketAddress remote, final SctpChannel so) {
 		if (isShutdown) {
 			LOG.warn("Could not register remote, because SctpMapper is shutting down its connections!");
@@ -92,6 +114,9 @@ public class SctpMapper {
 	 * {@link InetAddress} and port.
 	 * 
 	 * @param remoteAddress
+	 *            {@link String} representation of an IP address (e.g.
+	 *            \"192.168.0.1\")
+	 *            
 	 * @param remotePort
 	 * @return {@link SctpChannel}
 	 */
@@ -117,9 +142,9 @@ public class SctpMapper {
 	/**
 	 * This method locates a {@link SctpChannel} object given a {@link SctpSocket}.
 	 * 
-	 * @param remoteAddress
-	 * @param remotePort
-	 * @return {@link SctpChannel}
+	 * @param sctpSocket
+	 *            {@link SctpSocket}
+	 * @return
 	 */
 	public synchronized static SctpChannel locate(final SctpSocket sctpSocket) {
 		if (isShutdown) {
@@ -148,14 +173,16 @@ public class SctpMapper {
 	}
 
 	/**
-	 * This method shuts down all remaining connections and closes them.
-	 * @throws InterruptedException 
-	 * @throws TimeoutException 
+	 * This method shuts down all remaining connections and closes them. Afterwards
+	 * the socketMap is cleared.
+	 * 
+	 * @throws InterruptedException
+	 * @throws TimeoutException
 	 */
 	public void shutdown() throws InterruptedException, TimeoutException {
 		isShutdown = true;
 		CountDownLatch close = new CountDownLatch(socketMap.size());
-		
+
 		for (Map.Entry<InetSocketAddress, SctpChannel> element : socketMap.entrySet()) {
 			SctpChannel so = element.getValue();
 			Promise<Object, Exception, Object> p = so.close();
@@ -176,8 +203,8 @@ public class SctpMapper {
 			});
 
 		}
-		
-		if(!close.await(10, TimeUnit.SECONDS)) {
+
+		if (!close.await(10, TimeUnit.SECONDS)) {
 			LOG.error("Timeout called, because not all connections were closed correctly in time");
 			throw new TimeoutException();
 		} else {

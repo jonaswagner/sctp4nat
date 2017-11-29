@@ -21,11 +21,11 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.SctpAcceptable;
 import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
+import net.sctp4nat.util.SctpInitException;
 
 /**
  * This class helps instantiating a clean {@link SctpChannel}. It is designed

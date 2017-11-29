@@ -33,9 +33,9 @@ import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpSocket;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 /**

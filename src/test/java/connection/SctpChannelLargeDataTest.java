@@ -21,9 +21,9 @@ import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpDataCallback;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 /**

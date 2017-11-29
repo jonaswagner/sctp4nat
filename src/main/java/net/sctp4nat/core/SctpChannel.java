@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpDefaultStreamConfig;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpAcceptable;
@@ -35,6 +34,7 @@ import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 /**

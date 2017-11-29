@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sctp4nat.exception;
+package net.sctp4nat.util;
 
 /**
  * @author jonaswagner
  *
- * This Exception signals that the user tried to call Sctp.init() twice or more.
+ *         This Exception signals that the user tried to call Sctp.init() twice
+ *         or more.
  *
  */
 public class SctpInitException extends Exception {
@@ -28,6 +29,5 @@ public class SctpInitException extends Exception {
 	public SctpInitException(String string) {
 		super(string);
 	}
-
 
 }

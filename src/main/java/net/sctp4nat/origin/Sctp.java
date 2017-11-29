@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.util.Pair;
 import net.sctp4nat.util.SctpUtils;
 
 /**
@@ -80,11 +79,6 @@ public class Sctp {
 	 * List of instantiated <tt>SctpSockets</tt> mapped by native pointer.
 	 */
 	private static final Map<Long, SctpSocket> sockets = new ConcurrentHashMap<>();
-
-	/**
-	 * List of connection information about remote.
-	 */
-	private static final Map<Long, Pair<InetAddress, Integer>> remotes = new ConcurrentHashMap<>();
 
 	static {
 		String lib = "jnsctp";
@@ -149,9 +143,9 @@ public class Sctp {
 			socket = new SctpSocket(ptr, localPort);
 			sockets.put(Long.valueOf(ptr), socket);
 		}
-		
+
 		logger.info("SctpSocket with ptr:" + ptr + " created and initialized");
-		
+
 		return socket;
 	}
 
@@ -162,52 +156,16 @@ public class Sctp {
 	 *             if usrsctp stack has failed to shutdown.
 	 */
 	public synchronized void finish() throws IOException {
-		// //skip and reset if there is no socket assigned on usrsctp
-		// if (sctpEngineCount <= 0) {
-		// if (usrsctp_finish()) {
-		// Sctp.initialized = false;
-		// logger.debug("usrsctp_finish() successfully executed");
-		// } else {
-		//
-		// }
-		// return;
-		// }
-
 		// Skip if we're not the last one
 		if (--sctpEngineCount > 0)
 			return;
 
-		try {
-			// FIXME fix this loop?
-			// it comes from SCTP samples written in C
-
-			// Retry limited amount of times
-			/*
-			 * FIXME usrsctp issue: SCTP stack is now never deinitialized in order to
-			 * prevent deadlock in usrsctp_finish.
-			 * https://code.google.com/p/webrtc/issues/detail?id=2749
-			 */
-			final int CLOSE_RETRY_COUNT = 200;
-
-			for (int i = 0; i < CLOSE_RETRY_COUNT; i++) {
-				if (usrsctp_finish()) {
-					Sctp.initialized = false;
-					logger.debug("usrsctp_finish() successfully executed");
-					return;
-				}
-
-				Thread.sleep(50);
-			}
-
-			// FIXME after throwing we might end up with other SCTP users broken
-			// (or stack not disposed) at this point because engine count will
-			// be out of sync for the purpose of calling init() and finish()
-			// methods.
-			throw new IOException("Failed to shutdown usrsctp stack" + " after 200 retries");
-		} catch (InterruptedException e) {
-			logger.error("Finish interrupted", e);
-			Thread.currentThread().interrupt();
+		if (usrsctp_finish()) {
+			Sctp.initialized = false;
+			logger.debug("usrsctp_finish() successfully executed");
+			return;
 		}
+		throw new IOException("Failed to shutdown usrsctp stack" + " after 200 retries");
 	}
 
 	/**
@@ -407,8 +365,8 @@ public class Sctp {
 	 * 
 	 * @param ptr
 	 *            native socket pointer.
-	 * @param how (see {@link SctpUtils} constants)
-	 *            </br>
+	 * @param how
+	 *            (see {@link SctpUtils} constants) </br>
 	 *            SHUT_RD = 1 (Disables further receive operations. No SCTP protocol
 	 *            action is taken.) </br>
 	 *            SHUT_WR = 2 (Disables further send operations, and initiates the

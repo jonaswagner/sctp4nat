@@ -16,7 +16,6 @@
 package net.sctp4nat.origin;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +27,7 @@ import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.util.SctpUtils;
 
 /**
- * Class encapsulates native SCTP counterpart.
+ * Class encapsulates native SCTP counterpart (which is usrsctp).
  *
  * @author Pawel Domas (initial Author) </br>
  * 
@@ -36,10 +35,11 @@ import net.sctp4nat.util.SctpUtils;
  *         </br>
  *         Important changes: </br>
  *         <ul>
- *         <li>{@link Logger} is now done by sl4j.</li>
+ *         <li>{@link Logger} is now done by slf4j.</li>
  *         <li>Since the Sctp part got removed from Jitsi many renaming were
  *         needed. Additionally, the native c++ code also had to be modified to
- *         match the new class paths and names.</li>
+ *         match the new class paths and names. Sctp.shutdown() and finish() had
+ *         to be added and fixed.</li>
  *         </ul>
  */
 public class Sctp {

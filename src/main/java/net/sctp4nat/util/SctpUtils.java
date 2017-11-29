@@ -180,7 +180,6 @@ public class SctpUtils {
 	 */
 	public static Promise<Object, Exception, Object> shutdownAll(final NetworkLink customLink,
 			final SctpMapper customMapper) {
-		// TODO jwa shutdown every single connection
 		Deferred<Object, Exception, Object> d = new DeferredObject<>();
 
 		threadPoolExecutor.execute(new Runnable() {

@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
-import lombok.Getter;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
@@ -40,11 +39,11 @@ import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.util.SctpUtils;
 
 /**
- * @author Jonas Wagner
+ * This class holds the common {@link DatagramSocket} for all incoming SCTP
+ * connection attempts. By default it should be using port 9899 (default SCTP
+ * via UDP port).
  * 
- *         This class holds the common {@link DatagramSocket} for all incoming
- *         SCTP connection attempts. By default it should be using port 9899
- *         (default SCTP via UDP port).
+ * @author Jonas Wagner
  *
  */
 public class UdpServerLink implements NetworkLink {
@@ -62,14 +61,18 @@ public class UdpServerLink implements NetworkLink {
 	private boolean isShutdown = false;
 
 	/**
-	 * UDP port used.
-	 */
-	@Getter
-	private int port = -1;
-
-	/**
-	 * Creates new instance of <tt>UdpConnection</tt>. The default port used will be
+	 * 
+	 * Creates new instance of {@link UdpServerLink}. The default port used will be
 	 * 9899.
+	 *
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param local
+	 *            The local {@link InetAddress}
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 * @throws SocketException
+	 *             Thrown, if the {@link DatagramSocket} could not be created.
 	 */
 	public UdpServerLink(final SctpMapper mapper, final InetAddress local, final SctpDataCallback cb)
 			throws SocketException {
@@ -77,23 +80,62 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	/**
-	 * Creates new instance of <tt>UdpConnection</tt>.
+	 * 
+	 * Creates new instance of {@link UdpServerLink}.
+	 * 
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param local
+	 *            The local {@link InetAddress} used for the {@link DatagramSocket}.
+	 * @param localPort
+	 *            The port used for the {@link DatagramSocket}.
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 * @throws SocketException
+	 *             Thrown, if the {@link DatagramSocket} could not be created.
 	 */
 	public UdpServerLink(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
 			final SctpDataCallback cb) throws SocketException {
-
-		this.port = localPort;
 		this.udpSocket = new DatagramSocket(localPort, localAddress);
 		SctpUtils.setLink(this); // set this as main Link
 		receive(mapper, localAddress, localPort, cb);
 	}
 
+	/**
+	 * Creates new instance of {@link UdpServerLink}. 
+	 * 
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 * @param udpSocket
+	 *            An already existing {@link DatagramSocket} instance.
+	 */
 	public UdpServerLink(SctpMapper mapper, InetSocketAddress local, SctpDataCallback cb, DatagramSocket udpSocket) {
-		this.port = local.getPort();
 		this.udpSocket = udpSocket;
 		receive(mapper, local.getAddress(), local.getPort(), cb);
 	}
 
+	/**
+	 * If a new packet arrives over
+	 * the contained {@link DatagramSocket}, the method first checks, if the remote
+	 * endpoint is already known. If if is known, the packet is decoded and
+	 * forwarded to the native counterpart (usrsctp) via onConnIn(). If not, this
+	 * means, that an new SCTP endpoint wants to connect to this SCTP endpoint. Once
+	 * the SctpChannel is returned by setupSocket(), the
+	 * {@link SctpChannel} gets registered on {@link SctpMapper}. After the
+	 * registration, onConnIn() is called to forward the INIT message from
+	 * the remote endpoint to the newly created SctpChannel.
+	 * 
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param localAddress
+	 *            The local {@link InetAddress} used for the {@link DatagramSocket}.
+	 * @param localPort
+	 *            The port used for the {@link DatagramSocket}.
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 */
 	private void receive(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
 			final SctpDataCallback cb) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
@@ -169,8 +211,8 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	/**
-	 * Do not call this method while the corresponding {@link SctpSocket} is still
-	 * open!!! This method closes the {@link DatagramSocket}.
+	 * Do not call this method while other corresponding {@link SctpSocket}s are
+	 * still open!!! This method closes the {@link DatagramSocket}.
 	 */
 	@Override
 	public void close() {

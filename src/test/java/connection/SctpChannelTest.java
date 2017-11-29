@@ -105,8 +105,6 @@ public class SctpChannelTest {
 					e.printStackTrace();
 				}
 
-				assertEquals(SctpPorts.SCTP_TUNNELING_PORT, SctpUtils.getLink().getPort());
-
 				serverCd.countDown();
 			}
 		});

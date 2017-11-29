@@ -19,23 +19,24 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
-import lombok.Getter;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.util.SctpUtils;
 
 /**
+ * This class is heavily inspired by sctp4j's UdpLink class.
+ * 
  * @author Jonas Wagner
  * 
  *         This class holds the {@link DatagramSocket} the outgoing SCTP
- *         connection attempts.
+ *         connection attempts. It also forwards incoming SCPT packets, which
+ *         need to be encoded first, because they contain a UDP header.
  *
  */
 public class UdpClientLink implements NetworkLink {
@@ -88,8 +89,9 @@ public class UdpClientLink implements NetworkLink {
 	 * Forwards the UDP packets to the native counterpart.
 	 * 
 	 * @param remote
-	 *            {@link SctpChannel}
+	 *            {@link InetSocketAddress} of the remote endpoint
 	 * @param so
+	 *            The assigned {@link SctpChannel}
 	 */
 	private void receive(final InetSocketAddress remote, final SctpChannel so) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {

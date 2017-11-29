@@ -21,13 +21,11 @@ import javassist.NotFoundException;
 import net.sctp4nat.origin.SctpSocket;
 
 /**
- * Interface used by {@link SctpSocket} and {@link SctpChannel} for sending and
- * receiving network packets.
+ * Interface used by {@link SctpSocket} and {@link SctpChannel} for sending
+ * network packets.
  *
- * Modified slighly by Jonas Wagner (added {@link SctpChannelFacade} and the
- * close() method.
+ * This class is heavily inspired by sctp4j's NetworkLInk class.
  *
- * @author Pawel Domas
  * @author Jonas Wagner
  */
 public interface NetworkLink {
@@ -35,15 +33,14 @@ public interface NetworkLink {
 	 * Callback triggered by <tt>SctpSocket</tt> whenever it wants to send some
 	 * network packet.
 	 * 
-	 * @param s
-	 *            source <tt>SctpSocket</tt> instance.
+	 * @param facade
+	 *            SctpChannelFacade instance.
 	 * @param packet
 	 *            network packet buffer.
 	 * @param tos
 	 *            Type of Service flag
 	 * @param set_df
 	 *            IP don't fragment option
-	 *
 	 * @throws IOException
 	 *             in case of transport error.
 	 * @throws NotFoundException

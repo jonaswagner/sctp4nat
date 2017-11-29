@@ -18,14 +18,12 @@ package net.sctp4nat.connection;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
 import net.sctp4nat.core.NetworkLink;
-import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.SctpDataCallback;
@@ -34,6 +32,13 @@ import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
 
+/**
+ * 
+ * @author Jonas Wagner
+ * 
+ *         This class combines the use of the builder pattern with the
+ *         possibility to automatically connect to the desired remote endpoint.
+ */
 @Builder
 public class SctpConnection {
 
@@ -45,8 +50,19 @@ public class SctpConnection {
 	private SctpDataCallback cb;
 	private int localSctpPort;
 
+	/**
+	 * This method calls {@link SctpChannel}.connect() and therefore causes usrsctp
+	 * to start the handshake with the remote endpoint.
+	 * 
+	 * @param link
+	 *            The {@link NetworkLink}, on which packets are sent
+	 * @return A {@link Promise} object
+	 * @throws Exception
+	 *             Possible {@link Exception}s are {@link SctpInitException} and
+	 *             {@link NullPointerException}.
+	 */
 	public Promise<SctpChannelFacade, Exception, Object> connect(final NetworkLink link) throws Exception {
-		
+
 		if (remote == null) {
 			LOG.error("Remote InetSocketAddress was null. We can't connect to null!");
 			throw new NullPointerException("Remote InetSocketAddress was null. We can't connect to null!");
@@ -69,11 +85,10 @@ public class SctpConnection {
 			localSctpPort = remote.getPort();
 		}
 
-			
 		SctpChannel socket = null;
 		try {
-		socket = new SctpChannelBuilder().remoteAddress(remote.getAddress()).remotePort(remote.getPort())
-				.sctpDataCallBack(cb).mapper(SctpUtils.getMapper()).localSctpPort(localSctpPort).build();
+			socket = new SctpChannelBuilder().remoteAddress(remote.getAddress()).remotePort(remote.getPort())
+					.sctpDataCallBack(cb).mapper(SctpUtils.getMapper()).localSctpPort(localSctpPort).build();
 		} catch (SctpInitException e) {
 			LOG.error("Could not create SctpChannel, because Sctp is not initialized! Try SctpUtils.init()");
 			throw new SctpInitException(e.getMessage());
@@ -92,7 +107,7 @@ public class SctpConnection {
 
 		if (link2 == null) {
 			LOG.error("Could not create NetworkLink");
-			releaseAssignedParams(so, new IOException("Could not create UdpClientLink"));
+			releaseAssignedParams(so);
 			throw new NullPointerException("NetworkLink was null!");
 		}
 
@@ -100,20 +115,17 @@ public class SctpConnection {
 
 		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
 
-//		p.fail(new FailCallback<Exception>() {
-//
-//			@Override
-//			public void onFail(Exception e) {
-//				LOG.error("Could not connect to remote host", e);
-//				releaseAssignedParams(so, e);
-//			}
-//		});
-
 		return p;
 
 	}
 
-	private void releaseAssignedParams(SctpChannel so, Exception e) {
+	/**
+	 * This method cleans up the assigned resources after connect caused an error.
+	 * 
+	 * @param so
+	 *            The underlying {@link SctpChannel}
+	 */
+	private void releaseAssignedParams(SctpChannel so) {
 		SctpPorts.getInstance().removePort(so);
 		so.close();
 	}

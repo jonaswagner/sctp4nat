@@ -26,10 +26,13 @@ import net.sctp4nat.origin.SctpDataCallback;
 /**
  * 
  * @author Jonas Wagner
- *
- *         This class is a default configuration for connecting, handling and
- *         sending messages via sctp. If a extended configuration is needed,
- *         feel free extend this class and/or overwrite it with your needs.
+ * </br>
+ * </br>
+ * {@link SctpDefaultStreamConfig} is a convenience class, which is used for
+ * sending or defining the default {@link SctpDataCallback} in sctp4nat.
+ * In future, the class can be extented with additional variables or
+ * parameters for the sake of configuring the association.
+ * 
  */
 public class SctpDefaultStreamConfig {
 

@@ -15,7 +15,6 @@
  */
 package net.sctp4nat.connection;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.jdeferred.Promise;

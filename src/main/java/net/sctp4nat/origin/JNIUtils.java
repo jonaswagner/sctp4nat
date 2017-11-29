@@ -44,12 +44,12 @@ public final class JNIUtils
         loadLibrary(libname, null, classLoader);
     }
 
-    public static void loadLibrary(String libname, Class clazz)
+    public static void loadLibrary(String libname, @SuppressWarnings("rawtypes") Class clazz)
     {
         loadLibrary(libname, clazz, clazz.getClassLoader());
     }
 
-    private static void loadLibrary(String libname, Class clazz,
+    private static void loadLibrary(String libname, @SuppressWarnings("rawtypes") Class clazz,
         ClassLoader classLoader)
     {
         try

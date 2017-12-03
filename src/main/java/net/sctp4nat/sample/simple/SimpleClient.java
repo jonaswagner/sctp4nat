@@ -9,7 +9,6 @@ import org.jdeferred.DoneCallback;
 import org.jdeferred.Promise;
 
 import net.sctp4nat.connection.SctpConnection;
-import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
@@ -36,12 +35,13 @@ public class SimpleClient {
 			}
 		};
 
-		SctpConnection channel = SctpConnection.builder().cb(cb).local(local).remote(remote).build();
-		Promise<SctpChannelFacade, Exception, Object> p = channel.connect(null);
+		SctpConnection channel = SctpConnection.builder().local(local).remote(remote).build();
+		Promise<SctpChannelFacade, Exception, Void> p = channel.connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override
 			public void onDone(SctpChannelFacade result) {
+				result.setSctpDataCallback(cb);
 				result.send("Hello World!".getBytes(), false, 0, 0);
 			}
 		});

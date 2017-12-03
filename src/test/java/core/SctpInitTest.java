@@ -58,8 +58,8 @@ public class SctpInitTest {
 			}
 		};
 		
-		SctpConnection channel = SctpConnection.builder().cb(cb).local(clientAddr).remote(serverAddr).build();
-		Promise<SctpChannelFacade, Exception, Object> p = null;
+		SctpConnection channel = SctpConnection.builder().local(clientAddr).remote(serverAddr).build();
+		Promise<SctpChannelFacade, Exception, Void> p = null;
 		try{
 			p = channel.connect(null);
 		} catch (Exception e) {

@@ -202,7 +202,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 	}
 	
 	private void setUpSctp() {
-		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
+		Promise<SctpChannelFacade, Exception, Void> p = so.connect(remote);
 
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			@Override

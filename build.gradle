@@ -23,5 +23,5 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito
 	testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.7.3'
 	testCompile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.7.3'
-   	compile 'org.projectlombok:lombok:1.16.18'
+   	compileOnly 'org.projectlombok:lombok:1.16.18'
 }

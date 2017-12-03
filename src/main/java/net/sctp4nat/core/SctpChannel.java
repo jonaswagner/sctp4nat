@@ -61,7 +61,7 @@ public class SctpChannel implements SctpChannelFacade {
 	 * The {@link SctpNotification} callback, which is triggered by the native
 	 * counterpart.
 	 */
-	private NotificationListener l;
+	
 
 	/**
 	 * Creates an Instance of {@link SctpChannel}.
@@ -114,7 +114,6 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 
 	public void setNotificationListener(SctpSocket.NotificationListener l) {
-		this.l = l;
 		so.setNotificationListener(l);
 	}
 
@@ -129,83 +128,64 @@ public class SctpChannel implements SctpChannelFacade {
 	 *            {@link InetSocketAddress} of the remote.
 	 * @return p {@link Promise}
 	 */
-	public Promise<SctpChannelFacade, Exception, Object> connect(final InetSocketAddress remote) {
-		final Deferred<SctpChannelFacade, Exception, Object> d = new DeferredObject<>();
+	public Promise<SctpChannelFacade, Exception, Void> connect(final InetSocketAddress remote) {
+		final Deferred<SctpChannelFacade, Exception, Void> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
-
-		class SctpConnectThread extends Thread {
-			@Override
-			public void run() {
-				super.run();
-
-				if (!Sctp.isInitialized()) {
-					d.reject(new SctpInitException(
-							"Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
-					return;
-				}
-
-				try {
-					addNotificationListener(d, countDown);
-					SctpChannel.this.setNotificationListener(l);
-					mapper.register(remote, SctpChannel.this);
-					so.connectNative(remote.getPort());
-				} catch (IOException e) {
-					LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);
-					mapper.unregister(remote);
-					d.reject(e);
-				}
-			}
-
-			/**
-			 * This method catches the notifications send by the native counterpart
-			 * 
-			 * @param d
-			 * @param countDown
-			 */
-			private void addNotificationListener(final Deferred<SctpChannelFacade, Exception, Object> d,
-					final CountDownLatch countDown) {
-				l = new NotificationListener() {
-
-					@Override
-					public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
-						LOG.debug(notification.toString());
-						if (notification.toString().indexOf("COMM_UP") >= 0) {
-							countDown.countDown();
-							d.resolve(SctpChannel.this);
-						} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
-							// TODO jwa make a clean shutdown possible closing the socket prevents any
-							// SHUTDOWN ACK to be sent...
-							LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
-							SctpChannel.this.close();
-							d.reject(new Exception(
-									"we are forced to shutdown because of shutdown request from server!"));
-						} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0) {
-							LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
-							SctpChannel.this.close();
-							d.reject(new Exception(
-									"we are forced to close the connection because the remote is not answering! (remote: "
-											+ remote.getAddress().getHostAddress() + ":" + remote.getPort() + ")"));
-						} else if (notification.toString().indexOf("COMM_LOST") >= 0) {
-							LOG.error("Communication aborted! Now shutting down the udp connection...");
-							SctpChannel.this.close();
-							d.reject(new Exception(
-									"we are forced to close the connection because we lost the connection to remote: "
-											+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
-						} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0){
-							SctpChannel.this.close();
-						}
-					}
-
-				};
-			}
+		if (!Sctp.isInitialized()) {
+			d.reject(new SctpInitException("Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
+			return d;
 		}
 
-		SctpUtils.getThreadPoolExecutor()
-				.execute(new SctpTimeoutThread(d, CONNECT_TIMEOUT, TimeUnit.SECONDS, countDown));
-		SctpUtils.getThreadPoolExecutor().execute(new SctpConnectThread());
+		try {
+			NotificationListener l = addNotificationListener(d, countDown);
+			SctpChannel.this.setNotificationListener(l);
+			mapper.register(remote, SctpChannel.this);
+			so.connectNative(remote.getPort());
+		} catch (IOException e) {
+			LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);
+			mapper.unregister(remote);
+			d.reject(e);
+		}
 
 		return d.promise();
 	}
+
+	private NotificationListener addNotificationListener(final Deferred<SctpChannelFacade, Exception, Void> d,
+		final CountDownLatch countDown) {
+		return new NotificationListener() {
+
+		@Override
+		public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
+			LOG.debug(notification.toString());
+			if (notification.toString().indexOf("COMM_UP") >= 0) {
+				countDown.countDown();
+				d.resolve(SctpChannel.this);
+			} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
+				// TODO jwa make a clean shutdown possible closing the socket prevents any
+				// SHUTDOWN ACK to be sent...
+				LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
+				SctpChannel.this.close();
+				d.reject(new Exception(
+						"we are forced to shutdown because of shutdown request from server!"));
+			} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0) {
+				LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
+				SctpChannel.this.close();
+				d.reject(new Exception(
+						"we are forced to close the connection because the remote is not answering! (remote: "
+								+ remote.getAddress().getHostAddress() + ":" + remote.getPort() + ")"));
+			} else if (notification.toString().indexOf("COMM_LOST") >= 0) {
+				LOG.error("Communication aborted! Now shutting down the udp connection...");
+				SctpChannel.this.close();
+				d.reject(new Exception(
+						"we are forced to close the connection because we lost the connection to remote: "
+								+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
+			} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0){
+				SctpChannel.this.close();
+			}
+		}
+
+	};
+}
 
 	@Override
 	public Promise<Integer, Exception, Object> send(byte[] data, boolean ordered, int sid, int ppid) {

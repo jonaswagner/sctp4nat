@@ -52,7 +52,7 @@ public class UsrsctpFinishTest {
 			localhost = InetAddress.getByName("127.0.0.1");
 			SctpUtils.init(localhost, 9899, null);
 			SctpConnection connection = SctpConnection.builder().remote(remote).local(local).build();
-			Promise<SctpChannelFacade, Exception, Object> p = connection.connect(null);
+			Promise<SctpChannelFacade, Exception, Void> p = connection.connect(null);
 			p.done(new DoneCallback<SctpChannelFacade>() {
 
 				@Override
@@ -213,7 +213,7 @@ public class UsrsctpFinishTest {
 				}
 				so.setLink(link);
 
-				Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
+				Promise<SctpChannelFacade, Exception, Void> p = so.connect(remote);
 
 				p.done(new DoneCallback<SctpChannelFacade>() {
 

@@ -49,7 +49,7 @@ public class SctpConnectTest {
 		Sctp.getInstance().init();
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		Promise<SctpChannelFacade, Exception, Object> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
+		Promise<SctpChannelFacade, Exception, Void> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override
@@ -90,7 +90,7 @@ public class SctpConnectTest {
 		SctpUtils.init(clientAddr.getAddress(), SctpPorts.getInstance().generateDynPort(), null);
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		Promise<SctpChannelFacade, Exception, Object> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
+		Promise<SctpChannelFacade, Exception, Void> p = SctpConnection.builder().local(clientAddr).remote(serverAddr).build().connect(null);
 		p.done(new DoneCallback<SctpChannelFacade>() {
 			
 			@Override

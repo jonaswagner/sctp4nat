@@ -144,8 +144,8 @@ public class SctpChannelTest {
 					}
 				};
 
-				SctpConnection channel = SctpConnection.builder().cb(cb).local(local).remote(remote).build();
-				Promise<SctpChannelFacade, Exception, Object> p = null;
+				SctpConnection channel = SctpConnection.builder().local(local).remote(remote).build();
+				Promise<SctpChannelFacade, Exception, Void> p = null;
 				try {
 					p = channel.connect(null);
 				} catch (Exception e) {
@@ -156,6 +156,7 @@ public class SctpChannelTest {
 
 					@Override
 					public void onDone(SctpChannelFacade result) {
+						result.setSctpDataCallback(cb);
 						result.send("Hello World!".getBytes(), false, 0, 0);
 					}
 				});

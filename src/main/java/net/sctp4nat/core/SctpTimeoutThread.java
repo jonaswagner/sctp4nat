@@ -17,7 +17,7 @@ public class SctpTimeoutThread extends Thread {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpTimeoutThread.class);
 	
-	private final Deferred<SctpChannelFacade, Exception, Object> d;
+	private final Deferred<SctpChannelFacade, Exception, Void> d;
 	private final long timeout;
 	private final TimeUnit unit;
 	private final CountDownLatch countDown;
@@ -32,7 +32,7 @@ public class SctpTimeoutThread extends Thread {
 	 * @param countDown
 	 * 			the {@link CountDownLatch}, which specifies when the task is finished
 	 */
-	public SctpTimeoutThread(final Deferred<SctpChannelFacade, Exception, Object> d, final long timeout, final TimeUnit unit, final CountDownLatch countDown) {
+	public SctpTimeoutThread(final Deferred<SctpChannelFacade, Exception, Void> d, final long timeout, final TimeUnit unit, final CountDownLatch countDown) {
 		this.d = d;
 		this.timeout = timeout;
 		this.unit = unit;

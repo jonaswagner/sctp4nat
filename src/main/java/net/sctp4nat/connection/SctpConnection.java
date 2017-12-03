@@ -3,7 +3,6 @@ package net.sctp4nat.connection;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import lombok.Builder;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
@@ -27,10 +25,9 @@ public class SctpConnection {
 	private SctpDefaultConfig config;
 	private InetSocketAddress local;
 	private InetSocketAddress remote;
-	private SctpDataCallback cb;
 	private int localSctpPort;
 
-	public Promise<SctpChannelFacade, Exception, Object> connect(final NetworkLink link) throws Exception {
+	public Promise<SctpChannelFacade, Exception, Void> connect(final NetworkLink link) throws Exception {
 		
 		if (remote == null) {
 			LOG.error("Remote InetSocketAddress was null. We can't connect to null!");
@@ -46,10 +43,6 @@ public class SctpConnection {
 			config = new SctpDefaultConfig();
 		}
 
-		if (cb == null) {
-			cb = config.getCb();
-		}
-
 		if (localSctpPort == -1) {
 			localSctpPort = remote.getPort();
 		}
@@ -58,7 +51,7 @@ public class SctpConnection {
 		SctpChannel socket = null;
 		try {
 		socket = new SctpChannelBuilder().remoteAddress(remote.getAddress()).remotePort(remote.getPort())
-				.sctpDataCallBack(cb).mapper(SctpUtils.getMapper()).localSctpPort(localSctpPort).build();
+				.mapper(SctpUtils.getMapper()).localSctpPort(localSctpPort).build();
 		} catch (SctpInitException e) {
 			LOG.error("Could not create SctpChannel, because Sctp is not initialized! Try SctpUtils.init()");
 			throw new SctpInitException(e.getMessage());
@@ -83,7 +76,7 @@ public class SctpConnection {
 
 		so.setLink(link2);
 
-		Promise<SctpChannelFacade, Exception, Object> p = so.connect(remote);
+		Promise<SctpChannelFacade, Exception, Void> p = so.connect(remote);
 
 //		p.fail(new FailCallback<Exception>() {
 //

@@ -51,6 +51,20 @@ public class SctpChannelLargeDataTest {
 		CountDownLatch serverCd = new CountDownLatch(1);
 		CountDownLatch clientCd = new CountDownLatch(1);
 		CountDownLatch shutdownCd = new CountDownLatch(1);
+		
+		SctpDataCallback cb = new SctpDataCallback() {
+
+			@Override
+			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
+					SctpChannelFacade so) {
+				System.err.println("len: " + data.length + "/ " + sid + " / " + ssn + " :tsn " + tsn + " F:"
+						+ flags + " cxt:" + context);
+				if (flags == 128) {
+					SctpChannelLargeDataTest.this.serverSo = so;
+					shutdownCd.countDown();
+				}
+			}
+		};
 
 		/**
 		 * This is the server Thread
@@ -60,19 +74,7 @@ public class SctpChannelLargeDataTest {
 			@Override
 			public void run() {
 
-				SctpDataCallback cb = new SctpDataCallback() {
-
-					@Override
-					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-							SctpChannelFacade so) {
-						System.err.println("len: " + data.length + "/ " + sid + " / " + ssn + " :tsn " + tsn + " F:"
-								+ flags + " cxt:" + context);
-						if (flags == 128) {
-							SctpChannelLargeDataTest.this.serverSo = so;
-							shutdownCd.countDown();
-						}
-					}
-				};
+				
 
 				int wrongPort = -300;
 				try {
@@ -112,9 +114,9 @@ public class SctpChannelLargeDataTest {
 				InetSocketAddress local = new InetSocketAddress(localHost, SctpPorts.getInstance().generateDynPort());
 				InetSocketAddress remote = new InetSocketAddress(localHost, SctpPorts.SCTP_TUNNELING_PORT);
 
-				SctpConnection channel = SctpConnection.builder().local(local).cb(new SctpDefaultConfig().getCb())
+				SctpConnection channel = SctpConnection.builder().local(local)
 						.remote(remote).build();
-				Promise<SctpChannelFacade, Exception, Object> p = null;
+				Promise<SctpChannelFacade, Exception, Void> p = null;
 				try {
 					p = channel.connect(null);
 				} catch (Exception e) {
@@ -125,6 +127,7 @@ public class SctpChannelLargeDataTest {
 
 					@Override
 					public void onDone(SctpChannelFacade result) {
+						result.setSctpDataCallback(new SctpDefaultConfig().getCb());
 						try {
 							if (!clientCd.await(3, TimeUnit.SECONDS)) {
 								fail("Clientsetup failed!");

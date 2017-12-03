@@ -11,14 +11,15 @@ import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.connection.SctpDefaultConfig;
-import net.sctp4nat.exception.SctpInitException;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpAcceptable;
+import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 /**
@@ -245,12 +246,12 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 	
 	@Override
-	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultConfig config) {
+	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultStreamConfig config) {
 		return send(data, offset, len, config.isOrdered(), config.getSid(), config.getPpid());
 	}
 
 	@Override
-	public Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultConfig config) {
+	public Promise<Integer, Exception, Object> send(byte[] data, SctpDefaultStreamConfig config) {
 		return send(data, config.isOrdered(), config.getSid(), config.getPpid());
 	}
 

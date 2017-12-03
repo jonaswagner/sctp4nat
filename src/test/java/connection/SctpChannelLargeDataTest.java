@@ -115,9 +115,8 @@ public class SctpChannelLargeDataTest {
 				InetSocketAddress local = new InetSocketAddress(localHost, SctpPorts.getInstance().generateDynPort());
 				InetSocketAddress remote = new InetSocketAddress(localHost, SctpPorts.SCTP_TUNNELING_PORT);
 
-				SctpConnection channel = SctpConnection.builder().local(local).cb(new SctpDefaultStreamConfig().getCb())
-						.remote(remote).build();
-				Promise<SctpChannelFacade, Exception, Object> p = null;
+				SctpConnection channel = SctpConnection.builder().local(local).remote(remote).build();
+				Promise<SctpChannelFacade, Exception, Void> p = null;
 				try {
 					p = channel.connect(null);
 				} catch (Exception e) {

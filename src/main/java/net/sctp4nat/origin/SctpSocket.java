@@ -23,16 +23,44 @@ import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
 import net.sctp4nat.core.NetworkLink;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpChannel;
+import net.sctp4nat.core.SctpChannelFacade;
 
 /**
  * SCTP socket implemented using "usrsctp" lib.
  *
+ * </br>
+ * </br>
+ * <b>Initial Authors</b>
+ * 
  * @author Pawel Domas
  * @author George Politis
- * @author Lyubomir Marinov
+ * @author Lyubomir Marinov </br>
+ *         </br>
+ *         <b>Modifier</b>
+ * @author Jonas Wagner
+ * 
+ *         </br>
+ *         </br>
+ *         <b>Modifications made </b> </br>
+ *         The class had to be adjusted for the use in sctp4nat. First,
+ *         acceptNative() was changed, so that all incoming and outgoing
+ *         association attempts are accepted by sctp4nat. Either on the first
+ *         data packet sent or the first data packet received, acceptNative() is
+ *         executed. Second, to know when a connection is established, shutdown,
+ *         closed or lost, sctp4nat needed to be notified. For this reason, the
+ *         default {@link SctpNotification}ationListener will be overwritten by
+ *         every {@link SctpChannel}. Third, because sctp4nat is required to run
+ *         on a single port, it was necessary to modify onConnOut() and resolve
+ *         the current {@link SctpChannelFacade} instance for the corresponding
+ *         {@link NetworkLink} objects. Fourth, several minor bugs were detected
+ *         and fixed. Fiveth, {@link SctpAcceptable} was not in the initial
+ *         implentation of sctp4j. I have added the interface for the sake
+ *         of shielding the package from the user. The interface is used in
+ *         class {@link SctpSocket}, in method onSctpNotification().
+ *         Prior to the change, the method returned an instance of
+ *         SctpSocket. This instance was exchanged with the interface.
  */
 public class SctpSocket implements SctpAcceptable {
 	/**
@@ -421,6 +449,7 @@ public class SctpSocket implements SctpAcceptable {
 		long ptr = lockPtr();
 
 		try {
+			logger.info("calling JNI method Sctp.onConnIn with ptr:" + ptr);
 			Sctp.onConnIn(ptr, packet, offset, len);
 		} finally {
 			unlockPtr();
@@ -454,8 +483,8 @@ public class SctpSocket implements SctpAcceptable {
 	 * @param flags
 	 * @param so
 	 */
-	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpChannel so) throws IOException {
+	private void onSctpIn(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpChannel so)
+			throws IOException {
 
 		synchronized (this) {
 			if (!isAccepted) {
@@ -502,10 +531,10 @@ public class SctpSocket implements SctpAcceptable {
 	 * @param context
 	 * @param flags
 	 * @param so
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	void onSctpInboundPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-			SctpChannel so) throws IOException {
+	void onSctpInboundPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags, SctpChannel so)
+			throws IOException {
 		if ((flags & Sctp.MSG_NOTIFICATION) != 0) {
 			onNotification(SctpNotification.parse(data));
 		} else {
@@ -531,6 +560,7 @@ public class SctpSocket implements SctpAcceptable {
 
 		if (link != null) {
 			try {
+				logger.info("calling onSctpOut with ptr:" + this.ptr);
 				link.onConnOut(SctpMapper.locate(this), packet, tos);
 				ret = 0;
 			} catch (IOException | NotFoundException e) {
@@ -629,7 +659,7 @@ public class SctpSocket implements SctpAcceptable {
 	 *            the {@link NotificationListener} to set.
 	 */
 	public void setNotificationListener(NotificationListener l) {
-		logger.debug("Changed NotificationListener for SctpSocket" + this.ptr);
+		logger.debug("Changed NotificationListener for SctpSocket ptr:" + this.ptr);
 		this.notificationListener = l;
 	}
 

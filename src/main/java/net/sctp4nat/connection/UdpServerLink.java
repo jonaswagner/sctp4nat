@@ -1,3 +1,18 @@
+/*
+ * Copyright @ 2015 Atlassian Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sctp4nat.connection;
 
 import java.io.IOException;
@@ -12,24 +27,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
-import lombok.Getter;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.exception.SctpInitException;
+import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpSocket;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 /**
- * @author Jonas Wagner
+ * This class holds the common {@link DatagramSocket} for all incoming SCTP
+ * connection attempts. By default it should be using port 9899 (default SCTP
+ * via UDP port).
  * 
- *         This class holds the common {@link DatagramSocket} for all incoming
- *         SCTP connection attempts. By default it should be using port 9899
- *         (default SCTP via UDP port).
+ * @author Jonas Wagner
  *
  */
 public class UdpServerLink implements NetworkLink {
@@ -47,14 +61,18 @@ public class UdpServerLink implements NetworkLink {
 	private boolean isShutdown = false;
 
 	/**
-	 * UDP port used.
-	 */
-	@Getter
-	private int port = -1;
-
-	/**
-	 * Creates new instance of <tt>UdpConnection</tt>. The default port used will be
+	 * 
+	 * Creates new instance of {@link UdpServerLink}. The default port used will be
 	 * 9899.
+	 *
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param local
+	 *            The local {@link InetAddress}
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 * @throws SocketException
+	 *             Thrown, if the {@link DatagramSocket} could not be created.
 	 */
 	public UdpServerLink(final SctpMapper mapper, final InetAddress local, final SctpDataCallback cb)
 			throws SocketException {
@@ -62,23 +80,62 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	/**
-	 * Creates new instance of <tt>UdpConnection</tt>.
+	 * 
+	 * Creates new instance of {@link UdpServerLink}.
+	 * 
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param local
+	 *            The local {@link InetAddress} used for the {@link DatagramSocket}.
+	 * @param localPort
+	 *            The port used for the {@link DatagramSocket}.
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 * @throws SocketException
+	 *             Thrown, if the {@link DatagramSocket} could not be created.
 	 */
 	public UdpServerLink(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
 			final SctpDataCallback cb) throws SocketException {
-
-		this.port = localPort;
 		this.udpSocket = new DatagramSocket(localPort, localAddress);
 		SctpUtils.setLink(this); // set this as main Link
 		receive(mapper, localAddress, localPort, cb);
 	}
 
+	/**
+	 * Creates new instance of {@link UdpServerLink}. 
+	 * 
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 * @param udpSocket
+	 *            An already existing {@link DatagramSocket} instance.
+	 */
 	public UdpServerLink(SctpMapper mapper, InetSocketAddress local, SctpDataCallback cb, DatagramSocket udpSocket) {
-		this.port = local.getPort();
 		this.udpSocket = udpSocket;
 		receive(mapper, local.getAddress(), local.getPort(), cb);
 	}
 
+	/**
+	 * If a new packet arrives over
+	 * the contained {@link DatagramSocket}, the method first checks, if the remote
+	 * endpoint is already known. If if is known, the packet is decoded and
+	 * forwarded to the native counterpart (usrsctp) via onConnIn(). If not, this
+	 * means, that an new SCTP endpoint wants to connect to this SCTP endpoint. Once
+	 * the SctpChannel is returned by setupSocket(), the
+	 * {@link SctpChannel} gets registered on {@link SctpMapper}. After the
+	 * registration, onConnIn() is called to forward the INIT message from
+	 * the remote endpoint to the newly created SctpChannel.
+	 * 
+	 * @param mapper
+	 *            The {@link SctpMapper} instance
+	 * @param localAddress
+	 *            The local {@link InetAddress} used for the {@link DatagramSocket}.
+	 * @param localPort
+	 *            The port used for the {@link DatagramSocket}.
+	 * @param cb
+	 *            The {@link SctpDataCallback} used to reply.
+	 */
 	private void receive(final SctpMapper mapper, final InetAddress localAddress, final int localPort,
 			final SctpDataCallback cb) {
 		SctpUtils.getThreadPoolExecutor().execute(new Runnable() {
@@ -90,16 +147,18 @@ public class UdpServerLink implements NetworkLink {
 				while (!isShutdown) {
 					byte[] buff = new byte[2048];
 					DatagramPacket p = new DatagramPacket(buff, 2048);
-					
+
 					try {
 						udpSocket.receive(p);
 
 						InetSocketAddress remote = new InetSocketAddress(p.getAddress(), p.getPort());
 						so = SctpMapper.locate(p.getAddress().getHostAddress(), p.getPort());
 						if (so == null) {
+							LOG.info("New INIT arrived. Now starting the setupSocket() process...");
 							so = setupSocket(localAddress, localPort, p.getAddress(), p.getPort(), cb, mapper);
 							mapper.register(remote, so);
-							LOG.info("onConnIn() Called with IP and port /" + p.getAddress().getHostAddress() + ":" + p.getPort());
+							LOG.info("onConnIn() Called with IP and port /" + p.getAddress().getHostAddress() + ":"
+									+ p.getPort());
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
 						} else {
 							so.onConnIn(p.getData(), p.getOffset(), p.getLength());
@@ -120,8 +179,8 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	@Override
-	public void onConnOut(SctpChannelFacade so, byte[] data, final int tos) throws IOException, NotFoundException {
-		DatagramPacket packet = new DatagramPacket(data, data.length, (SocketAddress) so.getRemote());
+	public void onConnOut(SctpChannelFacade facade, byte[] data, final int tos) throws IOException, NotFoundException {
+		DatagramPacket packet = new DatagramPacket(data, data.length, (SocketAddress) facade.getRemote());
 		udpSocket.send(packet);
 	}
 
@@ -142,25 +201,31 @@ public class UdpServerLink implements NetworkLink {
 	 * @throws SctpInitException
 	 */
 	private SctpChannel setupSocket(final InetAddress localAddress, final int localPort,
-			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb, final SctpMapper mapper) throws SctpInitException {
-		SctpChannel so = new SctpChannelBuilder()
-				.networkLink(UdpServerLink.this)
-				.localSctpPort(localPort)
-				.sctpDataCallBack(cb)
-				.remoteAddress(remoteAddress)
-				.remotePort(remotePort)
-				.mapper(mapper).build();
+			final InetAddress remoteAddress, final int remotePort, final SctpDataCallback cb, final SctpMapper mapper)
+			throws SctpInitException {
+		SctpChannel so = new SctpChannelBuilder().networkLink(UdpServerLink.this).localSctpPort(localPort)
+				.sctpDataCallBack(cb).remoteAddress(remoteAddress).remotePort(remotePort).mapper(mapper).build();
+		LOG.info("new SctpChannel object created --> " + so.toString());
 		so.listen();
 		return so;
 	}
 
 	/**
-	 * Do not call this method while the corresponding {@link SctpSocket} is still
-	 * open!!! This method closes the {@link DatagramSocket}.
+	 * Do not call this method while other corresponding {@link SctpSocket}s are
+	 * still open!!! This method closes the {@link DatagramSocket}.
 	 */
 	@Override
 	public void close() {
 		this.isShutdown = true;
 		udpSocket.close();
+	}
+
+	@Override
+	public String toString() {
+		InetSocketAddress local = (InetSocketAddress) this.udpSocket.getLocalSocketAddress();
+
+		return "UdpClientLink(" + "Local(" + local.getAddress().getHostAddress() + ":" + local.getPort()
+				+ "), shutdown is " + isShutdown + ")";
+
 	}
 }

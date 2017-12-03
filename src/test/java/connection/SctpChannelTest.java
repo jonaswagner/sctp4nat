@@ -17,16 +17,18 @@ import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
+import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpDataCallback;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 public class SctpChannelTest {
@@ -41,6 +43,8 @@ public class SctpChannelTest {
 	@Test
 	public void sctpChannelTest() throws InterruptedException {
 
+		SctpMapper.setShutdown(false);
+		
 		CountDownLatch serverCd = new CountDownLatch(1);
 		CountDownLatch clientCd = new CountDownLatch(1);
 		CountDownLatch comCd = new CountDownLatch(2);
@@ -100,8 +104,6 @@ public class SctpChannelTest {
 					fail("Could not init server");
 					e.printStackTrace();
 				}
-
-				assertEquals(SctpPorts.SCTP_TUNNELING_PORT, SctpUtils.getLink().getPort());
 
 				serverCd.countDown();
 			}

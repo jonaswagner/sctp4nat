@@ -2,7 +2,7 @@
 This is a simple Java library, which provides the user to connect two endpoints (at least one with Java) to each other via SCTP. Since each SCTP packet is wrapped into a UDP packet, it is possible to overcome NAT devices easily (e.g. with hole punching).
 
 This library is not finished yet. But if you still want to try it out, you should know some stuff beforehand:
-- This library uses usrsctp via JNI interface. 
+- This library uses [usrsctp](https://github.com/sctplab/usrsctp) via JNI interface. 
 - The usrsctp-part of this library is not cross-compiled yet. Thus, it only works on linux. It is tested on Ubuntu 16.04.
 
 ## Code samples

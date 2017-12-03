@@ -400,8 +400,8 @@ Java_net_sctp4nat_origin_Sctp_usrsctp_1socket
         return 0;
     }
     
-    int snd_size = 1024 * 1024;
-    int rcv_size = 1024 * 1024;
+    int snd_size = 1 * 1024 * 1024;
+    int rcv_size = 1 * 1024 * 1024;
     usrsctp_setsockopt(so, SOL_SOCKET, SO_SNDBUF,  &snd_size, sizeof(snd_size));
     usrsctp_setsockopt(so, SOL_SOCKET, SO_RCVBUF,  &rcv_size, sizeof(rcv_size));
     

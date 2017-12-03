@@ -20,12 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.connection.UdpServerLink;
 import net.sctp4nat.core.NetworkLink;
-import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.exception.SctpInitException;
+import net.sctp4nat.origin.SctpDataCallback;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
@@ -153,7 +153,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 		return d.promise();
 	}
 
-	public Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(final SctpDefaultConfig config,
+	public Promise<SctpChannelFacade, Exception, NetworkLink> upgrade(final SctpDefaultStreamConfig config,
 			final InetSocketAddress local, final InetSocketAddress remote) {
 		this.isUgrading = true;
 		

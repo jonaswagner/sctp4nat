@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 
 import net.sctp4nat.connection.UdpServerLink;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpDataCallback;
 
 public class SampleServer {
 
@@ -34,10 +34,10 @@ public class SampleServer {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
+					SctpChannelFacade facade) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
-				so.send(data, false, sid, (int) ppid);
+				facade.send(data, false, sid, (int) ppid);
 			}
 		};
 		

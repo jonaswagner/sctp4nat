@@ -21,36 +21,35 @@ import javassist.NotFoundException;
 import net.sctp4nat.origin.SctpSocket;
 
 /**
- * Interface used by {@link SctpSocket} for sending network packets.
+ * Interface used by {@link SctpSocket} and {@link SctpChannel} for sending
+ * network packets.
  *
- * FIXME: introduce offset and length parameters in order to be able to
- *        re-use single buffer instance
- *        
- * Modified slighly by Jonas Wagner (added {@link SctpChannelFacade} and the close() method.
+ * This class is heavily inspired by sctp4j's NetworkLInk class.
  *
- * @author Pawel Domas
  * @author Jonas Wagner
  */
-public interface NetworkLink
-{
-    /**
-     * Callback triggered by <tt>SctpSocket</tt> whenever it wants to send some
-     * network packet.
-     * @param s source <tt>SctpSocket</tt> instance.
-     * @param packet network packet buffer.
-     * @param tos 
-     * 			Type of Service flag
-     * @param set_df 
-     * 			IP don't fragment option
-     *
-     * @throws IOException in case of transport error.
-     * @throws NotFoundException 
-     */
-    void onConnOut(final SctpChannelFacade so, final byte[] packet, final int tos)
-        throws IOException, NotFoundException;
+public interface NetworkLink {
+	/**
+	 * Callback triggered by <tt>SctpSocket</tt> whenever it wants to send some
+	 * network packet.
+	 * 
+	 * @param facade
+	 *            SctpChannelFacade instance.
+	 * @param packet
+	 *            network packet buffer.
+	 * @param tos
+	 *            Type of Service flag
+	 * @param set_df
+	 *            IP don't fragment option
+	 * @throws IOException
+	 *             in case of transport error.
+	 * @throws NotFoundException
+	 */
+	void onConnOut(final SctpChannelFacade facade, final byte[] packet, final int tos)
+			throws IOException, NotFoundException;
 
-    /**
-     * This method initiates the shutdown of the {@link NetworkLink}.
-     */
+	/**
+	 * This method initiates the shutdown of the {@link NetworkLink}.
+	 */
 	void close();
 }

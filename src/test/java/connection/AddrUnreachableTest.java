@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpAcceptable;
+import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 public class AddrUnreachableTest {
@@ -38,9 +38,11 @@ public class AddrUnreachableTest {
 	
 	Thread server;
 	Thread client;
+	CountDownLatch shutdownCb = new CountDownLatch(1);
+	CountDownLatch closeCb = new CountDownLatch(2);
 	
 	@Test
-	public void lostConnectionTest() {
+	public void lostConnectionTest() throws InterruptedException {
 
 		CountDownLatch serverSetup = new CountDownLatch(1);
 		CountDownLatch clientMessageExchange = new CountDownLatch(1);
@@ -105,6 +107,35 @@ public class AddrUnreachableTest {
 				System.out.println("Server ready!");
 				serverSetup.countDown();
 				
+				
+				try {
+					if (!shutdownCb.await(280, TimeUnit.SECONDS)) {
+						fail("Timeout!");
+					}
+				} catch (InterruptedException e) {
+					fail(e.getMessage());
+				}
+				
+				CountDownLatch close = new CountDownLatch(1);
+				
+				Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
+				closePromise.done(new DoneCallback<Object>() {
+
+					@Override
+					public void onDone(Object result) {
+						close.countDown();
+					}
+				});
+				
+				try {
+					if (!close.await(10,  TimeUnit.SECONDS)) {
+						fail("Timeout called! teardown could not be executed successfully!");
+					} else {
+						closeCb.countDown();
+					}
+				} catch (InterruptedException e) {
+					fail(e.getMessage());
+				}
 			}
 		});
 
@@ -165,7 +196,7 @@ public class AddrUnreachableTest {
 							fail("serverSocket was not closed!");
 						}
 						
-						server.interrupt();
+//						server.interrupt();
 					}
 				};
 
@@ -186,6 +217,35 @@ public class AddrUnreachableTest {
 						result.send("Hello World!".getBytes(), false, 0, 0);
 					}
 				});
+				
+				try {
+					if (!shutdownCb.await(280, TimeUnit.SECONDS)) {
+						fail("Timeout!");
+					}
+				} catch (InterruptedException e) {
+					fail(e.getMessage());
+				}
+				
+				CountDownLatch close = new CountDownLatch(1);
+				
+				Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
+				closePromise.done(new DoneCallback<Object>() {
+
+					@Override
+					public void onDone(Object result) {
+						close.countDown();
+					}
+				});
+				
+				try {
+					if (!close.await(10,  TimeUnit.SECONDS)) {
+						fail("Timeout called! teardown could not be executed successfully!");
+					} else {
+						closeCb.countDown();
+					}
+				} catch (InterruptedException e) {
+					fail(e.getMessage());
+				}
 			}
 		});
 
@@ -204,15 +264,22 @@ public class AddrUnreachableTest {
 			fail(e.getMessage());
 		}
 		
-		assertTrue(addrUnreachable.getCount()==0);		
+		assertTrue(addrUnreachable.getCount()==0);
+		
+		shutdownCb.countDown();
+		
+		if (!closeCb.await(300, TimeUnit.SECONDS)) {
+			fail("Timeout");
+		}
 	}
 	
 	@After
 	public void tearDown() throws IOException, InterruptedException {
-		CountDownLatch close = new CountDownLatch(1);
-		
 		server.interrupt();
 		client.interrupt();
+		
+		CountDownLatch close = new CountDownLatch(1);
+		
 		Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
 		closePromise.done(new DoneCallback<Object>() {
 
@@ -222,8 +289,14 @@ public class AddrUnreachableTest {
 			}
 		});
 		
-		if (!close.await(10,  TimeUnit.SECONDS)) {
-			fail("Timeout called! teardown could not be executed successfully!");
+		try {
+			if (!close.await(10,  TimeUnit.SECONDS)) {
+				fail("Timeout called! teardown could not be executed successfully!");
+			} else {
+				closeCb.countDown();
+			}
+		} catch (InterruptedException e) {
+			fail(e.getMessage());
 		}
 	}
 }

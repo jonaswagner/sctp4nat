@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.UdpClientLink;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpDataCallback;
+import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
 public class SampleClient {
@@ -41,9 +41,9 @@ public class SampleClient {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
+					SctpChannelFacade facade) {
 				System.out.println("I WAS HERE");
-				SctpChannel realSo = (SctpChannel) so;
+				SctpChannel realSo = (SctpChannel) facade;
 				realSo.shutdownInit();
 				realSo.close();
 			}

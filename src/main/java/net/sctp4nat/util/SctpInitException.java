@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sctp4nat.core;
+package net.sctp4nat.util;
 
 /**
- * Callback used to listen for incoming data on SCTP socket.
+ * @author jonaswagner
  *
- * @author Pawel Domas
+ *         This Exception signals that the user tried to call Sctp.init() twice
+ *         or more.
+ *
  */
-public interface SctpDataCallback
-{
-    /**
-     * Callback fired by <tt>SctpSocket</tt> to notify about incoming data.
-     * @param data buffer holding received data.
-     * @param sid SCTP stream identifier.
-     * @param ssn
-     * @param tsn
-     * @param ppid payload protocol identifier.
-     * @param context
-     * @param flags
-     * @param so 
-     */
-    void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid,
-                      int context, int flags, SctpChannelFacade so);
+public class SctpInitException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+
+	public SctpInitException(String string) {
+		super(string);
+	}
+
 }

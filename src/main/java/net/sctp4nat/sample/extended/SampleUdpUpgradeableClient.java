@@ -12,12 +12,12 @@ import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sctp4nat.connection.SctpDefaultConfig;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
-import net.sctp4nat.exception.SctpInitException;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpDataCallback;
+import net.sctp4nat.util.SctpInitException;
 
 public class SampleUdpUpgradeableClient {
 
@@ -36,7 +36,7 @@ public class SampleUdpUpgradeableClient {
 
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context,
-					int flags, SctpChannelFacade so) {
+					int flags, SctpChannelFacade facade) {
 				LOG.debug("CLIENT GOT MESSAGE: "+ new String(data, StandardCharsets.UTF_8));
 				LOG.debug("REPLY SUCCESS");
 			}
@@ -47,7 +47,7 @@ public class SampleUdpUpgradeableClient {
 		testPacket.setPort(serverSoAddr.getPort());
 		udpSocket.send(testPacket);
 
-			SctpDefaultConfig config = new SctpDefaultConfig();
+			SctpDefaultStreamConfig config = new SctpDefaultStreamConfig();
 			Promise<SctpChannelFacade, Exception, NetworkLink> promise = udpSocket.upgrade(config,
 					clientSoAddr, serverSoAddr);
 

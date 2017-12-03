@@ -29,8 +29,8 @@ import net.sctp4nat.util.SctpUtils;
  * 
  * <br>
  * <br>
- * This class provides the user with all five service primitives, which are
- * connect, disconnect, send, reply and close.
+ * This class provides the user with all six service primitives, which are
+ * listen, connect, disconnect, send, reply and close.
  * 
  * @author Jonas Wagner
  *
@@ -118,8 +118,8 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 
 	/**
-	 * This method connects this {@link SctpChannel} to the remote
-	 * counterpart. It uses {@link SctpSocket} to prepare the init messages and its
+	 * This method connects this {@link SctpChannel} to the remote counterpart. It
+	 * uses {@link SctpSocket} to prepare the init messages and its
 	 * {@link NetworkLink} to send it. Afterwards the SCTP four way handshake will
 	 * be done. If this method is not answered within time it will return a
 	 * {@link SctpInitException}.
@@ -150,6 +150,12 @@ public class SctpChannel implements SctpChannelFacade {
 		return d.promise();
 	}
 
+	/**
+	 * This method catches the notifications send by the native counterpart
+	 * 
+	 * @param d
+	 * @param countDown
+	 */
 	private NotificationListener addNotificationListener(final Deferred<SctpChannelFacade, Exception, Void> d,
 		final CountDownLatch countDown) {
 		return new NotificationListener() {
@@ -299,6 +305,15 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 	}
 
+	/**
+	 * This method checks if this instance contains the suggested
+	 * {@link SctpSocket}.
+	 * 
+	 * @param so
+	 *            suggested {@link SctpSocket}
+	 * @return true if the suggested {@link SctpSocket} is equal to this instance
+	 *         {@link SctpSocket}.
+	 */
 	public boolean containsSctpSocket(final SctpSocket so) {
 		return this.so.equals(so);
 	}
@@ -332,6 +347,14 @@ public class SctpChannel implements SctpChannelFacade {
 		so.setDataCallbackNative(cb);
 	}
 
+	/**
+	 * The method setLink() defines the NetworkLink, which is used
+	 * to encapsulate the SCTP association with a UDP header. Additionally, via this
+	 * NetworkLink, also the incoming SCTP packets are decoded.
+	 * 
+	 * @param link
+	 * 			A {@link NetworkLink}
+	 */
 	public void setLink(NetworkLink link) {
 		so.setLink(link);
 		this.link = link;
@@ -340,6 +363,15 @@ public class SctpChannel implements SctpChannelFacade {
 	@Override
 	public InetSocketAddress getRemote() {
 		return this.remote;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SctpChannel: Remote(" + remote.getAddress().getHostAddress() + ":" + remote.getPort()
+				+ "), SctpSocket(SctpPort:" + so.getPort() + ")");
+		return builder.toString();
+
 	}
 
 }

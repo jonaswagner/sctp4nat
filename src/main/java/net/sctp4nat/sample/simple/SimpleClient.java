@@ -10,9 +10,9 @@ import org.jdeferred.Promise;
 
 import net.sctp4nat.connection.SctpConnection;
 import net.sctp4nat.core.SctpChannelFacade;
-import net.sctp4nat.core.SctpDataCallback;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.origin.Sctp;
+import net.sctp4nat.origin.SctpDataCallback;
 
 public class SimpleClient {
 
@@ -27,11 +27,11 @@ public class SimpleClient {
 			
 			@Override
 			public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
-					SctpChannelFacade so) {
+					SctpChannelFacade facade) {
 				System.out.println("I WAS HERE");
 				System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
 				System.out.println("Now closing channel");
-				so.close();
+				facade.close();
 			}
 		};
 

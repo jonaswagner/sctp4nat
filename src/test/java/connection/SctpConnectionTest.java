@@ -17,7 +17,6 @@ import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +30,11 @@ import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
-public class SctpChannelTest {
+public class SctpConnectionTest {
 
 	private static final int TIMEOUT = 30;
 	private static final String TEST_STR = "Hello World!";
-	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpConnectionTest.class);
 
 	Thread server;
 	Thread client;

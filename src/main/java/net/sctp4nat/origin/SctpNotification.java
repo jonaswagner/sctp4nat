@@ -22,10 +22,25 @@ import java.nio.ByteOrder;
  * Partially implemented SCTP notifications for which the native wrapper
  * currently registers for.
  *
+ * </br>
+ * </br>
+ *	<b>Changes made</b>
+ *	Made several strings public to the sctp4nat project.
+ *
  * @author Pawel Domas
+ * @author Jonas Wagner
  */
 public class SctpNotification
 {
+	
+	/******** This project needs these parameters *********/
+	
+	public static final String COMM_UP_STR = "COMM_UP";
+	public static final String COMM_LOST_STR = "COMM_LOST";
+	public static final String SHUTDOWN_COMP_STR = "SHUTDOWN_COMP";
+	public static final String ADDR_UNREACHABLE_STR = "ADDR_UNREACHABLE";
+	public static final String SCTP_SHUTDOWN_EVENT_STR = "SCTP_SHUTDOWN_EVENT";
+	
     /********  Notifications  **************/
     /*
         union sctp_notification {
@@ -101,7 +116,7 @@ public class SctpNotification
             case SCTP_SEND_FAILED:
                 return "SCTP_SEND_FAILED";
             case SCTP_SHUTDOWN_EVENT:
-                return "SCTP_SHUTDOWN_EVENT";
+                return SCTP_SHUTDOWN_EVENT_STR;
             case SCTP_ADAPTATION_INDICATION:
                 return "SCTP_ADAPTATION_INDICATION";
             case SCTP_PARTIAL_DELIVERY_EVENT:
@@ -208,16 +223,16 @@ public class SctpNotification
             switch (state)
             {
                 case SCTP_COMM_UP:
-                    str += ",COMM_UP";
+                    str += "," + COMM_UP_STR;
                     break;
                 case SCTP_COMM_LOST:
-                    str += ",COMM_LOST";
+                    str += "," + COMM_LOST_STR;
                     break;
                 case SCTP_RESTART:
                     str += ",RESTART";
                     break;
                 case SCTP_SHUTDOWN_COMP:
-                    str += ",SHUTDOWN_COMP";
+                    str += "," + SHUTDOWN_COMP_STR;
                     break;
                 case SCTP_CANT_STR_ASSOC:
                     str += ",CANT_STR_ASSOC";
@@ -293,7 +308,7 @@ public class SctpNotification
                     base += ",ADDR_AVAILABLE";
                     break;
                 case SCTP_ADDR_UNREACHABLE:
-                    base += ",ADDR_UNREACHABLE";
+                    base += "," + ADDR_UNREACHABLE_STR;
                     break;
                 case SCTP_ADDR_REMOVED:
                     base += ",ADDR_REMOVED";

@@ -87,12 +87,12 @@ public class SctpChannelBuilder {
 			@Override
 			public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
 				LOG.debug(notification.toString());
-				if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
+				if (notification.toString().indexOf(SctpNotification.SHUTDOWN_COMP_STR) >= 0) {
 					so.close();
-				} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0) {
+				} else if (notification.toString().indexOf(SctpNotification.ADDR_UNREACHABLE_STR) >= 0) {
 					LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
 					so.close();
-				} else if (notification.toString().indexOf("COMM_LOST") >= 0) {
+				} else if (notification.toString().indexOf(SctpNotification.COMM_LOST_STR) >= 0) {
 					LOG.error("Communication aborted! Now shutting down the udp connection...");
 					so.close();
 				} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0) {

@@ -58,11 +58,11 @@ public class SctpChannel implements SctpChannelFacade {
 	 * The {@link SctpMapper} used by the session
 	 */
 	private SctpMapper mapper;
+
 	/**
 	 * The {@link SctpNotification} callback, which is triggered by the native
 	 * counterpart.
 	 */
-	
 
 	/**
 	 * Creates an Instance of {@link SctpChannel}.
@@ -78,8 +78,8 @@ public class SctpChannel implements SctpChannelFacade {
 	 *            the {@link SctpMapper} used by the session
 	 * @throws SctpInitException
 	 */
-	public SctpChannel(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb,
-			SctpMapper mapper) throws SctpInitException {
+	public SctpChannel(final int localSctpPort, final NetworkLink link, final SctpDataCallback cb, SctpMapper mapper)
+			throws SctpInitException {
 		this(localSctpPort, null, link, cb, mapper);
 	}
 
@@ -148,6 +148,8 @@ public class SctpChannel implements SctpChannelFacade {
 			d.reject(e);
 		}
 
+		SctpUtils.getThreadPoolExecutor()
+				.execute(new SctpTimeoutThread(d, CONNECT_TIMEOUT, TimeUnit.SECONDS, countDown));
 		return d.promise();
 	}
 
@@ -155,44 +157,45 @@ public class SctpChannel implements SctpChannelFacade {
 	 * This method catches the notifications send by the native counterpart
 	 * 
 	 * @param d
+	 *            {@link Deferred}
 	 * @param countDown
+	 *            The {@link CountDownLatch} from connect.
 	 */
 	private NotificationListener addNotificationListener(final Deferred<SctpChannelFacade, Exception, Void> d,
-		final CountDownLatch countDown) {
+			final CountDownLatch countDown) {
 		return new NotificationListener() {
 
-		@Override
-		public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
-			LOG.debug(notification.toString());
-			if (notification.toString().indexOf("COMM_UP") >= 0) {
-				countDown.countDown();
-				d.resolve(SctpChannel.this);
-			} else if (notification.toString().indexOf("SHUTDOWN_COMP") >= 0) {
-				// TODO jwa make a clean shutdown possible closing the socket prevents any
-				// SHUTDOWN ACK to be sent...
-				LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
-				SctpChannel.this.close();
-				d.reject(new Exception(
-						"we are forced to shutdown because of shutdown request from server!"));
-			} else if (notification.toString().indexOf("ADDR_UNREACHABLE") >= 0) {
-				LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
-				SctpChannel.this.close();
-				d.reject(new Exception(
-						"we are forced to close the connection because the remote is not answering! (remote: "
-								+ remote.getAddress().getHostAddress() + ":" + remote.getPort() + ")"));
-			} else if (notification.toString().indexOf("COMM_LOST") >= 0) {
-				LOG.error("Communication aborted! Now shutting down the udp connection...");
-				SctpChannel.this.close();
-				d.reject(new Exception(
-						"we are forced to close the connection because we lost the connection to remote: "
-								+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
-			} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0){
-				SctpChannel.this.close();
+			@Override
+			public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
+				LOG.debug(notification.toString());
+				if (notification.toString().indexOf(SctpNotification.COMM_UP_STR) >= 0) {
+					countDown.countDown();
+					d.resolve(SctpChannel.this);
+				} else if (notification.toString().indexOf(SctpNotification.SHUTDOWN_COMP_STR) >= 0) {
+					// TODO jwa make a clean shutdown possible closing the socket prevents any
+					// SHUTDOWN ACK to be sent...
+					LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
+					SctpChannel.this.close();
+					d.reject(new Exception("we are forced to shutdown because of shutdown request from server!"));
+				} else if (notification.toString().indexOf(SctpNotification.ADDR_UNREACHABLE_STR) >= 0) {
+					LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
+					SctpChannel.this.close();
+					d.reject(new Exception(
+							"we are forced to close the connection because the remote is not answering! (remote: "
+									+ remote.getAddress().getHostAddress() + ":" + remote.getPort() + ")"));
+				} else if (notification.toString().indexOf(SctpNotification.COMM_LOST_STR) >= 0) {
+					LOG.error("Communication aborted! Now shutting down the udp connection...");
+					SctpChannel.this.close();
+					d.reject(new Exception(
+							"we are forced to close the connection because we lost the connection to remote: "
+									+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
+				} else if (notification.toString().indexOf(SctpNotification.SCTP_SHUTDOWN_EVENT_STR) > 0) {
+					SctpChannel.this.close();
+				}
 			}
-		}
 
-	};
-}
+		};
+	}
 
 	@Override
 	public Promise<Integer, Exception, Object> send(byte[] data, boolean ordered, int sid, int ppid) {
@@ -244,7 +247,7 @@ public class SctpChannel implements SctpChannelFacade {
 
 		return d.promise();
 	}
-	
+
 	@Override
 	public Promise<Integer, Exception, Object> send(byte[] data, int offset, int len, SctpDefaultStreamConfig config) {
 		return send(data, offset, len, config.isOrdered(), config.getSid(), config.getPpid());
@@ -332,6 +335,7 @@ public class SctpChannel implements SctpChannelFacade {
 
 	/**
 	 * triggers the state change of the incoming connection to "COMM_UP"
+	 * 
 	 * @return
 	 */
 	public boolean accept() {
@@ -349,12 +353,12 @@ public class SctpChannel implements SctpChannelFacade {
 	}
 
 	/**
-	 * The method setLink() defines the NetworkLink, which is used
-	 * to encapsulate the SCTP association with a UDP header. Additionally, via this
-	 * NetworkLink, also the incoming SCTP packets are decoded.
+	 * The method setLink() defines the NetworkLink, which is used to encapsulate
+	 * the SCTP association with a UDP header. Additionally, via this NetworkLink,
+	 * also the incoming SCTP packets are decoded.
 	 * 
 	 * @param link
-	 * 			A {@link NetworkLink}
+	 *            A {@link NetworkLink}
 	 */
 	public void setLink(NetworkLink link) {
 		so.setLink(link);

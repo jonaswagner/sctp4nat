@@ -333,20 +333,6 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 	}
 
-	/**
-	 * triggers the state change of the incoming connection to "COMM_UP"
-	 * 
-	 * @return
-	 */
-	public boolean accept() {
-		try {
-			return so.acceptNative();
-		} catch (IOException e) {
-			LOG.error(e.getMessage());
-			return false; // this signals a accept failure
-		}
-	}
-
 	@Override
 	public void setSctpDataCallback(final SctpDataCallback cb) {
 		so.setDataCallbackNative(cb);

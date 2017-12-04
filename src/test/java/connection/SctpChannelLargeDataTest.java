@@ -12,13 +12,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.jdeferred.DoneCallback;
+import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.junit.After;
 import org.junit.Test;
 
 import net.sctp4nat.connection.SctpConnection;
-import net.sctp4nat.connection.SctpDefaultStreamConfig;
-import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.origin.Sctp;
@@ -128,7 +127,7 @@ public class SctpChannelLargeDataTest {
 					@Override
 					public void onDone(SctpChannelFacade result) {
 						try {
-							if (!clientCd.await(3, TimeUnit.SECONDS)) {
+							if (!clientCd.await(5, TimeUnit.SECONDS)) {
 								fail("Clientsetup failed!");
 							}
 						} catch (InterruptedException e) {
@@ -144,6 +143,13 @@ public class SctpChannelLargeDataTest {
 						SctpChannelLargeDataTest.this.clientSo = result;
 					}
 				});
+				p.fail(new FailCallback<Exception>() {
+					
+					@Override
+					public void onFail(Exception result) {
+						fail(result.getMessage());
+					}
+				});
 
 				clientCd.countDown();
 			}
@@ -153,6 +159,8 @@ public class SctpChannelLargeDataTest {
 		if (!serverCd.await(3, TimeUnit.SECONDS)) {
 			fail("Serversetup failed!");
 		}
+		
+		Thread.sleep(1000); //wait for server listen() to kick in
 
 		client.run();
 

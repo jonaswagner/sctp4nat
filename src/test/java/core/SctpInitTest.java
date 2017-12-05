@@ -75,11 +75,11 @@ public class SctpInitTest {
 		}
 		
 		CountDownLatch close = new CountDownLatch(1);
-		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
-		promise.done(new DoneCallback<Object>() {
+		Promise<Void, Exception, Void> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Void>() {
 			
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				close.countDown();
 			}
 		});
@@ -130,11 +130,11 @@ public class SctpInitTest {
 		}
 		
 		CountDownLatch close = new CountDownLatch(1);
-		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
-		promise.done(new DoneCallback<Object>() {
+		Promise<Void, Exception, Void> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Void>() {
 			
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				close.countDown();
 			}
 		});
@@ -148,11 +148,11 @@ public class SctpInitTest {
 	@After
 	public void tearDown() throws InterruptedException, IOException {
 		CountDownLatch close = new CountDownLatch(1);
-		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
-		promise.done(new DoneCallback<Object>() {
+		Promise<Void, Exception, Void> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Void>() {
 			
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				close.countDown();
 			}
 		});

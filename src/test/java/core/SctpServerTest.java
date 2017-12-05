@@ -40,11 +40,11 @@ public class SctpServerTest {
     public void simpleSetUpTest() throws Exception {
     	CountDownLatch simpleSetUpTest = new CountDownLatch(1);
 		SctpUtils.init(local.getAddress(), local.getPort(), null);
-		Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
-		p.done(new DoneCallback<Object>() {
+		Promise<Void, Exception, Void> p = SctpUtils.shutdownAll(null, null);
+		p.done(new DoneCallback<Void>() {
 			
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				simpleSetUpTest.countDown();
 			}
 		});
@@ -64,11 +64,11 @@ public class SctpServerTest {
 		}
 		
 		CountDownLatch close = new CountDownLatch(1);
-		Promise<Object, Exception, Object> promise = SctpUtils.shutdownAll();
-		promise.done(new DoneCallback<Object>() {
+		Promise<Void, Exception, Void> promise = SctpUtils.shutdownAll();
+		promise.done(new DoneCallback<Void>() {
 			
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				close.countDown();
 			}
 		});
@@ -94,12 +94,12 @@ public class SctpServerTest {
 		};
 		
 		UdpServerLink link = new UdpServerLink(mapper, local.getAddress(), cb);
-		Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(link, mapper);
+		Promise<Void, Exception, Void> p = SctpUtils.shutdownAll(link, mapper);
 		
-		p.done(new DoneCallback<Object>() {
+		p.done(new DoneCallback<Void>() {
 			
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				extendedSetUpTest.countDown();
 			}
 		});

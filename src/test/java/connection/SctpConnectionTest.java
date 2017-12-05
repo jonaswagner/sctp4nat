@@ -67,11 +67,11 @@ public class SctpConnectionTest {
 						so.send(data, 0, data.length, false, sid, (int) ppid);
 						comCd.countDown();
 
-						Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
-						p.done(new DoneCallback<Object>() {
+						Promise<Void, Exception, Void> p = SctpUtils.shutdownAll(null, null);
+						p.done(new DoneCallback<Void>() {
 
 							@Override
-							public void onDone(Object result) {
+							public void onDone(Void result) {
 								try {
 									comCd.await(TIMEOUT, TimeUnit.SECONDS);
 								} catch (InterruptedException e) {

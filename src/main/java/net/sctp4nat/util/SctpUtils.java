@@ -162,7 +162,7 @@ public class SctpUtils {
 	 * 
 	 * @return A promise, which is called, once the shutdown process finished.
 	 */
-	public static Promise<Object, Exception, Object> shutdownAll() {
+	public static Promise<Void, Exception, Void> shutdownAll() {
 		return shutdownAll(null, null);
 	}
 
@@ -178,9 +178,9 @@ public class SctpUtils {
 	 *            user-defined {@link SctpMapper}
 	 * @return A promise, which is called, once the shutdown process finished.
 	 */
-	public static Promise<Object, Exception, Object> shutdownAll(final NetworkLink customLink,
+	public static Promise<Void, Exception, Void> shutdownAll(final NetworkLink customLink,
 			final SctpMapper customMapper) {
-		Deferred<Object, Exception, Object> d = new DeferredObject<>();
+		Deferred<Void, Exception, Void> d = new DeferredObject<>();
 
 		threadPoolExecutor.execute(new Runnable() {
 

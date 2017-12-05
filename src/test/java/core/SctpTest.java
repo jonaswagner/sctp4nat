@@ -82,12 +82,12 @@ public class SctpTest {
 						});
 						
 						
-						Promise<Object, Exception, Object> p = SctpUtils.shutdownAll(null, null);
+						Promise<Void, Exception, Void> p = SctpUtils.shutdownAll(null, null);
 
-						p.done(new DoneCallback<Object>() {
+						p.done(new DoneCallback<Void>() {
 
 							@Override
-							public void onDone(Object result) {
+							public void onDone(Void result) {
 								shutdownCd.countDown();
 							}
 						});

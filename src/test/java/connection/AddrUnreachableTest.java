@@ -118,11 +118,11 @@ public class AddrUnreachableTest {
 				
 				CountDownLatch close = new CountDownLatch(1);
 				
-				Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
-				closePromise.done(new DoneCallback<Object>() {
+				Promise<Void, Exception, Void> closePromise = SctpUtils.shutdownAll();
+				closePromise.done(new DoneCallback<Void>() {
 
 					@Override
-					public void onDone(Object result) {
+					public void onDone(Void result) {
 						close.countDown();
 					}
 				});
@@ -228,11 +228,11 @@ public class AddrUnreachableTest {
 				
 				CountDownLatch close = new CountDownLatch(1);
 				
-				Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
-				closePromise.done(new DoneCallback<Object>() {
+				Promise<Void, Exception, Void> closePromise = SctpUtils.shutdownAll();
+				closePromise.done(new DoneCallback<Void>() {
 
 					@Override
-					public void onDone(Object result) {
+					public void onDone(Void result) {
 						close.countDown();
 					}
 				});
@@ -280,11 +280,11 @@ public class AddrUnreachableTest {
 		
 		CountDownLatch close = new CountDownLatch(1);
 		
-		Promise<Object, Exception, Object> closePromise = SctpUtils.shutdownAll();
-		closePromise.done(new DoneCallback<Object>() {
+		Promise<Void, Exception, Void> closePromise = SctpUtils.shutdownAll();
+		closePromise.done(new DoneCallback<Void>() {
 
 			@Override
-			public void onDone(Object result) {
+			public void onDone(Void result) {
 				close.countDown();
 			}
 		});

@@ -205,11 +205,6 @@ public class SctpChannel implements SctpChannelFacade {
 
 			@Override
 			public void run() {
-				if (!Sctp.isInitialized()) {
-					d.reject(new SctpInitException(
-							"Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
-				}
-
 				try {
 					d.resolve(new Integer(so.sendNative(data, 0, data.length, ordered, sid, ppid)));
 				} catch (IOException e) {
@@ -231,11 +226,6 @@ public class SctpChannel implements SctpChannelFacade {
 
 			@Override
 			public void run() {
-				if (!Sctp.isInitialized()) {
-					d.reject(new SctpInitException(
-							"Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
-				}
-
 				try {
 					d.resolve(new Integer(so.sendNative(data, offset, len, ordered, sid, ppid)));
 				} catch (IOException e) {

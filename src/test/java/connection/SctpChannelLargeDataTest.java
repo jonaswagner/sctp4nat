@@ -127,7 +127,7 @@ public class SctpChannelLargeDataTest {
 					@Override
 					public void onDone(SctpChannelFacade result) {
 						try {
-							if (!clientCd.await(5, TimeUnit.SECONDS)) {
+							if (!clientCd.await(10, TimeUnit.SECONDS)) {
 								fail("Clientsetup failed!");
 							}
 						} catch (InterruptedException e) {
@@ -135,7 +135,7 @@ public class SctpChannelLargeDataTest {
 							fail(e.getMessage());
 						}
 
-						result.send(new byte[800 * 1024], true, 2, 0); //just works
+						result.send(new byte[512 * 1024], true, 2, 0); //just works
 //						result.send(new byte[(1024 * 1024)- 16156], true, 5, 0); //this works --> if the transmissions are sent too fast, the system will 
 						// result.send(new byte[982 * 1024], true, 1, 0); this does not work!, there are
 						// only 10 streams available per association
@@ -160,8 +160,6 @@ public class SctpChannelLargeDataTest {
 			fail("Serversetup failed!");
 		}
 		
-		Thread.sleep(1000); //wait for server listen() to kick in
-
 		client.run();
 
 		if (!shutdownCd.await(20, TimeUnit.SECONDS)) {

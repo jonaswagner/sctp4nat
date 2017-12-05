@@ -220,8 +220,13 @@ public class SctpUtils {
 					d.reject(e);
 				}
 
-				LOG.debug("sctp4j shutdownAll done");
-				d.resolve(null);
+				if (d.isPending()) {
+					LOG.debug("sctp4j shutdownAll done");
+					d.resolve(null);
+				} else {
+					LOG.error("shutdown all done, but with errors");
+				}
+				
 			}
 		});
 

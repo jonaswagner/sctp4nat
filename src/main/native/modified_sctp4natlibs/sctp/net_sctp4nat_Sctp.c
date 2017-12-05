@@ -215,15 +215,16 @@ JNIEXPORT jboolean JNICALL
 Java_net_sctp4nat_origin_Sctp_usrsctp_1finish
     (JNIEnv *env, jclass clazz)
 {
-	while (usrsctp_finish() != 0) {
+	int count = 0;
+	while (usrsctp_finish() != 0 && count < 5) {
 	#ifdef _WIN32
 		Sleep(1000);
 	#else
 		sleep(1);
 	#endif
+	count = count + 1;
 	}
-    /*return usrsctp_finish() ? JNI_TRUE : JNI_FALSE;*/
-    return JNI_TRUE;
+    return count >= 5 ? JNI_FALSE : JNI_TRUE;
 }
 
 /*

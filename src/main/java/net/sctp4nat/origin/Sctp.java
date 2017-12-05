@@ -160,12 +160,18 @@ public class Sctp {
 		if (--sctpEngineCount > 0)
 			return;
 
-		if (usrsctp_finish()) {
-			Sctp.initialized = false;
-			logger.debug("usrsctp_finish() successfully executed");
-			return;
+		try {
+			if (usrsctp_finish()) {
+				Sctp.initialized = false;
+				logger.debug("usrsctp_finish() successfully executed");
+				return;
+			}
+		} finally {
+			if (Sctp.initialized == true) {
+				Sctp.initialized = false;
+				throw new IOException("Failed to shutdown usrsctp stack. Sctp.initialized set to false!");
+			}
 		}
-		throw new IOException("Failed to shutdown usrsctp stack" + " after 200 retries");
 	}
 
 	/**

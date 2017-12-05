@@ -1,0 +1,111 @@
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Getting Started}{1}
+\contentsline {subsection}{\numberline {2.1}Building the Library and the Applications}{1}
+\contentsline {subsubsection}{\numberline {2.1.1}Unix-like Operating Systems}{1}
+\contentsline {subsubsection}{\numberline {2.1.2}Windows}{2}
+\contentsline {subsection}{\numberline {2.2}Running the Test Programs}{2}
+\contentsline {subsubsection}{\numberline {2.2.1}Using UDP Encapsulation}{2}
+\contentsline {subsubsection}{\numberline {2.2.2}Sending over SCTP}{3}
+\contentsline {subsubsection}{\numberline {2.2.3}Using the Callback API}{3}
+\contentsline {section}{\numberline {3}Basic Operations}{3}
+\contentsline {subsection}{\numberline {3.1}Differences to RFC 6458}{3}
+\contentsline {subsubsection}{\numberline {3.1.1}usrsctp\_init()}{3}
+\contentsline {subsubsection}{\numberline {3.1.2}usrsctp\_finish()}{4}
+\contentsline {subsubsection}{\numberline {3.1.3}usrsctp\_socket()}{4}
+\contentsline {subsubsection}{\numberline {3.1.4}usrsctp\_close()}{4}
+\contentsline {subsection}{\numberline {3.2}Same Functionality as RFC 6458}{5}
+\contentsline {subsubsection}{\numberline {3.2.1}usrsctp\_bind()}{5}
+\contentsline {subsubsection}{\numberline {3.2.2}usrsctp\_listen()}{5}
+\contentsline {subsubsection}{\numberline {3.2.3}usrsctp\_accept()}{6}
+\contentsline {subsubsection}{\numberline {3.2.4}usrsctp\_connect()}{6}
+\contentsline {subsubsection}{\numberline {3.2.5}usrsctp\_shutdown()}{6}
+\contentsline {section}{\numberline {4}Sending and Receiving Data}{7}
+\contentsline {subsection}{\numberline {4.1}usrsctp\_sendv()}{7}
+\contentsline {subsection}{\numberline {4.2}usrsctp\_recvv()}{8}
+\contentsline {section}{\numberline {5}Socket Options}{9}
+\contentsline {section}{\numberline {6}Sysctl variables}{10}
+\contentsline {subsection}{\numberline {6.1}Manipulate Memory}{11}
+\contentsline {subsubsection}{\numberline {6.1.1}usrsctp\_sysctl\_set\_sctp\_sendspace()}{11}
+\contentsline {subsubsection}{\numberline {6.1.2}usrsctp\_sysctl\_set\_sctp\_recvspace()}{11}
+\contentsline {subsubsection}{\numberline {6.1.3}usrsctp\_sysctl\_set\_sctp\_hashtblsize()}{11}
+\contentsline {subsubsection}{\numberline {6.1.4}usrsctp\_sysctl\_set\_sctp\_pcbtblsize()}{11}
+\contentsline {subsubsection}{\numberline {6.1.5}usrsctp\_sysctl\_set\_sctp\_system\_free\_resc\_limit()}{11}
+\contentsline {subsubsection}{\numberline {6.1.6}usrsctp\_sysctl\_set\_sctp\_asoc\_free\_resc\_limit()}{11}
+\contentsline {subsubsection}{\numberline {6.1.7}usrsctp\_sysctl\_set\_sctp\_mbuf\_threshold\_count()}{11}
+\contentsline {subsubsection}{\numberline {6.1.8}usrsctp\_sysctl\_set\_sctp\_add\_more\_threshold()}{11}
+\contentsline {subsection}{\numberline {6.2}Configure RTO}{11}
+\contentsline {subsubsection}{\numberline {6.2.1}usrsctp\_sysctl\_set\_sctp\_rto\_max\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.2.2}usrsctp\_sysctl\_set\_sctp\_rto\_min\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.2.3}usrsctp\_sysctl\_set\_sctp\_rto\_initial\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.2.4}usrsctp\_sysctl\_set\_sctp\_init\_rto\_max\_default()}{12}
+\contentsline {subsection}{\numberline {6.3}Set Timers}{12}
+\contentsline {subsubsection}{\numberline {6.3.1}usrsctp\_sysctl\_set\_sctp\_valid\_cookie\_life\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.3.2}usrsctp\_sysctl\_set\_sctp\_heartbeat\_interval\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.3.3}usrsctp\_sysctl\_set\_sctp\_shutdown\_guard\_time\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.3.4}usrsctp\_sysctl\_set\_sctp\_pmtu\_raise\_time\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.3.5}usrsctp\_sysctl\_set\_sctp\_secret\_lifetime\_default()}{12}
+\contentsline {subsubsection}{\numberline {6.3.6}usrsctp\_sysctl\_set\_sctp\_vtag\_time\_wait()}{12}
+\contentsline {subsection}{\numberline {6.4}Set Failure Limits}{13}
+\contentsline {subsubsection}{\numberline {6.4.1}usrsctp\_sysctl\_set\_sctp\_init\_rtx\_max\_default()}{13}
+\contentsline {subsubsection}{\numberline {6.4.2}usrsctp\_sysctl\_set\_sctp\_assoc\_rtx\_max\_default()}{13}
+\contentsline {subsubsection}{\numberline {6.4.3}usrsctp\_sysctl\_set\_sctp\_path\_rtx\_max\_default()}{13}
+\contentsline {subsubsection}{\numberline {6.4.4}usrsctp\_sysctl\_set\_sctp\_max\_retran\_chunk()}{13}
+\contentsline {subsubsection}{\numberline {6.4.5}usrsctp\_sysctl\_set\_sctp\_path\_pf\_threshold()}{13}
+\contentsline {subsubsection}{\numberline {6.4.6}usrsctp\_sysctl\_set\_sctp\_abort\_if\_one\_2\_one\_hits\_limit()}{13}
+\contentsline {subsection}{\numberline {6.5}Control the Sending of SACKs}{13}
+\contentsline {subsubsection}{\numberline {6.5.1}usrsctp\_sysctl\_set\_sctp\_sack\_freq\_default()}{13}
+\contentsline {subsubsection}{\numberline {6.5.2}usrsctp\_sysctl\_set\_sctp\_delayed\_sack\_time\_default()}{13}
+\contentsline {subsubsection}{\numberline {6.5.3}usrsctp\_sysctl\_set\_sctp\_strict\_sacks()}{13}
+\contentsline {subsubsection}{\numberline {6.5.4}usrsctp\_sysctl\_set\_sctp\_nr\_sack\_on\_off()}{14}
+\contentsline {subsubsection}{\numberline {6.5.5}usrsctp\_sysctl\_set\_sctp\_enable\_sack\_immediately()}{14}
+\contentsline {subsubsection}{\numberline {6.5.6}usrsctp\_sysctl\_set\_sctp\_L2\_abc\_variable()}{14}
+\contentsline {subsection}{\numberline {6.6}Change Max Burst}{14}
+\contentsline {subsubsection}{\numberline {6.6.1}usrsctp\_sysctl\_set\_sctp\_max\_burst\_default()}{14}
+\contentsline {subsubsection}{\numberline {6.6.2}usrsctp\_sysctl\_set\_sctp\_use\_cwnd\_based\_maxburst()}{14}
+\contentsline {subsubsection}{\numberline {6.6.3}usrsctp\_sysctl\_set\_sctp\_hb\_maxburst()}{14}
+\contentsline {subsubsection}{\numberline {6.6.4}usrsctp\_sysctl\_set\_sctp\_fr\_max\_burst\_default()}{14}
+\contentsline {subsection}{\numberline {6.7}Handle Chunks}{14}
+\contentsline {subsubsection}{\numberline {6.7.1}usrsctp\_sysctl\_set\_sctp\_peer\_chunk\_oh()}{14}
+\contentsline {subsubsection}{\numberline {6.7.2}usrsctp\_sysctl\_set\_sctp\_max\_chunks\_on\_queue()}{15}
+\contentsline {subsubsection}{\numberline {6.7.3}usrsctp\_sysctl\_set\_sctp\_min\_split\_point()}{15}
+\contentsline {subsubsection}{\numberline {6.7.4}usrsctp\_sysctl\_set\_sctp\_chunkscale()}{15}
+\contentsline {subsubsection}{\numberline {6.7.5}usrsctp\_sysctl\_set\_sctp\_min\_residual()}{15}
+\contentsline {subsection}{\numberline {6.8}Calculate RTT}{15}
+\contentsline {subsubsection}{\numberline {6.8.1}usrsctp\_sysctl\_set\_sctp\_rttvar\_bw()}{15}
+\contentsline {subsubsection}{\numberline {6.8.2}usrsctp\_sysctl\_set\_sctp\_rttvar\_rtt()}{15}
+\contentsline {subsubsection}{\numberline {6.8.3}usrsctp\_sysctl\_set\_sctp\_rttvar\_eqret()}{15}
+\contentsline {subsection}{\numberline {6.9}Influence the Congestion Control}{15}
+\contentsline {subsubsection}{\numberline {6.9.1}usrsctp\_sysctl\_set\_sctp\_ecn\_enable}{15}
+\contentsline {subsubsection}{\numberline {6.9.2}usrsctp\_sysctl\_set\_sctp\_default\_cc\_module()}{15}
+\contentsline {subsubsection}{\numberline {6.9.3}usrsctp\_sysctl\_set\_sctp\_initial\_cwnd()}{16}
+\contentsline {subsubsection}{\numberline {6.9.4}usrsctp\_sysctl\_set\_sctp\_use\_dccc\_ecn()}{16}
+\contentsline {subsubsection}{\numberline {6.9.5}usrsctp\_sysctl\_set\_sctp\_steady\_step()}{16}
+\contentsline {subsection}{\numberline {6.10}Configure AUTH and ADD-IP}{16}
+\contentsline {subsubsection}{\numberline {6.10.1}usrsctp\_sysctl\_set\_sctp\_auto\_asconf()}{16}
+\contentsline {subsubsection}{\numberline {6.10.2}usrsctp\_sysctl\_set\_sctp\_multiple\_asconfs()}{16}
+\contentsline {subsubsection}{\numberline {6.10.3}usrsctp\_sysctl\_set\_sctp\_auth\_disable()}{16}
+\contentsline {subsubsection}{\numberline {6.10.4}usrsctp\_sysctl\_set\_sctp\_asconf\_auth\_nochk()}{16}
+\contentsline {subsection}{\numberline {6.11}Concurrent Multipath Transfer (CMT)}{16}
+\contentsline {subsubsection}{\numberline {6.11.1}usrsctp\_sysctl\_set\_sctp\_cmt\_on\_off()}{16}
+\contentsline {subsubsection}{\numberline {6.11.2}usrsctp\_sysctl\_set\_sctp\_cmt\_use\_dac()}{16}
+\contentsline {subsubsection}{\numberline {6.11.3}usrsctp\_sysctl\_set\_sctp\_buffer\_splitting()}{17}
+\contentsline {subsection}{\numberline {6.12}Network Address Translation (NAT)}{17}
+\contentsline {subsubsection}{\numberline {6.12.1}usrsctp\_sysctl\_set\_sctp\_nat\_friendly()}{17}
+\contentsline {subsubsection}{\numberline {6.12.2}usrsctp\_sysctl\_set\_sctp\_inits\_include\_nat\_friendly()}{17}
+\contentsline {subsubsection}{\numberline {6.12.3}usrsctp\_sysctl\_set\_sctp\_udp\_tunneling\_port()}{17}
+\contentsline {subsection}{\numberline {6.13}SCTP Mobility}{17}
+\contentsline {subsubsection}{\numberline {6.13.1}usrsctp\_sysctl\_set\_sctp\_mobility\_base()}{17}
+\contentsline {subsubsection}{\numberline {6.13.2}usrsctp\_sysctl\_set\_sctp\_mobility\_fasthandoff()}{17}
+\contentsline {subsection}{\numberline {6.14}Miscellaneous}{17}
+\contentsline {subsubsection}{\numberline {6.14.1}usrsctp\_sysctl\_set\_sctp\_no\_csum\_on\_loopback()}{17}
+\contentsline {subsubsection}{\numberline {6.14.2}usrsctp\_sysctl\_set\_sctp\_nr\_outgoing\_streams\_default()}{17}
+\contentsline {subsubsection}{\numberline {6.14.3}usrsctp\_sysctl\_set\_sctp\_do\_drain()}{17}
+\contentsline {subsubsection}{\numberline {6.14.4}usrsctp\_sysctl\_set\_sctp\_strict\_data\_order()}{17}
+\contentsline {subsubsection}{\numberline {6.14.5}usrsctp\_sysctl\_set\_sctp\_default\_ss\_module()}{18}
+\contentsline {subsubsection}{\numberline {6.14.6}usrsctp\_sysctl\_set\_sctp\_default\_frag\_interleave()}{18}
+\contentsline {subsubsection}{\numberline {6.14.7}usrsctp\_sysctl\_set\_sctp\_blackhole()}{18}
+\contentsline {subsubsection}{\numberline {6.14.8}usrsctp\_sysctl\_set\_sctp\_logging\_level()}{18}
+\contentsline {subsubsection}{\numberline {6.14.9}usrsctp\_sysctl\_set\_sctp\_debug\_on()}{18}
+\contentsline {section}{\numberline {7}Examples}{18}
+\contentsline {subsection}{\numberline {7.1}Discard Server}{18}
+\contentsline {subsection}{\numberline {7.2}Client}{22}

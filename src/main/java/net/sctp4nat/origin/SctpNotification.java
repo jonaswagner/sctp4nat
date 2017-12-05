@@ -40,6 +40,7 @@ public class SctpNotification
 	public static final String SHUTDOWN_COMP_STR = "SHUTDOWN_COMP";
 	public static final String ADDR_UNREACHABLE_STR = "ADDR_UNREACHABLE";
 	public static final String SCTP_SHUTDOWN_EVENT_STR = "SCTP_SHUTDOWN_EVENT";
+	public static final String ADDR_CONFIRMED_STR = "ADDR_CONFIRMED";
 	
     /********  Notifications  **************/
     /*
@@ -320,7 +321,7 @@ public class SctpNotification
                     base += ",ADDR_MADE_PRIM";
                     break;
                 case SCTP_ADDR_CONFIRMED:
-                    base += ",ADDR_CONFIRMED";
+                    base += "," + ADDR_CONFIRMED_STR;
                     break;
                 default:
                     base += "," + Integer.toHexString(state);

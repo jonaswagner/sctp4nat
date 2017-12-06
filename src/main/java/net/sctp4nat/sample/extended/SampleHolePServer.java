@@ -49,7 +49,7 @@ public class SampleHolePServer extends AbstractSampleHoleP {
 		LOG.debug("initiating usrsctp and setup of SctpMapper and UdpServerLink");
 		SctpUtils.init(sourceIP, sourcePort, cb);
 
-		holePuncher.run();
+		new Thread(holePuncher).start();
 
 		LOG.debug("Setup of SampleHolePServer finished");
 	}

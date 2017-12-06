@@ -43,6 +43,8 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 				new InetSocketAddress(destinationIP, destinationPort), so);
 		so.setLink(link);
 
+		new Thread(holePuncher).start();
+		
 		Promise<SctpChannelFacade, Exception, Void> p = so
 				.connect(new InetSocketAddress(destinationIP, destinationPort));
 
@@ -88,6 +90,6 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 			}
 		});
 
-		LOG.debug("Setup of SampleHolePServer finished");
+		LOG.debug("Setup of SampleHolePClient finished");
 	}
 }

@@ -44,7 +44,7 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 		so.setLink(link);
 
 		new Thread(holePuncher).start();
-		
+
 		Promise<SctpChannelFacade, Exception, Void> p = so
 				.connect(new InetSocketAddress(destinationIP, destinationPort));
 
@@ -55,28 +55,28 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 
 				LOG.error("connected to {}/{}", destinationIP, destinationPort);
 				connected = true;
-				
+
 				boolean exitLoop = false;
-				@SuppressWarnings("resource")
-				Scanner scanner = new Scanner(System.in);
-				while (!exitLoop)
+				while (!exitLoop) {
 					LOG.error("1 = send \"Hello World\"");
-				LOG.error("2 = exit program");
+					LOG.error("2 = exit program");
 
-				int i = scanner.nextInt();
+					Scanner scanner = new Scanner(System.in);
+					int i = scanner.nextInt();
 
-				switch (i) {
-				case 1: {
-					result.send("Hello World!".getBytes(), false, 0, 0);
-					break;
+					switch (i) {
+					case 1: {
+						result.send("Hello World!".getBytes(), false, 0, 0);
+						continue;
+					}
+					case 2: {
+						LOG.error("now exiting program on command...");
+						scanner.close();
+						System.exit(0);
+					}
+					default:
+					}
 				}
-				case 2: {
-					LOG.error("now exiting program on command...");
-					System.exit(0);
-				}
-				default:
-				}
-
 			}
 		});
 

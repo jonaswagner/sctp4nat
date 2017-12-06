@@ -132,6 +132,7 @@ public class SctpChannel implements SctpChannelFacade {
 	public Promise<SctpChannelFacade, Exception, Void> connect(final InetSocketAddress remote) {
 		final Deferred<SctpChannelFacade, Exception, Void> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
+		
 		if (!Sctp.isInitialized()) {
 			d.reject(new SctpInitException("Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
 			return d;
@@ -141,6 +142,7 @@ public class SctpChannel implements SctpChannelFacade {
 			NotificationListener l = addNotificationListener(d, countDown);
 			SctpChannel.this.setNotificationListener(l);
 			mapper.register(remote, SctpChannel.this);
+			LOG.debug("try connect to {}/{}, ", remote.getAddress().getHostAddress(), remote.getPort());
 			so.connectNative(remote.getPort());
 		} catch (IOException e) {
 			LOG.error("Could not connect via SCTP! Cause: " + e.getMessage(), e);

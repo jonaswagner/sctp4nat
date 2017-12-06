@@ -51,6 +51,11 @@ public class UdpClientLink implements NetworkLink {
 	/**
 	 * Destination <tt>InetSocketAddress</tt>.
 	 */
+	private final InetSocketAddress local;
+
+	/**
+	 * Destination <tt>InetSocketAddress</tt>.
+	 */
 	private final InetSocketAddress remote;
 
 	/**
@@ -64,6 +69,7 @@ public class UdpClientLink implements NetworkLink {
 	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpChannel so)
 			throws IOException {
 		so.setLink(this);
+		this.local = local;
 		this.remote = remote;
 		this.udpSocket = new DatagramSocket(local.getPort(), local.getAddress());
 
@@ -78,6 +84,7 @@ public class UdpClientLink implements NetworkLink {
 	public UdpClientLink(final InetSocketAddress local, final InetSocketAddress remote, final SctpChannel so,
 			final DatagramSocket udpSocket) {
 		so.setLink(this);
+		this.local = local;
 		this.remote = remote;
 		this.udpSocket = udpSocket;
 
@@ -116,6 +123,8 @@ public class UdpClientLink implements NetworkLink {
 	@Override
 	public void onConnOut(final SctpChannelFacade facade, final byte[] data, final int tos)
 			throws IOException, NotFoundException {
+		LOG.info("sending sctp packet from {}/{} to {}/{}, ", local.getAddress().getHostAddress(), local.getPort(),
+				remote.getAddress().getHostAddress(), remote.getPort());
 		DatagramPacket packet = new DatagramPacket(data, data.length, this.remote.getAddress(), this.remote.getPort());
 		udpSocket.send(packet);
 	}

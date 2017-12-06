@@ -29,6 +29,9 @@ import net.sctp4nat.origin.SctpSocket;
  * @author Jonas Wagner
  */
 public interface NetworkLink {
+	
+	int UDP_DEFAULT_BUFFER_SIZE = 2048;
+
 	/**
 	 * Callback triggered by <tt>SctpSocket</tt> whenever it wants to send some
 	 * network packet.

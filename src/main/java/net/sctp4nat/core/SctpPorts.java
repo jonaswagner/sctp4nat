@@ -41,6 +41,10 @@ public class SctpPorts {
 	private static final SctpPorts instance = new SctpPorts(); // threadsafe
 
 	/**
+	 * port = 2⁰ - 1 (because 0 is also a port)
+	 */
+	public static final int MIN_PORT = 0;
+	/**
 	 * port = 2¹⁶ - 1 (because 0 is also a port)
 	 */
 	public static final int MAX_PORT = 65535;
@@ -48,6 +52,10 @@ public class SctpPorts {
 	 * The minimal dyniamic port.
 	 */
 	public static final int MIN_DYN_PORT = 49152;
+	/**
+	 * -1 indicates, that a port variable is not initialized yet.
+	 */
+	public static final int PORT_NOT_INITIALIZED = -1;
 
 	/**
 	 * This {@link ConcurrentHashMap} keeps track of all the used ports for sctp.
@@ -136,6 +144,10 @@ public class SctpPorts {
 	 */
 	public synchronized boolean isUsedPort(final int port) {
 		return portMap.contains(port);
+	}
+	
+	public boolean isInValidRange(final int port) {
+		return port >= SctpPorts.MIN_PORT && port < SctpPorts.MAX_PORT;
 	}
 
 	/**

@@ -51,7 +51,7 @@ public class SctpChannelSend {
 	
 	private static CountDownLatch shutdownCountDown = new CountDownLatch(1);
 	
-	@Test
+//	@Test
 	public void testSendFail() throws SctpInitException, InterruptedException, IOException {
 		LOG.debug("SendFail start");
 		

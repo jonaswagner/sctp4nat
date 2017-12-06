@@ -40,7 +40,7 @@ public class SctpChannel implements SctpChannelFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpChannel.class);
 	private static final int NUMBER_OF_CONNECT_TASKS = 1;
-	private static final long CONNECT_TIMEOUT = 5; // TODO jwa remove or explain this
+	private static final long CONNECT_TIMEOUT_SECONDS = 5;
 
 	/**
 	 * The corresponding native {@link SctpSocket}
@@ -132,7 +132,7 @@ public class SctpChannel implements SctpChannelFacade {
 	public Promise<SctpChannelFacade, Exception, Void> connect(final InetSocketAddress remote) {
 		final Deferred<SctpChannelFacade, Exception, Void> d = new DeferredObject<>();
 		final CountDownLatch countDown = new CountDownLatch(NUMBER_OF_CONNECT_TASKS);
-		
+
 		if (!Sctp.isInitialized()) {
 			d.reject(new SctpInitException("Sctp is currently not initialized! Try init it with SctpUtils.init(...)"));
 			return d;
@@ -151,7 +151,7 @@ public class SctpChannel implements SctpChannelFacade {
 		}
 
 		SctpUtils.getThreadPoolExecutor()
-				.execute(new SctpTimeoutThread(d, CONNECT_TIMEOUT, TimeUnit.SECONDS, countDown));
+				.execute(new SctpTimeoutThread(d, CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS, countDown));
 		return d.promise();
 	}
 
@@ -250,7 +250,7 @@ public class SctpChannel implements SctpChannelFacade {
 		return send(data, config.isOrdered(), config.getSid(), config.getPpid());
 	}
 
-	/**
+	/*
 	 * FIXME jwa this call is non-blocking, therefore it should be calling a
 	 * callback or something similar
 	 */
@@ -258,7 +258,7 @@ public class SctpChannel implements SctpChannelFacade {
 	public void shutdownInit() {
 		try {
 			LOG.debug("Send shutdown command to " + remote.getHostString() + ":" + remote.getPort());
-			int success = so.shutdownNative(SctpUtils.SHUT_WR); // TODO jwa implement config
+			int success = so.shutdownNative(SctpUtils.SHUT_WR);
 			if (success < 0) {
 				LOG.error("Could not send SHUTDOWN command to " + remote.getHostString() + ":" + remote.getPort());
 			}

@@ -47,6 +47,7 @@ import net.sctp4nat.origin.SctpSocket;
 public class SctpMapper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpMapper.class);
+	private static final int CLOSE_TIMEOUT = 10;
 
 	/**
 	 * The {@link Map} containing all active {@link SctpChannel}s.s
@@ -219,7 +220,7 @@ public class SctpMapper {
 
 		}
 
-		if (!close.await(10, TimeUnit.SECONDS)) {
+		if (!close.await(CLOSE_TIMEOUT, TimeUnit.SECONDS)) {
 			LOG.error("Timeout called, because not all connections were closed correctly in time");
 			throw new TimeoutException();
 		} else {

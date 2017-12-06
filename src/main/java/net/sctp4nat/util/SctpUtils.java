@@ -57,7 +57,7 @@ public class SctpUtils {
 	 * This constants defines the multiplier, with which the maximal number of
 	 * Threads is defined.
 	 */
-	private static final int THREADPOOL_MULTIPLIER = 100;
+	private static final int THREADPOOL_MULTIPLIER = 10;
 
 	/**
 	 * This is the {@link ExecutorService}, which defines the

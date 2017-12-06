@@ -145,8 +145,8 @@ public class UdpServerLink implements NetworkLink {
 				SctpChannel so = null;
 
 				while (!isShutdown) {
-					byte[] buff = new byte[2048];
-					DatagramPacket p = new DatagramPacket(buff, 2048);
+					byte[] buff = new byte[UDP_DEFAULT_BUFFER_SIZE];
+					DatagramPacket p = new DatagramPacket(buff, UDP_DEFAULT_BUFFER_SIZE);
 
 					try {
 						udpSocket.receive(p);

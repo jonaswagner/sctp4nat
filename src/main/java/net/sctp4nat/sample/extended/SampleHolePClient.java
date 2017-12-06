@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.UdpClientLink;
+import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
@@ -39,7 +40,7 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 		SctpChannel so = new SctpChannelBuilder().localSctpPort(sourcePort).remoteAddress(destinationIP)
 				.remotePort(destinationPort).sctpDataCallBack(cb).mapper(SctpUtils.getMapper()).build();
 
-		UdpClientLink link = new UdpClientLink(new InetSocketAddress(sourceIP, sourcePort),
+		NetworkLink link = new UdpClientLink(new InetSocketAddress(sourceIP, sourcePort),
 				new InetSocketAddress(destinationIP, destinationPort), so);
 		so.setLink(link);
 

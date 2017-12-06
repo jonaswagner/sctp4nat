@@ -45,7 +45,7 @@ public class SctpConnection {
 	private SctpDefaultStreamConfig config;
 	private InetSocketAddress local;
 	private InetSocketAddress remote;
-	private int localSctpPort;
+	@Builder.Default private int localSctpPort = SctpPorts.PORT_NOT_INITIALIZED;
 
 	/**
 	 * This method calls {@link SctpChannel}.connect() and therefore causes usrsctp
@@ -74,7 +74,7 @@ public class SctpConnection {
 			config = new SctpDefaultStreamConfig();
 		}
 
-		if (localSctpPort == -1) {
+		if (localSctpPort == SctpPorts.PORT_NOT_INITIALIZED) {
 			localSctpPort = remote.getPort();
 		}
 

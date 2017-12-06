@@ -105,8 +105,8 @@ public class UdpClientLink implements NetworkLink {
 			public void run() {
 
 				try {
-					byte[] buff = new byte[2048];
-					DatagramPacket p = new DatagramPacket(buff, 2048);
+					byte[] buff = new byte[UDP_DEFAULT_BUFFER_SIZE];
+					DatagramPacket p = new DatagramPacket(buff, UDP_DEFAULT_BUFFER_SIZE);
 					while (!isShutdown) {
 						udpSocket.receive(p);
 						so.onConnIn(p.getData(), p.getOffset(), p.getLength());

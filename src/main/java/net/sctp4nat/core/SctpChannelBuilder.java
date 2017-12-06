@@ -38,8 +38,8 @@ public class SctpChannelBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelBuilder.class);
 
-	private int localSctpPort = -1;
-	private int remotePort = -1;
+	private int localSctpPort = SctpPorts.PORT_NOT_INITIALIZED;
+	private int remotePort = SctpPorts.PORT_NOT_INITIALIZED;
 	private InetAddress remoteAddress = null;
 	private SctpDataCallback cb = null;
 	private NetworkLink link = null;
@@ -53,8 +53,9 @@ public class SctpChannelBuilder {
 	 *             Thrown, if usrsctp was not initialized.
 	 */
 	public SctpChannel build() throws SctpInitException {
-
-		if (localSctpPort == -1) {
+		LOG.info("start building an SctpChannel object...");
+		
+		if (localSctpPort == SctpPorts.PORT_NOT_INITIALIZED) {
 			localSctpPort = SctpPorts.getInstance().generateDynPort();
 		}
 
@@ -63,6 +64,7 @@ public class SctpChannelBuilder {
 				@Override
 				public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 						SctpChannelFacade facade) {
+					LOG.trace("Sctp message from {}/{} ignored", facade.getRemote().getAddress().getHostAddress(), facade.getRemote().getPort());
 					// do nothing
 				}
 			};
@@ -74,7 +76,7 @@ public class SctpChannelBuilder {
 		}
 
 		SctpChannel candidateSo = null;
-		if (remoteAddress == null || remotePort == -1) {
+		if (remoteAddress == null || remotePort == SctpPorts.PORT_NOT_INITIALIZED) {
 			candidateSo = (SctpChannel) new SctpChannel(localSctpPort, link, cb, mapper);
 		} else {
 			InetSocketAddress remote = new InetSocketAddress(remoteAddress, remotePort);
@@ -95,18 +97,19 @@ public class SctpChannelBuilder {
 				} else if (notification.toString().indexOf(SctpNotification.COMM_LOST_STR) >= 0) {
 					LOG.error("Communication aborted! Now shutting down the udp connection...");
 					so.close();
-				} else if (notification.toString().indexOf("SCTP_SHUTDOWN_EVENT") > 0) {
+				} else if (notification.toString().indexOf(SctpNotification.SCTP_SHUTDOWN_EVENT_STR) > 0) {
 					so.close();
 				}
 			}
 
 		});
 
+		LOG.info("...finished building the SctpChannel object");
 		return so;
 	}
 
 	public SctpChannelBuilder localSctpPort(int localSctpPort) {
-		if (isInRange(localSctpPort)) {
+		if (SctpPorts.getInstance().isInValidRange(localSctpPort)) {
 			if (!SctpPorts.getInstance().isUsedPort(localSctpPort)) {
 				this.localSctpPort = localSctpPort;
 			} else {
@@ -114,21 +117,17 @@ public class SctpChannelBuilder {
 				return null;
 			}
 		} else {
-			LOG.error("Port is out of range (possible range: 0-65535) or is already assigned!");
+			LOG.error("Port is out of range (possible range: {}-{}) or is already assigned!", SctpPorts.MIN_PORT, SctpPorts.MAX_PORT);
 			return null;
 		}
 		return this;
 	}
 
-	private boolean isInRange(int localPort) {
-		return localPort >= 0 && localPort < SctpPorts.MAX_PORT;
-	}
-
 	public SctpChannelBuilder remotePort(int remotePort) {
-		if (isInRange(remotePort)) {
+		if (SctpPorts.getInstance().isInValidRange(remotePort)) {
 			this.remotePort = remotePort;
 		} else {
-			LOG.error("Port is out of range (possible range: 0-65535)!");
+			LOG.error("Port is out of range (possible range: {}-{})!", SctpPorts.MIN_PORT, SctpPorts.MAX_PORT);
 		}
 		return this;
 	}

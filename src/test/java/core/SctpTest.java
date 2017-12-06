@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.connection.UdpServerLink;
 import net.sctp4nat.core.SctpMapper;
+import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
@@ -157,7 +158,7 @@ public class SctpTest {
 					e2.printStackTrace();
 				}
 
-				UdpClientLink link = null;
+				NetworkLink link = null;
 				try {
 					link = new UdpClientLink(local, remote, so);
 				} catch (IOException e1) {

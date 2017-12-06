@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpMapper;
+import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
@@ -57,7 +58,7 @@ public class SampleClient {
 				mapper(mapper).
 				build();
 		
-		UdpClientLink link = new UdpClientLink(local, remote, so);
+		NetworkLink link = new UdpClientLink(local, remote, so);
 		so.setLink(link);
 		
 		Promise<SctpChannelFacade, Exception, Void> p = so.connect(remote);

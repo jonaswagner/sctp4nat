@@ -182,7 +182,7 @@ public class UpgradeableUdpSocketSample extends DatagramSocket {
 					d.reject(e1);
 				}
 
-				UdpClientLink link = new UdpClientLink(local, remote, so, UpgradeableUdpSocketSample.this);
+				NetworkLink link = new UdpClientLink(local, remote, so, UpgradeableUdpSocketSample.this);
 				d.notify(link);
 
 				try {

@@ -45,36 +45,28 @@ public class SctpDefaultStreamConfig {
 	@Getter
 	@Setter
 	private SctpDataCallback cb = new SctpDataCallback() {
-
 		@Override
 		public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 				SctpChannelFacade facade) {
-			// do nothing and notify the log
-			LOG.info("ignored message from " + facade.getRemote().getAddress().getHostAddress() + ":"
-					+ facade.getRemote().getPort());
+			LOG.trace("Sctp message from {}/{} ignored", facade.getRemote().getAddress().getHostAddress(), facade.getRemote().getPort());
+			// do nothing
 		}
 	};
 
 	/**
 	 * This is the stream id, which is used defaultly.
 	 */
-	@Getter
-	@Setter
-	private int sid = 0;
+	@Getter	@Setter	private int sid = 0;
 
 	/**
 	 * This is the payload protocol identifier. It is a feature, which is offered by
 	 * SCTP, but not used by it. For a better description see the SCTP
 	 * specification.
 	 */
-	@Getter
-	@Setter
-	private int ppid = 0;
+	@Getter	@Setter	private int ppid = 0;
 
 	/**
 	 * This field specifies if the receiver should respect the order of packets.
 	 */
-	@Getter
-	@Setter
-	private boolean ordered = false;
+	@Getter	@Setter	private boolean ordered = false;
 }

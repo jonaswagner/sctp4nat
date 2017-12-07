@@ -32,9 +32,9 @@ import net.sctp4nat.origin.SctpNotification;
 import net.sctp4nat.origin.SctpSocket.NotificationListener;
 import net.sctp4nat.util.SctpUtils;
 
-public class SctpChannelNotification {
+public class SctpChannelNotificationTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelNotification.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelNotificationTest.class);
 	private static final Random RND = new Random(new Date().getTime());
 	
 	private static CountDownLatch shutdownCountDown;

@@ -281,7 +281,9 @@ public class SctpChannel implements SctpChannelFacade {
 				mapper.unregister(currentInstance);
 				SctpPorts.getInstance().removePort(currentInstance);
 				so.closeNative();
-				link.close();
+				if (link != null) {
+					link.close();
+				}
 				d.resolve(null);
 			}
 		});

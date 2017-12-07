@@ -102,7 +102,7 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	/**
-	 * Creates new instance of {@link UdpServerLink}. 
+	 * Creates new instance of {@link UdpServerLink}.
 	 * 
 	 * @param mapper
 	 *            The {@link SctpMapper} instance
@@ -117,15 +117,14 @@ public class UdpServerLink implements NetworkLink {
 	}
 
 	/**
-	 * If a new packet arrives over
-	 * the contained {@link DatagramSocket}, the method first checks, if the remote
-	 * endpoint is already known. If if is known, the packet is decoded and
-	 * forwarded to the native counterpart (usrsctp) via onConnIn(). If not, this
-	 * means, that an new SCTP endpoint wants to connect to this SCTP endpoint. Once
-	 * the SctpChannel is returned by setupSocket(), the
+	 * If a new packet arrives over the contained {@link DatagramSocket}, the method
+	 * first checks, if the remote endpoint is already known. If if is known, the
+	 * packet is decoded and forwarded to the native counterpart (usrsctp) via
+	 * onConnIn(). If not, this means, that an new SCTP endpoint wants to connect to
+	 * this SCTP endpoint. Once the SctpChannel is returned by setupSocket(), the
 	 * {@link SctpChannel} gets registered on {@link SctpMapper}. After the
-	 * registration, onConnIn() is called to forward the INIT message from
-	 * the remote endpoint to the newly created SctpChannel.
+	 * registration, onConnIn() is called to forward the INIT message from the
+	 * remote endpoint to the newly created SctpChannel.
 	 * 
 	 * @param mapper
 	 *            The {@link SctpMapper} instance
@@ -180,6 +179,8 @@ public class UdpServerLink implements NetworkLink {
 
 	@Override
 	public void onConnOut(SctpChannelFacade facade, byte[] data, final int tos) throws IOException, NotFoundException {
+		LOG.info("sending sctp packet from to {}/{}, ", facade.getRemote().getAddress().getHostAddress(),
+				facade.getRemote().getPort());
 		DatagramPacket packet = new DatagramPacket(data, data.length, (SocketAddress) facade.getRemote());
 		udpSocket.send(packet);
 	}

@@ -44,8 +44,6 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 				new InetSocketAddress(destinationIP, destinationPort), so);
 		so.setLink(link);
 
-		new Thread(holePuncher).start();
-
 		Promise<SctpChannelFacade, Exception, Void> p = so
 				.connect(new InetSocketAddress(destinationIP, destinationPort));
 
@@ -53,31 +51,8 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 
 			@Override
 			public void onDone(SctpChannelFacade result) {
-
-				LOG.error("connected to {}/{}", destinationIP, destinationPort);
-				connected = true;
-
-				boolean exitLoop = false;
-				while (!exitLoop) {
-					LOG.error("1 = send \"Hello World\"");
-					LOG.error("2 = exit program");
-
-					Scanner scanner = new Scanner(System.in);
-					int i = scanner.nextInt();
-
-					switch (i) {
-					case 1: {
-						result.send("Hello World!".getBytes(), false, 0, 0);
-						continue;
-					}
-					case 2: {
-						LOG.error("now exiting program on command...");
-						scanner.close();
-						System.exit(0);
-					}
-					default:
-					}
-				}
+				LOG.debug("connected to {}/{}", destinationIP, destinationPort);
+				result.send("Hello World!".getBytes(), false, 0, 0);
 			}
 		});
 

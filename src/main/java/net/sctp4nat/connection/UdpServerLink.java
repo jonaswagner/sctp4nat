@@ -150,8 +150,8 @@ public class UdpServerLink implements NetworkLink {
 
 					try {
 						udpSocket.receive(p);
-
 						InetSocketAddress remote = new InetSocketAddress(p.getAddress(), p.getPort());
+						LOG.info("packet received from {}/{}", remote.getAddress().getHostAddress(), remote.getPort());
 						so = SctpMapper.locate(p.getAddress().getHostAddress(), p.getPort());
 						if (so == null) {
 							LOG.info("New INIT arrived. Now starting the setupSocket() process...");

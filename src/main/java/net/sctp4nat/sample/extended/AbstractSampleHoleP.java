@@ -73,6 +73,8 @@ public abstract class AbstractSampleHoleP {
 				System.exit(1);
 			}
 			
+			LOG.debug("source {}/{}, destination {}/{}", sourceIP.getHostAddress(), sourcePort, destinationIP.getHostAddress(), destinationPort);
+			
 			if (sourceIP == null || sourcePort == -1 || destinationIP == null || destinationPort == -1) {
 				LOG.error("could cast args! System exiting application");
 				System.exit(1);

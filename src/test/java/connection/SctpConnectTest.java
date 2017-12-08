@@ -1,4 +1,4 @@
-package core;
+package connection;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -14,10 +14,12 @@ import java.util.concurrent.TimeoutException;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,8 @@ import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.util.SctpUtils;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SctpChannel.class)
 public class SctpConnectTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpConnectTest.class);
@@ -43,11 +47,13 @@ public class SctpConnectTest {
 	@Before
 	public void setup() {
 		try {
+			Thread.sleep(2000); //wait if some other test shuts down usrsctp
+			
 			serverAddr = new InetSocketAddress(InetAddress.getByName(LOCALHOST),
 					SctpPorts.getInstance().generateDynPort());
 			clientAddr = new InetSocketAddress(InetAddress.getByName(LOCALHOST),
 					SctpPorts.getInstance().generateDynPort());
-		} catch (UnknownHostException e1) {
+		} catch (UnknownHostException | InterruptedException e1) {
 			fail(e1.getMessage());
 		}
 	}

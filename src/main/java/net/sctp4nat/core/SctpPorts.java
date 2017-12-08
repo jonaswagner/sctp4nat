@@ -111,6 +111,10 @@ public class SctpPorts {
 	 *            the port, which is used for so
 	 */
 	public synchronized void putPort(final SctpChannel so, final int port) {
+		if (so == null) {
+			LOG.error("SctpPorts cannot remove a port assigned to null (so was null)!");
+			return;
+		}
 		portMap.put(so, port);
 		LOG.info("SctpPorts added port " + port + " to the portMap!");
 	}
@@ -127,7 +131,7 @@ public class SctpPorts {
 			return;
 		}
 
-		if (!portMap.contains(so)) {
+		if (!portMap.containsKey(so)) {
 			LOG.warn("SctpPorts cannot remove " + so.toString()
 					+ ", because it does not contain such an instance in its portMap!");
 			return;
@@ -147,7 +151,7 @@ public class SctpPorts {
 	}
 	
 	public boolean isInValidRange(final int port) {
-		return port >= SctpPorts.MIN_PORT && port < SctpPorts.MAX_PORT;
+		return port >= SctpPorts.MIN_PORT && port <= SctpPorts.MAX_PORT;
 	}
 
 	/**

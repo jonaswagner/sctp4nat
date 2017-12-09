@@ -20,10 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.sctp4nat.connection.NetworkLink;
 import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.connection.UdpServerLink;
-import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.origin.SctpDataCallback;
 import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;

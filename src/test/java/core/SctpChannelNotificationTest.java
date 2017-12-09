@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
-import net.sctp4nat.core.NetworkLink;
+import net.sctp4nat.connection.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
@@ -111,7 +111,7 @@ public class SctpChannelNotificationTest {
 		assertTrue(d.isRejected());
 		
 		Mockito.when(sctpNotificationMock.toString())
-		.thenReturn("Random number:" + RND.nextInt() + ", " + SctpNotification.SCTP_SHUTDOWN_EVENT_STR);
+		.thenReturn("Random number:" + RND.nextInt() + ", " + SctpNotification.SHUTDOWN_EVENT_STR);
 		d = new DeferredObject<>();
 		countDown = new CountDownLatch(1);
 		l = Whitebox.invokeMethod(channel, "addNotificationListener", d, countDown);

@@ -10,9 +10,9 @@ import org.jdeferred.Promise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4nat.connection.NetworkLink;
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpMapper;
-import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;

@@ -39,7 +39,7 @@ public class SctpNotification
 	public static final String COMM_LOST_STR = "COMM_LOST";
 	public static final String SHUTDOWN_COMP_STR = "SHUTDOWN_COMP";
 	public static final String ADDR_UNREACHABLE_STR = "ADDR_UNREACHABLE";
-	public static final String SCTP_SHUTDOWN_EVENT_STR = "SCTP_SHUTDOWN_EVENT";
+	public static final String SHUTDOWN_EVENT_STR = "SCTP_SHUTDOWN_EVENT";
 	public static final String ADDR_CONFIRMED_STR = "ADDR_CONFIRMED";
 	
     /********  Notifications  **************/
@@ -117,7 +117,7 @@ public class SctpNotification
             case SCTP_SEND_FAILED:
                 return "SCTP_SEND_FAILED";
             case SCTP_SHUTDOWN_EVENT:
-                return SCTP_SHUTDOWN_EVENT_STR;
+                return SHUTDOWN_EVENT_STR;
             case SCTP_ADAPTATION_INDICATION:
                 return "SCTP_ADAPTATION_INDICATION";
             case SCTP_PARTIAL_DELIVERY_EVENT:

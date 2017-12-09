@@ -53,8 +53,7 @@ public class Sctp {
 	private Sctp() {
 	}
 
-	@Getter
-	private static boolean initialized;
+	@Getter	private static boolean initialized = false;
 
 	/**
 	 * The logger.
@@ -361,10 +360,6 @@ public class Sctp {
 	 * @return native socket pointer or 0 if operation failed.
 	 */
 	private static native long usrsctp_socket(int localPort);
-
-	/*
-	 * FIXME to be added? int usrsctp_shutdown(struct socket *so, int how);
-	 */
 
 	/**
 	 * @author jonaswagner

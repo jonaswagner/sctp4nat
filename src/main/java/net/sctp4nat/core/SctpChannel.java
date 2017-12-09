@@ -11,6 +11,7 @@ import org.jdeferred.impl.DeferredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sctp4nat.connection.NetworkLink;
 import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.origin.JNIUtils;
 import net.sctp4nat.origin.Sctp;
@@ -191,7 +192,7 @@ public class SctpChannel implements SctpChannelFacade {
 					d.reject(new Exception(
 							"we are forced to close the connection because we lost the connection to remote: "
 									+ remote.getAddress().getHostAddress() + ":" + remote.getPort()));
-				} else if (notification.toString().indexOf(SctpNotification.SCTP_SHUTDOWN_EVENT_STR) > 0) {
+				} else if (notification.toString().indexOf(SctpNotification.SHUTDOWN_EVENT_STR) > 0) {
 					SctpChannel.this.close();
 				}
 			}

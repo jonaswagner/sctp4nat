@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
-import net.sctp4nat.core.NetworkLink;
 import net.sctp4nat.core.SctpPorts;
 import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;

@@ -27,7 +27,7 @@ public abstract class AbstractSampleHoleP {
 	protected static int sourcePort = -1;
 	protected static Inet4Address destinationIP = null;
 	protected static int destinationPort = -1;
-	protected static int messageCap = 100;
+	protected static int messageCap = 1000;
 
 	protected static final SctpDataCallback cb = new SctpDataCallback() {
 
@@ -43,7 +43,8 @@ public abstract class AbstractSampleHoleP {
 
 			if (messageCap > 0 && d.isPending()) {
 				connected = true;
-				LOG.debug("onSctpPacket() called with data {}", new String(data, StandardCharsets.UTF_8));
+				LOG.debug("packet received with length {}. Now sending the very same packet back...", data.length);
+//				LOG.debug("onSctpPacket() called with data {}", new String(data, StandardCharsets.UTF_8));
 				facade.send(data, false, sid, (int) ppid);
 				messageCap--;
 			} else if (!d.isPending() && d.isRejected()) {

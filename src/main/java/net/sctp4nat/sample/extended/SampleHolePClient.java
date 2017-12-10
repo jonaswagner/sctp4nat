@@ -2,7 +2,6 @@ package net.sctp4nat.sample.extended;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Scanner;
 
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
@@ -15,6 +14,9 @@ import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.origin.SctpAcceptable;
+import net.sctp4nat.origin.SctpNotification;
+import net.sctp4nat.origin.SctpSocket.NotificationListener;
 import net.sctp4nat.util.SctpInitException;
 import net.sctp4nat.util.SctpUtils;
 
@@ -52,7 +54,33 @@ public class SampleHolePClient extends AbstractSampleHoleP {
 			@Override
 			public void onDone(SctpChannelFacade result) {
 				LOG.debug("connected to {}/{}", destinationIP, destinationPort);
+//				result.send(new byte[500*2024], false, 0, 0);
 				result.send("Hello World!".getBytes(), false, 0, 0);
+				result.setNotificationListener(new NotificationListener() {
+
+					@Override
+					public void onSctpNotification(SctpAcceptable socket, SctpNotification notification) {
+						LOG.debug(notification.toString());
+						if (notification.toString().indexOf(SctpNotification.COMM_UP_STR) >= 0) {
+							LOG.warn("This should not be called anymore!");
+						} else if (notification.toString().indexOf(SctpNotification.SHUTDOWN_COMP_STR) >= 0) {
+							LOG.debug("Shutdown request received. Now shutting down the SCTP connection...");
+							result.close();
+							System.exit(0);
+						} else if (notification.toString().indexOf(SctpNotification.ADDR_UNREACHABLE_STR) >= 0) {
+							LOG.error("Heartbeat missing! Now shutting down the SCTP connection...");
+							result.close();
+							System.exit(0);
+						} else if (notification.toString().indexOf(SctpNotification.COMM_LOST_STR) >= 0) {
+							LOG.error("Communication aborted! Now shutting down the udp connection...");
+							result.close();
+							System.exit(0);
+						} else if (notification.toString().indexOf(SctpNotification.SHUTDOWN_EVENT_STR) > 0) {
+							result.close();
+							System.exit(0);
+						}
+					}
+				});
 			}
 		});
 

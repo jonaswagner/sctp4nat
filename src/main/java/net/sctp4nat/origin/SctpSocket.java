@@ -612,8 +612,7 @@ public class SctpSocket implements SctpAcceptable {
 		}
 
 		if (!isAccepted) {
-			acceptNative();
-			isAccepted = true;
+			isAccepted = acceptNative();
 		}
 
 		if (offset < 0 || len <= 0 || offset + len > data.length) {

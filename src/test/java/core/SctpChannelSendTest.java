@@ -45,13 +45,13 @@ import javassist.NotFoundException;;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SctpChannel.class)
-public class SctpChannelSend {
+public class SctpChannelSendTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelSend.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SctpChannelSendTest.class);
 	
 	private static CountDownLatch shutdownCountDown = new CountDownLatch(1);
 	
-//	@Test
+	@Test
 	public void testSendFail() throws SctpInitException, InterruptedException, IOException {
 		LOG.debug("SendFail start");
 		
@@ -71,6 +71,7 @@ public class SctpChannelSend {
 		CountDownLatch countDown = new CountDownLatch(1);
 		
 		SctpSocket mockSocket = Mockito.mock(SctpSocket.class);
+		Mockito.when(mockSocket.acceptNative()).thenReturn(true);
 		Whitebox.setInternalState(channel, SctpSocket.class, mockSocket);
 		
 		SctpDefaultStreamConfig config = new SctpDefaultStreamConfig();
@@ -89,19 +90,8 @@ public class SctpChannelSend {
 			fail("send fail");
 		}
 		
-		CountDownLatch countDown2 = new CountDownLatch(1);
-		Promise<Integer, Exception, Object> promise3 = channel.send(data, config);
-		promise3.fail(new FailCallback<Exception>() {
-			
-			@Override
-			public void onFail(Exception result) {
-				countDown2.countDown();
-			}
-		});
-		
-		if (!countDown2.await(3, TimeUnit.SECONDS)) {
-			fail("send fail");
-		}
+		Mockito.when(mockSocket.sendNative(data, 0, data.length, false, 0, 0)).thenReturn(2048);
+		channel.send(data, config);
 		
 		Promise<Object, Exception, Object> promise4 = channel.close();
 		promise4.done(new DoneCallback<Object>() {

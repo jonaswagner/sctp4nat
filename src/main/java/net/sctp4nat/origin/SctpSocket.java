@@ -22,10 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javassist.NotFoundException;
-import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.connection.NetworkLink;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.core.SctpMapper;
 
 /**
  * SCTP socket implemented using "usrsctp" lib.
@@ -511,6 +511,7 @@ public class SctpSocket implements SctpAcceptable {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private String getString(byte[] data) {
 		String current = new String(data, StandardCharsets.UTF_8);
 		current = current.trim();

@@ -24,12 +24,12 @@ import net.sctp4nat.connection.NetworkLink;
 import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.connection.UdpClientLink;
 import net.sctp4nat.connection.UdpServerLink;
-import net.sctp4nat.origin.SctpDataCallback;
-import net.sctp4nat.util.SctpInitException;
-import net.sctp4nat.util.SctpUtils;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.origin.SctpDataCallback;
+import net.sctp4nat.util.SctpInitException;
+import net.sctp4nat.util.SctpUtils;
 
 public class UpgradeableUdpSocketSample extends DatagramSocket {
 

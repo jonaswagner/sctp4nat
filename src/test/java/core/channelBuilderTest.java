@@ -1,10 +1,10 @@
 package core;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,6 +32,7 @@ public class channelBuilderTest {
 		int currentLocalSctpPort = (int) field.get(builder);
 
 		SctpPorts.getInstance().putPort(mockChannel, 10);
+		@SuppressWarnings("unused")
 		SctpChannelBuilder current = builder.localSctpPort(10);
 		current = builder.localSctpPort(-3000);
 		currentLocalSctpPort = (int) field.get(builder);

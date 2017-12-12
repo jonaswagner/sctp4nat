@@ -1,9 +1,12 @@
 package core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -17,6 +20,7 @@ import net.sctp4nat.core.SctpPorts;
 @PrepareForTest(SctpChannel.class)
 public class SctpPortsTest {
 
+	@SuppressWarnings("static-access")
 	@Test
 	public void sctpPortsTest()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -24,6 +28,7 @@ public class SctpPortsTest {
 
 		Field field = SctpPorts.class.getDeclaredField("portMap");
 		field.setAccessible(true);
+		@SuppressWarnings("unchecked")
 		ConcurrentHashMap<SctpChannel, Integer> portMap = (ConcurrentHashMap<SctpChannel, Integer>) field.get(ports);
 
 		ports.putPort(null, 0);

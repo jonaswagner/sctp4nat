@@ -3,7 +3,6 @@ package net.sctp4nat.sample.extended;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpTimeoutThread;
 import net.sctp4nat.origin.SctpDataCallback;
-import net.sctp4nat.util.SctpUtils;
 
 public abstract class AbstractSampleHoleP {
 

@@ -16,10 +16,7 @@ import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,7 +144,6 @@ public class SctpConnectTest {
 		Sctp.getInstance().init();
 		CountDownLatch failCountDown = new CountDownLatch(1);
 
-		InetSocketAddress local = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9899);
 		InetSocketAddress remote = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9900);
 
 		SctpSocket mockSocket = Mockito.mock(SctpSocket.class);

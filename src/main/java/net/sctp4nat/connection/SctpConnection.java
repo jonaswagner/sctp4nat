@@ -22,12 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lombok.Builder;
-import net.sctp4nat.core.SctpPorts;
-import net.sctp4nat.util.SctpInitException;
-import net.sctp4nat.util.SctpUtils;
 import net.sctp4nat.core.SctpChannel;
 import net.sctp4nat.core.SctpChannelBuilder;
 import net.sctp4nat.core.SctpChannelFacade;
+import net.sctp4nat.core.SctpPorts;
+import net.sctp4nat.util.SctpInitException;
+import net.sctp4nat.util.SctpUtils;
 
 /**
  * 

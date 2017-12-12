@@ -16,6 +16,7 @@
 package net.sctp4nat.core;
 
 import java.net.InetSocketAddress;
+
 import org.jdeferred.Promise;
 
 import net.sctp4nat.connection.SctpDefaultStreamConfig;

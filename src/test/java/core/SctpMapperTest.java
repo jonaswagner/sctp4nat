@@ -1,6 +1,9 @@
 package core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -27,6 +30,7 @@ import net.sctp4nat.origin.SctpSocket;
 @PrepareForTest(SctpChannel.class)
 public class SctpMapperTest {
 
+	@SuppressWarnings({ "static-access", "unlikely-arg-type" })
 	@Test
 	public void testMapper() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException, UnknownHostException, InterruptedException, TimeoutException {
@@ -35,6 +39,7 @@ public class SctpMapperTest {
 
 		Field field = SctpMapper.class.getDeclaredField("socketMap");
 		field.setAccessible(true);
+		@SuppressWarnings("unchecked")
 		ConcurrentHashMap<InetSocketAddress, SctpChannel> socketMap = (ConcurrentHashMap<InetSocketAddress, SctpChannel>) field
 				.get(mapper);
 

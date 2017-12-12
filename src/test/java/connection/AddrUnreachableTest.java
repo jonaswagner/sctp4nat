@@ -69,8 +69,8 @@ public class AddrUnreachableTest {
 					public void onSctpPacket(byte[] data, int sid, int ssn, int tsn, long ppid, int context, int flags,
 							SctpChannelFacade so) {
 						SctpChannelFacade facade = (SctpChannelFacade) so;
-						System.out.println("I WAS HERE");
-						System.out.println("got data: " + new String(data, StandardCharsets.UTF_8));
+						LOG.debug("I WAS HERE");
+						LOG.debug("got data: " + new String(data, StandardCharsets.UTF_8));
 						facade.send(data, false, sid, (int) ppid);
 						
 						try {
@@ -104,7 +104,7 @@ public class AddrUnreachableTest {
 					fail(e.getMessage());
 				}
 
-				System.out.println("Server ready!");
+				LOG.debug("Server ready!");
 				serverSetup.countDown();
 				
 				

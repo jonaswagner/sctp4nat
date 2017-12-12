@@ -104,6 +104,7 @@ public class SctpTest {
 					e.printStackTrace();
 				}
 
+				LOG.debug(link.toString());
 				LOG.debug("SERVER SETUP COMPLETE");
 				serverCd.countDown();
 			}
@@ -165,7 +166,8 @@ public class SctpTest {
 					e1.printStackTrace();
 				}
 				so.setLink(link);
-
+				LOG.debug(((UdpClientLink) link).toString());
+				
 				Promise<SctpChannelFacade, Exception, Void> p = so.connect(remote);
 
 				p.done(new DoneCallback<SctpChannelFacade>() {
@@ -222,7 +224,7 @@ public class SctpTest {
 		try {
 			Sctp.getInstance().finish();
 		} catch (IOException e) {
-			fail(e.getMessage());
+			LOG.error(e.getMessage());
 		}
 	}
 }

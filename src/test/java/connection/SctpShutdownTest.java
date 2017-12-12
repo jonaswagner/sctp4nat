@@ -72,12 +72,6 @@ public class SctpShutdownTest {
 
 						so.shutdownInit();
 						
-						try {
-							Thread.sleep(400);
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
-						
 						Promise<Void, Exception, Void> p = SctpUtils.shutdownAll(null, null);
 						p.done(new DoneCallback<Void>() {
 
@@ -157,7 +151,6 @@ public class SctpShutdownTest {
 						try {
 							Thread.sleep(400);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						

@@ -136,8 +136,8 @@ public class UdpClientLink implements NetworkLink {
 
 	@Override
 	public String toString() {
-		InetSocketAddress local = (InetSocketAddress) this.udpSocket.getLocalSocketAddress();
-		InetSocketAddress remote = (InetSocketAddress) this.udpSocket.getRemoteSocketAddress();
+		InetSocketAddress local = this.local;
+		InetSocketAddress remote = this.remote;
 
 		return "UdpClientLink(" + "Local(" + local.getAddress().getHostAddress() + ":" + local.getPort() + ")"
 				+ ", Remote(" + remote.getAddress().getHostAddress() + ":" + remote.getPort() + "), shutdown is "

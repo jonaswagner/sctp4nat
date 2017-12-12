@@ -3,7 +3,6 @@ package connection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -16,12 +15,12 @@ import java.util.concurrent.TimeUnit;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.FailCallback;
 import org.jdeferred.Promise;
-import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sctp4nat.connection.SctpConnection;
+import net.sctp4nat.connection.SctpDefaultStreamConfig;
 import net.sctp4nat.core.SctpChannelFacade;
 import net.sctp4nat.core.SctpMapper;
 import net.sctp4nat.core.SctpPorts;
@@ -38,12 +37,12 @@ public class SctpConnectionTest {
 
 	Thread server;
 	Thread client;
-	
+
 	@Test
 	public void sctpChannelTest() throws InterruptedException {
 
 		SctpMapper.setShutdown(false);
-		
+
 		CountDownLatch serverCd = new CountDownLatch(1);
 		CountDownLatch clientCd = new CountDownLatch(1);
 		CountDownLatch comCd = new CountDownLatch(2);
@@ -179,12 +178,38 @@ public class SctpConnectionTest {
 		if (shutdownCd.getCount() > 0) {
 			fail("shutdown could not complete");
 		}
-	}
-	
-	@After
-	public void tearDown() throws IOException {
+
 		server.interrupt();
 		client.interrupt();
 		SctpUtils.shutdownAll();
+	}
+
+	@Test
+	public void testSctpConnection() throws Exception {
+
+		CountDownLatch latch = new CountDownLatch(3);
+		try {
+			SctpConnection.builder().build().connect(null);
+		} catch (Exception e) {
+			latch.countDown();
+		}
+
+		InetSocketAddress remote = new InetSocketAddress("localhost", 6597);
+		try {
+			SctpConnection.builder().remote(remote).build().connect(null);
+		} catch (Exception e) {
+			latch.countDown();
+		}
+
+		try {
+			SctpConnection.builder().remote(remote).config(new SctpDefaultStreamConfig()).local(remote)
+					.localSctpPort(3000).build().connect(null);
+		} catch (Exception e) {
+			latch.countDown();
+		}
+
+		if (latch.getCount() > 0) {
+			fail("test contained errors");
+		}
 	}
 }

@@ -34,8 +34,6 @@ import net.sctp4nat.origin.Sctp;
 import net.sctp4nat.origin.SctpSocket;
 import net.sctp4nat.util.SctpUtils;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SctpChannel.class)
 public class SctpConnectTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SctpConnectTest.class);

@@ -99,7 +99,8 @@ public class SctpConnection {
 
 		if (link2 == null) {
 			LOG.error("Could not create NetworkLink");
-			releaseAssignedParams(so);
+			SctpPorts.getInstance().removePort(so);
+			so.close();
 			throw new NullPointerException("NetworkLink was null!");
 		}
 
@@ -110,16 +111,4 @@ public class SctpConnection {
 		return p;
 
 	}
-
-	/**
-	 * This method cleans up the assigned resources after connect caused an error.
-	 * 
-	 * @param so
-	 *            The underlying {@link SctpChannel}
-	 */
-	private void releaseAssignedParams(SctpChannel so) {
-		SctpPorts.getInstance().removePort(so);
-		so.close();
-	}
-
 }

@@ -41,6 +41,7 @@ public class SampleServer {
 			}
 		};
 		
+		@SuppressWarnings("unused")
 		UdpServerLink link = new UdpServerLink(mapper, local.getAddress(), cb);
 		
 		System.out.println("SETUP COMPLETE");

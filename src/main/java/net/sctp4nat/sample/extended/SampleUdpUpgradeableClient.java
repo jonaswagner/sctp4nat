@@ -30,6 +30,7 @@ public class SampleUdpUpgradeableClient {
 		InetSocketAddress serverSoAddr = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 5689);
 		
 		Sctp.getInstance().init();
+		@SuppressWarnings("resource")
 		UpgradeableUdpSocketSample udpSocket = new UpgradeableUdpSocketSample(clientSoAddr.getPort(),
 				clientSoAddr.getAddress());
 		udpSocket.setCb(new SctpDataCallback() {

@@ -26,6 +26,7 @@ public class SampleUdpUpgradeableServer {
 		
 		SctpUtils.init(serverSoAddr.getAddress(), serverSoAddr.getPort(), null);
 		
+		@SuppressWarnings("resource")
 		UpgradeableUdpSocketSample udpSocket = new UpgradeableUdpSocketSample(serverSoAddr.getPort(),
 				serverSoAddr.getAddress());
 		udpSocket.setCb(new SctpDataCallback() {

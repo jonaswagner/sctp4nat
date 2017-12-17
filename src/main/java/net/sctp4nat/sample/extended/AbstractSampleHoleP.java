@@ -3,6 +3,7 @@ package net.sctp4nat.sample.extended;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,7 @@ public abstract class AbstractSampleHoleP {
 	protected static Inet4Address destinationIP = null;
 	protected static int destinationPort = -1;
 	protected static int messageCap = 1000;
+	protected static int counter = 0;
 
 	protected static final SctpDataCallback cb = new SctpDataCallback() {
 
@@ -39,20 +41,21 @@ public abstract class AbstractSampleHoleP {
 				new SctpTimeoutThread(d, 2, TimeUnit.MINUTES, countDown).start();
 			}
 
-			if (messageCap > 0 && d.isPending()) {
+//			if (messageCap > 0 && d.isPending()) {
 				connected = true;
-				LOG.debug("packet received with length {}. Now sending the very same packet back...", data.length);
-//				LOG.debug("onSctpPacket() called with data {}", new String(data, StandardCharsets.UTF_8));
+				counter ++;
+				LOG.debug("packet #" + counter + " received with length {}. Now sending the very same packet back...", data.length);
+				LOG.debug("onSctpPacket() called with data {}", new String(data, StandardCharsets.UTF_8));
 				facade.send(data, false, sid, (int) ppid);
-				messageCap--;
-			} else if (!d.isPending() && d.isRejected()) {
-				LOG.error("Test was not successful!");
-				System.exit(1);
-			} else {
-				LOG.error("Test sucessfully completed");
-				facade.close();
-				System.exit(0);
-			}
+//				messageCap--;
+//			} else if (!d.isPending() && d.isRejected()) {
+//				LOG.error("Test was not successful!");
+//				System.exit(1);
+//			} else {
+//				LOG.error("Test sucessfully completed");
+//				facade.close();
+//				System.exit(0);
+//			}
 		}
 	};
 	protected static final Runnable holePuncher = new Runnable() {

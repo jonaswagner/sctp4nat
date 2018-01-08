@@ -35,7 +35,7 @@
 # Reminder:
 # The command below is used to re-generate jni header
 # (run from classes output folder)
-# javah -jni org.jitsi.sctp4j.Sctp
+# javah -jni net.sctp4nat.Sctp
 # NOTES: To fix the following error
 #  [cc]    Creating library jnsctp.lib and object jnsctp.exp
 #  [cc] LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
